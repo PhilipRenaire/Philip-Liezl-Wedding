@@ -86,8 +86,8 @@ body {
   text-align: center;
   padding: 80px 24px;
   background:
-    linear-gradient(rgba(75, 36, 95, 0.24), rgba(75, 36, 95, 0.24)),
-    url("assets/hero-background.svg");
+    linear-gradient(rgba(75, 36, 95, 0.20), rgba(75, 36, 95, 0.20)),
+    url("assets/hero-background.svg?v=hq2");
   background-size: cover;
   background-position: center;
   color: var(--white);
@@ -97,7 +97,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(rgba(36, 23, 38, 0.12), rgba(36, 23, 38, 0.36));
+  background: linear-gradient(rgba(36, 23, 38, 0.10), rgba(36, 23, 38, 0.34));
   pointer-events: none;
 }
 
@@ -266,14 +266,14 @@ h3 {
   display: block;
   margin-bottom: 22px;
   color: var(--deep-purple);
-  font-size: clamp(36px, 4.5vw, 52px);
-  line-height: 1.08;
+  font-size: clamp(44px, 5.2vw, 64px);
+  line-height: 1.04;
 }
 
 .details-venue {
   margin: 0;
   color: var(--text);
-  font-size: 25px;
+  font-size: 24px;
   line-height: 1.35;
 }
 
@@ -456,7 +456,7 @@ summary {
   }
 
   .details-main-date {
-    font-size: 38px;
+    font-size: 40px;
   }
 
   .details-venue {
