@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Philip & Liezl | Wedding in Dahilayan</title>
   <meta name="description" content="Wedding website for Philip and Liezl's celebration at Dahilayan Forest Park Resort in Dahilayan, Bukidnon on October 19, 2026." />
-  <link rel="stylesheet" href="styles.css?v=hero-fix-1" />
+  <link rel="stylesheet" href="styles.css?v=details-rsvp-map-gallery-20260904" />
 </head>
 <body>
   <header class="site-header">
@@ -23,6 +23,7 @@
         <a href="#location">Location</a>
         <a href="#stay">Stay Guide</a>
         <a href="#faqs">FAQs</a>
+        <a href="#gallery">Gallery</a>
       </div>
     </nav>
   </header>
@@ -56,24 +57,48 @@
       </p>
     </section>
 
-    <section id="details" class="section details-grid">
-      <div class="card wedding-details-card">
-        <h3>Wedding Details</h3>
-        <span class="details-label">Date</span>
-        <strong class="details-main-date">October 19, 2026</strong>
-        <span class="details-label">Venue</span>
-        <p class="details-venue">Dahilayan Forest Park Resort</p>
+    <section id="details" class="section details-section">
+      <div class="section-heading">
+        <p class="eyebrow">Wedding Details</p>
+        <h2>The Day We Say I Do</h2>
+        <p class="section-subtitle">A mountain celebration surrounded by family, friends, and the cool beauty of Dahilayan.</p>
       </div>
-      <div class="card">
-        <h3>Dress Code</h3>
-        <p><strong>Guests:</strong> Formal to semi-formal attire</p>
-        <p><strong>Guest colors:</strong> Dusty Rose, Antique Rose, Blush Mauve</p>
-        <p><strong>Please avoid:</strong> Deep purple, entourage colors, all-white outfits, and exact champagne gowns.</p>
-      </div>
-      <div class="card">
-        <h3>Weather Reminder</h3>
-        <p>Dahilayan can feel cool, especially in the afternoon and evening.</p>
-        <p>Please bring a light jacket, shawl, or coat for comfort.</p>
+
+      <div class="details-layout">
+        <article class="detail-feature-card">
+          <span class="details-label">Date</span>
+          <strong class="details-main-date">October 19, 2026</strong>
+          <span class="details-label">Venue</span>
+          <p class="details-venue">Dahilayan Forest Park Resort</p>
+          <div class="detail-divider"></div>
+          <div class="detail-mini-grid">
+            <div>
+              <span>Ceremony</span>
+              <p>To be announced</p>
+            </div>
+            <div>
+              <span>Reception</span>
+              <p>To be announced</p>
+            </div>
+          </div>
+        </article>
+
+        <div class="detail-side-grid">
+          <article class="card detail-card-soft">
+            <div class="detail-icon">✦</div>
+            <h3>Dress Code</h3>
+            <p><strong>Guests:</strong> Formal to semi-formal attire</p>
+            <p><strong>Guest colors:</strong> Dusty Rose, Antique Rose, Blush Mauve</p>
+            <p><strong>Please avoid:</strong> Deep purple, entourage colors, all-white outfits, and exact champagne gowns.</p>
+          </article>
+
+          <article class="card detail-card-soft">
+            <div class="detail-icon">❄</div>
+            <h3>Weather Reminder</h3>
+            <p>Dahilayan can feel cool, especially in the afternoon and evening.</p>
+            <p>Please bring a light jacket, shawl, or coat for comfort.</p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -92,20 +117,22 @@
       </div>
     </section>
 
-    <section id="rsvp" class="section">
-      <div class="section-heading">
-        <p class="eyebrow">Kindly Respond</p>
-        <h2>RSVP</h2>
+    <section id="rsvp" class="section rsvp-section">
+      <div class="rsvp-card">
+        <div class="section-heading">
+          <p class="eyebrow">Kindly Respond</p>
+          <h2>RSVP</h2>
+        </div>
+        <p class="center-text">
+          Please confirm your attendance so we can prepare your seat, meal, and table assignment.
+        </p>
+        <div class="center">
+          <a href="https://forms.google.com/" target="_blank" rel="noopener" class="btn primary">
+            Open RSVP Form
+          </a>
+        </div>
+        <p class="small-note">Send me your final Google Form link and I’ll replace this placeholder button.</p>
       </div>
-      <p class="center-text">
-        Please confirm your attendance so we can prepare your seat, meal, and table assignment.
-      </p>
-      <div class="center">
-        <a href="https://forms.google.com/" target="_blank" rel="noopener" class="btn primary">
-          Open RSVP Form
-        </a>
-      </div>
-      <p class="small-note">Replace this button link with your final Google Form or Airtable form link.</p>
     </section>
 
     <section id="seating" class="section muted">
@@ -125,22 +152,28 @@
       </div>
     </section>
 
-    <section id="location" class="section">
+    <section id="location" class="section location-section">
       <div class="section-heading">
         <p class="eyebrow">How to Get There</p>
         <h2>Location & Directions</h2>
       </div>
-      <div class="two-column">
-        <div>
+      <div class="location-card">
+        <div class="location-copy">
           <h3>Dahilayan Forest Park Resort</h3>
           <p>
             Please plan your travel ahead. Dahilayan is a mountain destination, so travel time may vary depending
             on weather, traffic, and road conditions.
           </p>
           <p><strong>Tip:</strong> Save the Google Maps pin before traveling.</p>
+          <a class="btn primary" href="https://www.google.com/maps/search/?api=1&query=Dahilayan%20Forest%20Park%20Resort%2C%20Dahilayan%2C%20Bukidnon" target="_blank" rel="noopener">Open in Google Maps</a>
         </div>
-        <div class="map-placeholder">
-          Add Google Maps Embed Here
+        <div class="map-embed">
+          <iframe
+            title="Map to Dahilayan Forest Park Resort"
+            src="https://www.google.com/maps?q=Dahilayan%20Forest%20Park%20Resort%2C%20Dahilayan%2C%20Bukidnon&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
         </div>
       </div>
     </section>
@@ -199,13 +232,15 @@
       <div class="section-heading">
         <p class="eyebrow">Memories</p>
         <h2>Gallery</h2>
+        <p class="section-subtitle">A soft preview space for your engagement photos, prenup shots, and wedding memories.</p>
       </div>
       <div class="gallery-grid">
-        <div>Photo 1</div>
-        <div>Photo 2</div>
-        <div>Photo 3</div>
-        <div>Photo 4</div>
+        <div class="gallery-card"><span>Photo 1</span><p>Engagement</p></div>
+        <div class="gallery-card"><span>Photo 2</span><p>Pre-wedding</p></div>
+        <div class="gallery-card"><span>Photo 3</span><p>Details</p></div>
+        <div class="gallery-card"><span>Photo 4</span><p>Memories</p></div>
       </div>
+      <p class="small-note">Upload your final photos here and I’ll replace these placeholders.</p>
     </section>
   </main>
 
