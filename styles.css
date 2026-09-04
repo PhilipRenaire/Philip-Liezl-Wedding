@@ -45,11 +45,17 @@ body {
 }
 
 .logo {
-  font-size: 24px;
-  color: var(--deep-purple);
+  display: inline-flex;
+  align-items: center;
+  width: 84px;
+  height: 38px;
   text-decoration: none;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+}
+
+.logo-image {
+  display: block;
+  width: 84px;
+  height: auto;
 }
 
 .nav-links {
