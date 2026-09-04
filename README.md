@@ -1,50 +1,20 @@
-# Dahilayan Wedding Website
+# Philip & Liezl Wedding Website - Hero Fix Package
 
-A simple static wedding website for a Dahilayan, Bukidnon wedding.
+This ZIP includes the updated website files with the hero image fix.
 
-## Sections Included
+## Included fixes
+- Sharper hero image asset
+- Soft low-opacity purple overlay
+- Date placed above the venue in the Details section
+- Date made larger than the venue text
+- Venue updated to Dahilayan Forest Park Resort
 
-- Home
-- Our Story
-- Wedding Details
-- Schedule
-- RSVP
-- Seating Arrangement
-- Location & Directions
-- Accommodation Guide
-- FAQs
-- Gallery
+## Files to replace in your repository
+- index.html
+- styles.css
+- script.js
+- assets/logo-pl.svg
+- assets/hero-names.svg
+- assets/hero-background.jpg
 
-## How to Use with GitHub Pages
-
-1. Create a new GitHub repository.
-2. Upload these files:
-   - `index.html`
-   - `styles.css`
-   - `script.js`
-3. Go to **Settings > Pages**.
-4. Under **Build and deployment**, choose:
-   - Source: Deploy from a branch
-   - Branch: main
-   - Folder: `/root`
-5. Save.
-6. GitHub will generate your live website link.
-
-## Important Privacy Note
-
-Do not upload private guest information, contact numbers, RSVP responses, or full seating records to a public GitHub repository.
-
-For RSVP and guest data, use:
-- Google Forms + Google Sheets
-- Airtable
-- Supabase
-- Firebase
-
-## Customization Checklist
-
-- Replace `Partner` with your partner's name.
-- Replace `P & E` logo initials.
-- Replace Google Forms link in the RSVP button.
-- Add your final venue name and Google Maps embed.
-- Replace sample seating data in `script.js`.
-- Add your real photos to the Gallery.
+If your site still shows the old background after upload, do a hard refresh: Ctrl + F5.
