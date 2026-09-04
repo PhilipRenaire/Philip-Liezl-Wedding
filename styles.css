@@ -86,16 +86,25 @@ body {
   text-align: center;
   padding: 80px 24px;
   background:
-    linear-gradient(rgba(36, 23, 38, 0.35), rgba(36, 23, 38, 0.55)),
-    radial-gradient(circle at top, rgba(239, 226, 200, 0.95), rgba(75, 36, 95, 0.78)),
-    url("https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1800&q=80");
+    linear-gradient(rgba(75, 36, 95, 0.24), rgba(75, 36, 95, 0.24)),
+    url("assets/hero-background.svg");
   background-size: cover;
   background-position: center;
   color: var(--white);
 }
 
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(36, 23, 38, 0.12), rgba(36, 23, 38, 0.36));
+  pointer-events: none;
+}
+
 .hero-content {
-  max-width: 850px;
+  max-width: 1080px;
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {
@@ -109,6 +118,21 @@ body {
 
 .hero .eyebrow {
   color: var(--champagne);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.hero-title {
+  margin: 10px 0 0;
+  line-height: 1;
+}
+
+.hero-title-image {
+  display: block;
+  width: min(95vw, 980px);
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.32));
 }
 
 h1 {
@@ -131,7 +155,8 @@ h3 {
 
 .date {
   font-size: 22px;
-  margin: 16px 0;
+  margin: 18px 0 16px;
+  text-shadow: 0 5px 20px rgba(0, 0, 0, 0.42);
 }
 
 .hero-text {
@@ -139,6 +164,7 @@ h3 {
   margin: 0 auto 28px;
   font-size: 20px;
   line-height: 1.6;
+  text-shadow: 0 5px 20px rgba(0, 0, 0, 0.45);
 }
 
 .hero-buttons,
@@ -219,6 +245,36 @@ h3 {
   border-radius: 24px;
   box-shadow: var(--shadow);
   border: 1px solid rgba(75, 36, 95, 0.08);
+}
+
+.wedding-details-card {
+  background: linear-gradient(180deg, #ffffff, #fff8ee);
+}
+
+.details-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--orchid);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.details-main-date {
+  display: block;
+  margin-bottom: 22px;
+  color: var(--deep-purple);
+  font-size: clamp(36px, 4.5vw, 52px);
+  line-height: 1.08;
+}
+
+.details-venue {
+  margin: 0;
+  color: var(--text);
+  font-size: 25px;
+  line-height: 1.35;
 }
 
 .card p,
@@ -393,6 +449,18 @@ summary {
 
   .search-box {
     flex-direction: column;
+  }
+
+  .hero-title-image {
+    width: min(96vw, 760px);
+  }
+
+  .details-main-date {
+    font-size: 38px;
+  }
+
+  .details-venue {
+    font-size: 22px;
   }
 
   .section {
