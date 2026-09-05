@@ -5,6 +5,9 @@
   --orchid: #7d4f8d;
   --mauve: #b9849c;
   --rose: #c88b91;
+  --rose-gold-dark: #a95f62;
+  --rose-gold: #d79a92;
+  --rose-gold-light: #f6d2c5;
   --dark: #241726;
   --text: #3c2f35;
   --white: #ffffff;
@@ -85,19 +88,21 @@ body {
   place-items: center;
   text-align: center;
   padding: 80px 24px;
-  background:
-    linear-gradient(rgba(75, 36, 95, 0.22), rgba(75, 36, 95, 0.22)),
-    url("assets/hero-background.jpg");
+  background-image:
+    linear-gradient(rgba(42, 22, 34, 0.08), rgba(42, 22, 34, 0.18)),
+    url("assets/hero-background.jpg?v=hero-hq-20260905");
   background-size: cover;
   background-position: center;
-  color: var(--white);
+  color: var(--rose-gold);
 }
 
 .hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(rgba(36, 23, 38, 0.10), rgba(36, 23, 38, 0.30));
+  background:
+    radial-gradient(circle at center, rgba(255, 250, 244, 0.03) 0%, rgba(36, 23, 38, 0.20) 78%),
+    linear-gradient(90deg, rgba(36, 23, 38, 0.18), rgba(36, 23, 38, 0.02) 45%, rgba(36, 23, 38, 0.18));
   pointer-events: none;
 }
 
@@ -116,23 +121,54 @@ body {
   font-weight: 700;
 }
 
-.hero .eyebrow {
-  color: var(--champagne);
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+.hero .eyebrow,
+.hero-event-date,
+.hero-event-venue,
+.hero-text {
+  color: var(--rose-gold-light) !important;
+  text-shadow:
+    0 2px 2px rgba(78, 38, 46, 0.55),
+    0 0 14px rgba(246, 210, 197, 0.48),
+    0 0 28px rgba(169, 95, 98, 0.30) !important;
+}
+
+.hero-event-date,
+.hero-event-venue {
+  background-image: linear-gradient(105deg, #fff0e8 0%, #f2c5b8 24%, #c98581 52%, #f7d6c9 76%, #b76e79 100%);
+  background-size: 180% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .hero-title {
-  margin: 10px 0 0;
+  position: relative;
+  width: min(95vw, 980px);
+  aspect-ratio: 1653 / 400;
+  margin: 10px auto 0;
   line-height: 1;
+  filter: drop-shadow(0 10px 26px rgba(58, 25, 33, 0.36));
+}
+
+.hero-title::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-image: linear-gradient(105deg, #fff1e8 0%, #f4c7ba 24%, #b76e79 48%, #f8d6ca 72%, #c27a7a 100%);
+  background-size: 190% auto;
+  -webkit-mask: url("assets/hero-names.svg") center / contain no-repeat;
+  mask: url("assets/hero-names.svg") center / contain no-repeat;
+  z-index: 1;
 }
 
 .hero-title-image {
   display: block;
-  width: min(95vw, 980px);
+  width: 100%;
   max-width: 100%;
   height: auto;
   margin: 0 auto;
-  filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.32));
+  opacity: 0;
 }
 
 h1 {
@@ -164,7 +200,6 @@ h3 {
   margin: 0 auto 28px;
   font-size: 20px;
   line-height: 1.6;
-  text-shadow: 0 5px 20px rgba(0, 0, 0, 0.45);
 }
 
 .hero-buttons,
@@ -191,16 +226,19 @@ h3 {
   transform: translateY(-2px);
 }
 
-.btn.primary {
-  background: var(--deep-purple);
-  color: var(--white);
-  box-shadow: var(--shadow);
+.btn.primary,
+.hero .btn.primary {
+  background: var(--deep-purple) !important;
+  color: var(--white) !important;
+  border-color: transparent !important;
+  box-shadow: var(--shadow) !important;
 }
 
-.btn.secondary {
-  border-color: var(--champagne);
-  color: var(--white);
-  background: rgba(255, 255, 255, 0.12);
+.btn.secondary,
+.hero .btn.secondary {
+  border-color: var(--champagne) !important;
+  color: var(--white) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
 }
 
 .section {
@@ -252,6 +290,10 @@ h3 {
   border-radius: 24px;
   box-shadow: var(--shadow);
   border: 1px solid rgba(75, 36, 95, 0.08);
+}
+
+.wedding-details-card {
+  background: linear-gradient(180deg, #ffffff, #fff8ee);
 }
 
 .details-section {
@@ -323,8 +365,8 @@ h3 {
   display: block;
   margin-bottom: 24px;
   color: var(--deep-purple);
-  font-size: clamp(46px, 5.4vw, 68px);
-  line-height: 1.02;
+  font-size: 34px;
+  line-height: 1.12;
 }
 
 .details-venue {
@@ -623,12 +665,12 @@ summary {
     flex-direction: column;
   }
 
-  .hero-title-image {
+  .hero-title {
     width: min(96vw, 760px);
   }
 
   .details-main-date {
-    font-size: 42px;
+    font-size: 34px;
   }
 
   .details-venue {
