@@ -96,7 +96,7 @@ if (searchButton && searchInput) {
 
 // RSVP plus-one lookup. Keep the real guest list private in Google Sheets, not in this public file.
 const rsvpSection = document.getElementById('rsvp');
-const rsvpEndpoint = rsvpSection?.dataset.rsvpEndpoint?.trim() || '';
+const rsvpEndpoint = rsvpSection?.dataset.rsvpEndpoint?.trim() || 'https://script.google.com/macros/s/AKfycbzrtTDKXdgI-hSUhJh9fAatWxVWI1cOH_fK9u0uD_dONW9kk_O9kyX6XCIZiDLkWtGF/exec';
 
 const rsvpLookupForm = document.getElementById('rsvpLookupForm');
 const rsvpDetailsForm = document.getElementById('rsvpDetailsForm');
