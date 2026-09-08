@@ -96,7 +96,7 @@ if (searchButton && searchInput) {
 
 // RSVP plus-one lookup. Keep the real guest list private in Google Sheets, not in this public file.
 const rsvpSection = document.getElementById('rsvp');
-const rsvpEndpoint = rsvpSection?.dataset.rsvpEndpoint?.trim() || 'https://script.google.com/macros/s/AKfycbzrtTDKXdgI-hSUhJh9fAatWxVWI1cOH_fK9u0uD_dONW9kk_O9kyX6XCIZiDLkWtGF/exec';
+const rsvpEndpoint = rsvpSection?.dataset.rsvpEndpoint?.trim() || '';
 
 const rsvpLookupForm = document.getElementById('rsvpLookupForm');
 const rsvpDetailsForm = document.getElementById('rsvpDetailsForm');
@@ -128,21 +128,75 @@ function setRsvpStatus(message, type = '') {
   rsvpStatus.innerHTML = message;
 }
 
+function hasLiveRsvpEndpoint() {
+  return Boolean(rsvpEndpoint && rsvpEndpoint.startsWith('https://script.google.com/macros/s/') && rsvpEndpoint.endsWith('/exec'));
+}
+
+function rsvpJsonpRequest(params, timeout = 15000) {
+  return new Promise((resolve, reject) => {
+    if (!hasLiveRsvpEndpoint()) {
+      reject(new Error('The RSVP form is not connected to a Google Apps Script endpoint yet.'));
+      return;
+    }
+
+    let url;
+    try {
+      url = new URL(rsvpEndpoint);
+    } catch (error) {
+      reject(new Error('The RSVP endpoint URL is not valid.'));
+      return;
+    }
+
+    const callbackName = `rsvpCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    url.searchParams.set('callback', callbackName);
+
+    Object.entries(params).forEach(([key, value]) => {
+      url.searchParams.set(key, value == null ? '' : String(value));
+    });
+
+    const script = document.createElement('script');
+    let isDone = false;
+
+    const cleanup = () => {
+      isDone = true;
+      clearTimeout(timer);
+      delete window[callbackName];
+      script.remove();
+    };
+
+    const timer = setTimeout(() => {
+      if (!isDone) {
+        cleanup();
+        reject(new Error('The RSVP database did not respond. Please check that the Google Apps Script is deployed for Anyone, then try again.'));
+      }
+    }, timeout);
+
+    window[callbackName] = (data) => {
+      if (!isDone) {
+        cleanup();
+        resolve(data);
+      }
+    };
+
+    script.onerror = () => {
+      if (!isDone) {
+        cleanup();
+        reject(new Error('Could not load the RSVP database. Please redeploy the Google Apps Script web app using access: Anyone.'));
+      }
+    };
+
+    script.src = url.toString();
+    document.body.appendChild(script);
+  });
+}
+
 async function lookupGuest(name, inviteCode) {
-  if (rsvpEndpoint) {
-    const url = new URL(rsvpEndpoint);
-    url.searchParams.set('action', 'lookup');
-    url.searchParams.set('name', name);
-    if (inviteCode) {
-      url.searchParams.set('code', inviteCode);
-    }
-
-    const response = await fetch(url.toString());
-    if (!response.ok) {
-      throw new Error('Could not connect to the RSVP database.');
-    }
-
-    return response.json();
+  if (hasLiveRsvpEndpoint()) {
+    return rsvpJsonpRequest({
+      action: 'lookup',
+      name,
+      code: inviteCode
+    });
   }
 
   const guest = demoRsvpGuests.find((item) => {
@@ -172,12 +226,12 @@ function showRsvpForm(guest, demoMode = false) {
   }
 
   const plusOneAllowed = Boolean(guest.plusOneAllowed || String(guest.plusOneAllowed).toLowerCase() === 'yes');
-  const seats = Number(guest.seats || (plusOneAllowed ? 2 : 1));
+  const seats = Number(guest.seats || guest.maxGuests || (plusOneAllowed ? 2 : 1));
 
-  matchedGuestName.value = guest.name || '';
-  matchedInviteCode.value = guest.inviteCode || inviteCodeInput?.value || '';
-  matchedSeats.value = String(seats);
-  matchedPlusOneAllowed.value = plusOneAllowed ? 'Yes' : 'No';
+  if (matchedGuestName) matchedGuestName.value = guest.name || '';
+  if (matchedInviteCode) matchedInviteCode.value = guest.inviteCode || inviteCodeInput?.value || '';
+  if (matchedSeats) matchedSeats.value = String(seats);
+  if (matchedPlusOneAllowed) matchedPlusOneAllowed.value = plusOneAllowed ? 'Yes' : 'No';
 
   if (plusOneAllowed) {
     guestGreeting.innerHTML = `<strong>Hi ${guest.name}!</strong><br>Your invitation includes ${seats} seats. You may RSVP with one plus one.`;
@@ -249,23 +303,20 @@ if (rsvpDetailsForm) {
       attendanceStatus,
       bringingPlusOne: willBringPlusOne ? 'Yes' : 'No',
       plusOneName: willBringPlusOne ? plusOneName.value.trim() : '',
-      notes: document.getElementById('rsvpNotes')?.value.trim() || ''
+      notes: (document.getElementById('rsvpNotes')?.value.trim() || '').slice(0, 500)
     };
 
-    if (!rsvpEndpoint) {
+    if (!hasLiveRsvpEndpoint()) {
       setRsvpStatus('Demo RSVP recorded on screen only. Connect the private Google Sheet endpoint to save real responses.', 'warning');
       return;
     }
 
     try {
-      const response = await fetch(rsvpEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
+      setRsvpStatus('Submitting your RSVP...', 'warning');
+      const data = await rsvpJsonpRequest(payload);
 
-      if (!response.ok) {
-        throw new Error('Could not submit your RSVP.');
+      if (!data.success) {
+        throw new Error(data.message || 'Could not submit your RSVP.');
       }
 
       setRsvpStatus('Thank you! Your RSVP has been submitted.', 'success');
