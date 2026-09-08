@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Philip & Liezl | Wedding in Dahilayan</title>
   <meta name="description" content="Wedding website for Philip and Liezl's celebration at Dahilayan Forest Park Resort in Dahilayan, Bukidnon on October 19, 2026." />
-  <link rel="stylesheet" href="styles.css?v=rsvp-required-popup-20260908" />
+  <link rel="stylesheet" href="styles.css?v=rsvp-code-required-20260908-2317" />
   <style>
     .hero {
       background:
@@ -261,17 +261,17 @@
           <h2>RSVP</h2>
         </div>
         <p class="center-text">
-          Enter your name to check your invitation. The form will automatically show if your invitation includes a plus one.
+          Enter your name and invitation code to check your invitation. The form will automatically show if your invitation includes a plus one.
         </p>
 
-        <form id="rsvpLookupForm" class="rsvp-form" novalidate>
+        <form id="rsvpLookupForm" class="rsvp-form">
           <label class="rsvp-field" for="guestName">
             <span>First Name and Last Name</span>
-            <input type="text" id="guestName" name="guestName" placeholder="Enter your first name and last name" autocomplete="name" required />
+            <input type="text" id="guestName" name="guestName" placeholder="Enter your first name and last name" autocomplete="name" required oninvalid="alert('Please enter your first name and last name.'); this.setCustomValidity('Please enter your first name and last name.');" oninput="this.setCustomValidity('')" />
           </label>
           <label class="rsvp-field" for="inviteCode">
             <span>Enter Invitation Code</span>
-            <input type="text" id="inviteCode" name="inviteCode" placeholder="Enter invitation code" autocomplete="off" required />
+            <input type="text" id="inviteCode" name="inviteCode" placeholder="Enter invitation code" autocomplete="off" required oninvalid="alert('Please enter your invitation code.'); this.setCustomValidity('Please enter your invitation code.');" oninput="this.setCustomValidity('')" />
           </label>
           <div class="rsvp-actions">
             <button type="submit" class="btn primary">Check My Invitation</button>
@@ -436,6 +436,6 @@
     <p>Thank you for being part of our story.</p>
   </footer>
 
-  <script src="script.js?v=rsvp-required-popup-20260908"></script>
+  <script src="script.js?v=rsvp-code-required-20260908-2317"></script>
 </body>
 </html>
