@@ -131,6 +131,15 @@ function setRsvpStatus(message, type = '') {
   rsvpStatus.innerHTML = message;
 }
 
+function showRequiredPopup(message, inputElement) {
+  alert(message);
+  setRsvpStatus(message, 'error');
+
+  if (inputElement && typeof inputElement.focus === 'function') {
+    inputElement.focus();
+  }
+}
+
 function isYes(value) {
   if (value === true) return true;
   if (value === false || value == null) return false;
@@ -374,7 +383,12 @@ if (rsvpLookupForm) {
     const inviteCode = inviteCodeInput?.value.trim();
 
     if (!name) {
-      setRsvpStatus('Please enter your first name and last name.', 'error');
+      showRequiredPopup('Please enter your first name and last name.', guestNameInput);
+      return;
+    }
+
+    if (!inviteCode) {
+      showRequiredPopup('Please enter your invitation code.', inviteCodeInput);
       return;
     }
 
@@ -409,12 +423,12 @@ if (rsvpDetailsForm) {
     const willBringPlusOne = isAttending && plusOneAllowed && Boolean(bringingPlusOne?.checked);
 
     if (!attendanceStatus) {
-      setRsvpStatus('Please select if you will attend.', 'error');
+      showRequiredPopup('Please select if you will attend.', document.getElementById('attendanceStatus'));
       return;
     }
 
     if (willBringPlusOne && enteredPlusOneNames.length === 0) {
-      setRsvpStatus('Please enter at least one additional guest name.', 'error');
+      showRequiredPopup('Please enter at least one additional guest name.', document.querySelector('.plus-one-name-input'));
       return;
     }
 
