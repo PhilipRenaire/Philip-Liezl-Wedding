@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Philip & Liezl | Wedding in Dahilayan</title>
   <meta name="description" content="Wedding website for Philip and Liezl's celebration at Dahilayan Forest Park Resort in Dahilayan, Bukidnon on October 19, 2026." />
-  <link rel="stylesheet" href="styles.css?v=restore-original-hero-20260907" />
+  <link rel="stylesheet" href="styles.css?v=rsvp-plus-one-20260908" />
   <style>
     .hero {
       background:
@@ -47,6 +47,108 @@
       color: var(--white) !important;
       border-color: var(--champagne) !important;
       box-shadow: none !important;
+    }
+
+    .rsvp-form,
+    .rsvp-details-form {
+      max-width: 660px;
+      margin: 28px auto 0;
+      display: grid;
+      gap: 18px;
+      text-align: left;
+    }
+
+    .rsvp-field {
+      display: grid;
+      gap: 8px;
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+      color: var(--deep-purple);
+    }
+
+    .rsvp-field span {
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .rsvp-field input,
+    .rsvp-field select,
+    .rsvp-field textarea {
+      width: 100%;
+      border: 1px solid rgba(75, 36, 95, 0.22);
+      border-radius: 18px;
+      padding: 15px 16px;
+      font-size: 16px;
+      color: var(--text);
+      background: var(--white);
+      font-family: Arial, sans-serif;
+      outline: none;
+    }
+
+    .rsvp-field textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .rsvp-field input:focus,
+    .rsvp-field select:focus,
+    .rsvp-field textarea:focus {
+      border-color: var(--orchid);
+      box-shadow: 0 0 0 4px rgba(125, 79, 141, 0.10);
+    }
+
+    .rsvp-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .rsvp-status,
+    .rsvp-summary-card {
+      max-width: 660px;
+      margin: 20px auto 0;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(239, 226, 200, 0.45);
+      border: 1px solid rgba(75, 36, 95, 0.10);
+      color: var(--text);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .rsvp-status.success {
+      background: rgba(217, 198, 232, 0.35);
+      color: var(--deep-purple);
+    }
+
+    .rsvp-status.warning {
+      background: rgba(255, 248, 238, 0.94);
+    }
+
+    .rsvp-status.error {
+      background: rgba(200, 139, 145, 0.18);
+      color: #6f2f3a;
+    }
+
+    .checkbox-line {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .checkbox-line input {
+      width: auto;
+      margin-top: 4px;
+    }
+
+    .hidden {
+      display: none !important;
     }
   </style>
 </head>
@@ -139,21 +241,74 @@
       </div>
     </section>
 
-    <section id="rsvp" class="section rsvp-section">
+    <section id="rsvp" class="section rsvp-section" data-rsvp-endpoint="">
       <div class="rsvp-card">
         <div class="section-heading">
           <p class="eyebrow">Kindly Respond</p>
           <h2>RSVP</h2>
         </div>
         <p class="center-text">
-          Please confirm your attendance so we can prepare your seat, meal, and table assignment.
+          Enter your name to check your invitation. The form will automatically show if your invitation includes a plus one.
         </p>
-        <div class="center">
-          <a href="https://forms.google.com/" target="_blank" rel="noopener" class="btn primary">
-            Open RSVP Form
-          </a>
+
+        <form id="rsvpLookupForm" class="rsvp-form">
+          <label class="rsvp-field" for="guestName">
+            <span>Full Name</span>
+            <input type="text" id="guestName" name="guestName" placeholder="Enter your full name" autocomplete="name" required />
+          </label>
+          <label class="rsvp-field" for="inviteCode">
+            <span>Invitation Code</span>
+            <input type="text" id="inviteCode" name="inviteCode" placeholder="Optional for now; recommended for privacy" autocomplete="off" />
+          </label>
+          <div class="rsvp-actions">
+            <button type="submit" class="btn primary">Check My Invitation</button>
+          </div>
+        </form>
+
+        <div id="rsvpStatus" class="rsvp-status">
+          Your invitation details will appear here.
         </div>
-        <p class="small-note">Send me your final Google Form link and I’ll replace this placeholder button.</p>
+
+        <form id="rsvpDetailsForm" class="rsvp-details-form hidden">
+          <input type="hidden" id="matchedGuestName" name="matchedGuestName" />
+          <input type="hidden" id="matchedInviteCode" name="matchedInviteCode" />
+          <input type="hidden" id="matchedSeats" name="matchedSeats" />
+          <input type="hidden" id="matchedPlusOneAllowed" name="matchedPlusOneAllowed" />
+
+          <div id="guestGreeting" class="rsvp-summary-card"></div>
+
+          <label class="rsvp-field" for="attendanceStatus">
+            <span>Will you attend?</span>
+            <select id="attendanceStatus" name="attendanceStatus" required>
+              <option value="">Select your answer</option>
+              <option value="Yes">Yes, I will attend</option>
+              <option value="No">Sorry, I cannot attend</option>
+            </select>
+          </label>
+
+          <div id="plusOneBlock" class="hidden">
+            <label class="checkbox-line" for="bringingPlusOne">
+              <input type="checkbox" id="bringingPlusOne" name="bringingPlusOne" />
+              <span>I will bring my plus one.</span>
+            </label>
+            <label class="rsvp-field" for="plusOneName">
+              <span>Plus One Name</span>
+              <input type="text" id="plusOneName" name="plusOneName" placeholder="Enter your guest's full name" />
+            </label>
+          </div>
+
+          <label class="rsvp-field" for="rsvpNotes">
+            <span>Meal notes or message</span>
+            <textarea id="rsvpNotes" name="rsvpNotes" placeholder="Optional"></textarea>
+          </label>
+
+          <div class="rsvp-actions">
+            <button type="submit" class="btn primary">Submit RSVP</button>
+            <button type="button" id="resetRsvpButton" class="btn secondary">Check Another Name</button>
+          </div>
+        </form>
+
+        <p class="small-note">For the real guest list, connect this form to a private Google Sheet using the Apps Script file included in this repo.</p>
       </div>
     </section>
 
@@ -233,7 +388,7 @@
         </details>
         <details>
           <summary>Can I bring a plus one?</summary>
-          <p>Please check your invitation or contact us so we can confirm seating availability.</p>
+          <p>Please check your invitation in the RSVP section. If your invitation includes a plus one, the option will appear automatically.</p>
         </details>
         <details>
           <summary>What should I wear?</summary>
@@ -271,6 +426,6 @@
     <p>Thank you for being part of our story.</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=rsvp-plus-one-20260908"></script>
 </body>
 </html>
