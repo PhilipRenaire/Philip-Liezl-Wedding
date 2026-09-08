@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Philip & Liezl | Wedding in Dahilayan</title>
   <meta name="description" content="Wedding website for Philip and Liezl's celebration at Dahilayan Forest Park Resort in Dahilayan, Bukidnon on October 19, 2026." />
-  <link rel="stylesheet" href="styles.css?v=rsvp-live-connected-20260908" />
+  <link rel="stylesheet" href="styles.css?v=rsvp-multi-plus-one-20260908" />
   <style>
     .hero {
       background:
@@ -147,6 +147,19 @@
       margin-top: 4px;
     }
 
+    .plus-one-count-note {
+      color: var(--deep-purple);
+      font-family: Arial, sans-serif;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .plus-one-fields {
+      display: grid;
+      gap: 14px;
+      margin-top: 12px;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -253,8 +266,8 @@
 
         <form id="rsvpLookupForm" class="rsvp-form">
           <label class="rsvp-field" for="guestName">
-            <span>Full Name</span>
-            <input type="text" id="guestName" name="guestName" placeholder="Enter your full name" autocomplete="name" required />
+            <span>First Name and Last Name</span>
+            <input type="text" id="guestName" name="guestName" placeholder="Enter your first and last name" autocomplete="name" required />
           </label>
           <label class="rsvp-field" for="inviteCode">
             <span>Invitation Code</span>
@@ -287,24 +300,21 @@
           </label>
 
           <div id="plusOneBlock" class="hidden">
+            <div id="plusOneCountNote" class="plus-one-count-note"></div>
             <label class="checkbox-line" for="bringingPlusOne">
               <input type="checkbox" id="bringingPlusOne" name="bringingPlusOne" />
-              <span>I will bring my plus one.</span>
+              <span id="bringingPlusOneLabel">I will bring my plus one.</span>
             </label>
-            <label class="rsvp-field" for="plusOneName">
-              <span>Plus One Name</span>
-              <input type="text" id="plusOneName" name="plusOneName" placeholder="Enter your guest's full name" />
-            </label>
+            <div id="plusOneFields" class="plus-one-fields"></div>
           </div>
 
           <label class="rsvp-field" for="rsvpNotes">
-            <span>Meal notes or message</span>
+            <span>Your Message to the Couple (Optional)</span>
             <textarea id="rsvpNotes" name="rsvpNotes" placeholder="Optional"></textarea>
           </label>
 
           <div class="rsvp-actions">
             <button type="submit" class="btn primary">Submit RSVP</button>
-            <button type="button" id="resetRsvpButton" class="btn secondary">Check Another Name</button>
           </div>
         </form>
 
@@ -426,6 +436,6 @@
     <p>Thank you for being part of our story.</p>
   </footer>
 
-  <script src="script.js?v=rsvp-live-connected-20260908"></script>
+  <script src="script.js?v=rsvp-multi-plus-one-20260908"></script>
 </body>
 </html>
