@@ -105,9 +105,10 @@ const guestNameInput = document.getElementById('guestName');
 const inviteCodeInput = document.getElementById('inviteCode');
 const guestGreeting = document.getElementById('guestGreeting');
 const plusOneBlock = document.getElementById('plusOneBlock');
+const plusOneCountNote = document.getElementById('plusOneCountNote');
+const plusOneFields = document.getElementById('plusOneFields');
 const bringingPlusOne = document.getElementById('bringingPlusOne');
-const plusOneName = document.getElementById('plusOneName');
-const resetRsvpButton = document.getElementById('resetRsvpButton');
+const bringingPlusOneLabel = document.getElementById('bringingPlusOneLabel');
 
 const matchedGuestName = document.getElementById('matchedGuestName');
 const matchedInviteCode = document.getElementById('matchedInviteCode');
@@ -115,7 +116,7 @@ const matchedSeats = document.getElementById('matchedSeats');
 const matchedPlusOneAllowed = document.getElementById('matchedPlusOneAllowed');
 
 const demoRsvpGuests = [
-  { name: 'Sample Guest', inviteCode: 'PL-001', seats: 2, plusOneAllowed: true },
+  { name: 'Sample Guest', inviteCode: 'PL-001', seats: 3, plusOneAllowed: true },
   { name: 'Demo Guest', inviteCode: 'PL-002', seats: 1, plusOneAllowed: false }
 ];
 
@@ -220,27 +221,107 @@ async function lookupGuest(name, inviteCode) {
   };
 }
 
+function getSeatCount(guest, plusOneAllowed) {
+  const seatCount = Number(guest.seats || guest.maxGuests || 0);
+
+  if (Number.isFinite(seatCount) && seatCount > 0) {
+    return Math.max(1, Math.floor(seatCount));
+  }
+
+  return plusOneAllowed ? 2 : 1;
+}
+
+function getPlusOneLimit(guest, seats, plusOneAllowed) {
+  if (!plusOneAllowed) {
+    return 0;
+  }
+
+  const explicitLimit = Number(guest.plusOneLimit || guest.plusOneCount || guest.allowedPlusOnes || 0);
+
+  if (Number.isFinite(explicitLimit) && explicitLimit > 0) {
+    return Math.floor(explicitLimit);
+  }
+
+  return Math.max(1, seats - 1);
+}
+
+function renderPlusOneFields(limit) {
+  if (!plusOneFields) {
+    return;
+  }
+
+  plusOneFields.innerHTML = '';
+
+  for (let index = 1; index <= limit; index += 1) {
+    const label = document.createElement('label');
+    label.className = 'rsvp-field';
+    label.setAttribute('for', `plusOneName${index}`);
+
+    const labelText = limit === 1 ? 'Plus One Name' : `Plus One ${index} Name`;
+    const placeholderText = limit === 1 ? "Enter your guest's full name" : `Enter guest ${index}'s full name`;
+
+    label.innerHTML = `
+      <span>${labelText}</span>
+      <input type="text" id="plusOneName${index}" class="plus-one-name-input" name="plusOneName${index}" placeholder="${placeholderText}" autocomplete="name" />
+    `;
+
+    plusOneFields.appendChild(label);
+  }
+}
+
+function getEnteredPlusOneNames() {
+  return Array.from(document.querySelectorAll('.plus-one-name-input'))
+    .map((input) => input.value.trim())
+    .filter(Boolean);
+}
+
+function clearPlusOneDetails() {
+  if (bringingPlusOne) {
+    bringingPlusOne.checked = false;
+  }
+
+  if (plusOneFields) {
+    plusOneFields.innerHTML = '';
+  }
+
+  if (plusOneCountNote) {
+    plusOneCountNote.textContent = '';
+  }
+}
+
 function showRsvpForm(guest, demoMode = false) {
   if (!rsvpDetailsForm || !guestGreeting || !plusOneBlock) {
     return;
   }
 
   const plusOneAllowed = Boolean(guest.plusOneAllowed || String(guest.plusOneAllowed).toLowerCase() === 'yes');
-  const seats = Number(guest.seats || guest.maxGuests || (plusOneAllowed ? 2 : 1));
+  const seats = getSeatCount(guest, plusOneAllowed);
+  const plusOneLimit = getPlusOneLimit(guest, seats, plusOneAllowed);
 
   if (matchedGuestName) matchedGuestName.value = guest.name || '';
   if (matchedInviteCode) matchedInviteCode.value = guest.inviteCode || inviteCodeInput?.value || '';
   if (matchedSeats) matchedSeats.value = String(seats);
   if (matchedPlusOneAllowed) matchedPlusOneAllowed.value = plusOneAllowed ? 'Yes' : 'No';
 
-  if (plusOneAllowed) {
-    guestGreeting.innerHTML = `<strong>Hi ${guest.name}!</strong><br>Your invitation includes ${seats} seats. You may RSVP with one plus one.`;
+  clearPlusOneDetails();
+
+  if (plusOneAllowed && plusOneLimit > 0) {
+    const additionalGuestText = plusOneLimit === 1 ? '1 additional guest' : `${plusOneLimit} additional guests`;
+    guestGreeting.innerHTML = `<strong>Hi ${guest.name}!</strong><br>Your invitation includes ${seats} seat${seats > 1 ? 's' : ''}. You may add up to ${additionalGuestText}.`;
+
+    if (plusOneCountNote) {
+      plusOneCountNote.textContent = `You may enter up to ${additionalGuestText} below.`;
+    }
+
+    if (bringingPlusOneLabel) {
+      bringingPlusOneLabel.textContent = plusOneLimit === 1 ? 'I will bring my plus one.' : 'I will bring additional guests.';
+    }
+
+    renderPlusOneFields(plusOneLimit);
     plusOneBlock.classList.remove('hidden');
   } else {
     guestGreeting.innerHTML = `<strong>Hi ${guest.name}!</strong><br>Your invitation is reserved for ${seats} seat${seats > 1 ? 's' : ''}.`;
     plusOneBlock.classList.add('hidden');
-    if (bringingPlusOne) bringingPlusOne.checked = false;
-    if (plusOneName) plusOneName.value = '';
   }
 
   rsvpDetailsForm.classList.remove('hidden');
@@ -255,7 +336,7 @@ if (rsvpLookupForm) {
     const inviteCode = inviteCodeInput?.value.trim();
 
     if (!name) {
-      setRsvpStatus('Please enter your full name.', 'error');
+      setRsvpStatus('Please enter your first name and last name.', 'error');
       return;
     }
 
@@ -282,17 +363,28 @@ if (rsvpDetailsForm) {
 
     const attendanceStatus = document.getElementById('attendanceStatus')?.value || '';
     const plusOneAllowed = matchedPlusOneAllowed?.value === 'Yes';
-    const willBringPlusOne = plusOneAllowed && Boolean(bringingPlusOne?.checked);
+    const seats = Number(matchedSeats?.value || 1);
+    const plusOneLimit = plusOneAllowed ? Math.max(1, seats - 1) : 0;
+    const enteredPlusOneNames = getEnteredPlusOneNames();
+    const isAttending = attendanceStatus === 'Yes';
+    const willBringPlusOne = isAttending && plusOneAllowed && (Boolean(bringingPlusOne?.checked) || enteredPlusOneNames.length > 0);
 
     if (!attendanceStatus) {
       setRsvpStatus('Please select if you will attend.', 'error');
       return;
     }
 
-    if (willBringPlusOne && !plusOneName?.value.trim()) {
-      setRsvpStatus('Please enter your plus one name.', 'error');
+    if (willBringPlusOne && enteredPlusOneNames.length === 0) {
+      setRsvpStatus('Please enter at least one additional guest name.', 'error');
       return;
     }
+
+    if (enteredPlusOneNames.length > plusOneLimit) {
+      setRsvpStatus(`Please enter only up to ${plusOneLimit} additional guest${plusOneLimit > 1 ? 's' : ''}.`, 'error');
+      return;
+    }
+
+    const plusOneNamesText = willBringPlusOne ? enteredPlusOneNames.join('; ') : '';
 
     const payload = {
       action: 'submit',
@@ -302,7 +394,9 @@ if (rsvpDetailsForm) {
       plusOneAllowed: matchedPlusOneAllowed?.value || 'No',
       attendanceStatus,
       bringingPlusOne: willBringPlusOne ? 'Yes' : 'No',
-      plusOneName: willBringPlusOne ? plusOneName.value.trim() : '',
+      plusOneName: plusOneNamesText,
+      plusOneNames: plusOneNamesText,
+      plusOneCount: willBringPlusOne ? enteredPlusOneNames.length : 0,
       notes: (document.getElementById('rsvpNotes')?.value.trim() || '').slice(0, 500)
     };
 
@@ -322,16 +416,9 @@ if (rsvpDetailsForm) {
       setRsvpStatus('Thank you! Your RSVP has been submitted.', 'success');
       rsvpDetailsForm.classList.add('hidden');
       rsvpLookupForm.reset();
+      clearPlusOneDetails();
     } catch (error) {
       setRsvpStatus(error.message || 'Something went wrong while submitting your RSVP.', 'error');
     }
-  });
-}
-
-if (resetRsvpButton) {
-  resetRsvpButton.addEventListener('click', () => {
-    rsvpDetailsForm?.classList.add('hidden');
-    rsvpLookupForm?.reset();
-    setRsvpStatus('Enter your name to check another invitation.');
   });
 }
