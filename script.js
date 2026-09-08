@@ -115,6 +115,8 @@ const matchedInviteCode = document.getElementById('matchedInviteCode');
 const matchedSeats = document.getElementById('matchedSeats');
 const matchedPlusOneAllowed = document.getElementById('matchedPlusOneAllowed');
 
+let currentPlusOneLimit = 0;
+
 const demoRsvpGuests = [
   { name: 'Sample Guest', inviteCode: 'PL-001', seats: 3, plusOneAllowed: true },
   { name: 'Demo Guest', inviteCode: 'PL-002', seats: 1, plusOneAllowed: false }
@@ -127,6 +129,12 @@ function setRsvpStatus(message, type = '') {
 
   rsvpStatus.className = `rsvp-status ${type}`.trim();
   rsvpStatus.innerHTML = message;
+}
+
+function isYes(value) {
+  if (value === true) return true;
+  if (value === false || value == null) return false;
+  return ['yes', 'y', 'true', '1', 'allowed', 'oo'].includes(normalize(value));
 }
 
 function hasLiveRsvpEndpoint() {
@@ -269,6 +277,30 @@ function renderPlusOneFields(limit) {
   }
 }
 
+function hidePlusOneFields() {
+  if (plusOneFields) {
+    plusOneFields.innerHTML = '';
+    plusOneFields.classList.add('hidden');
+  }
+}
+
+function showPlusOneFields() {
+  if (!plusOneFields || currentPlusOneLimit <= 0) {
+    return;
+  }
+
+  renderPlusOneFields(currentPlusOneLimit);
+  plusOneFields.classList.remove('hidden');
+}
+
+function updatePlusOneFieldVisibility() {
+  if (bringingPlusOne?.checked) {
+    showPlusOneFields();
+  } else {
+    hidePlusOneFields();
+  }
+}
+
 function getEnteredPlusOneNames() {
   return Array.from(document.querySelectorAll('.plus-one-name-input'))
     .map((input) => input.value.trim())
@@ -276,13 +308,13 @@ function getEnteredPlusOneNames() {
 }
 
 function clearPlusOneDetails() {
+  currentPlusOneLimit = 0;
+
   if (bringingPlusOne) {
     bringingPlusOne.checked = false;
   }
 
-  if (plusOneFields) {
-    plusOneFields.innerHTML = '';
-  }
+  hidePlusOneFields();
 
   if (plusOneCountNote) {
     plusOneCountNote.textContent = '';
@@ -294,38 +326,44 @@ function showRsvpForm(guest, demoMode = false) {
     return;
   }
 
-  const plusOneAllowed = Boolean(guest.plusOneAllowed || String(guest.plusOneAllowed).toLowerCase() === 'yes');
+  const plusOneAllowed = isYes(guest.plusOneAllowed);
   const seats = getSeatCount(guest, plusOneAllowed);
-  const plusOneLimit = getPlusOneLimit(guest, seats, plusOneAllowed);
+  currentPlusOneLimit = getPlusOneLimit(guest, seats, plusOneAllowed);
 
   if (matchedGuestName) matchedGuestName.value = guest.name || '';
   if (matchedInviteCode) matchedInviteCode.value = guest.inviteCode || inviteCodeInput?.value || '';
   if (matchedSeats) matchedSeats.value = String(seats);
   if (matchedPlusOneAllowed) matchedPlusOneAllowed.value = plusOneAllowed ? 'Yes' : 'No';
 
-  clearPlusOneDetails();
-
-  if (plusOneAllowed && plusOneLimit > 0) {
-    const additionalGuestText = plusOneLimit === 1 ? '1 additional guest' : `${plusOneLimit} additional guests`;
+  if (plusOneAllowed && currentPlusOneLimit > 0) {
+    const additionalGuestText = currentPlusOneLimit === 1 ? '1 additional guest' : `${currentPlusOneLimit} additional guests`;
     guestGreeting.innerHTML = `<strong>Hi ${guest.name}!</strong><br>Your invitation includes ${seats} seat${seats > 1 ? 's' : ''}. You may add up to ${additionalGuestText}.`;
 
     if (plusOneCountNote) {
-      plusOneCountNote.textContent = `You may enter up to ${additionalGuestText} below.`;
+      plusOneCountNote.textContent = `You may enter up to ${additionalGuestText}. Check the box below to add their name${currentPlusOneLimit > 1 ? 's' : ''}.`;
     }
 
     if (bringingPlusOneLabel) {
-      bringingPlusOneLabel.textContent = plusOneLimit === 1 ? 'I will bring my plus one.' : 'I will bring additional guests.';
+      bringingPlusOneLabel.textContent = currentPlusOneLimit === 1 ? 'I will bring my plus one.' : 'I will bring additional guests.';
     }
 
-    renderPlusOneFields(plusOneLimit);
+    if (bringingPlusOne) {
+      bringingPlusOne.checked = false;
+    }
+    hidePlusOneFields();
     plusOneBlock.classList.remove('hidden');
   } else {
+    clearPlusOneDetails();
     guestGreeting.innerHTML = `<strong>Hi ${guest.name}!</strong><br>Your invitation is reserved for ${seats} seat${seats > 1 ? 's' : ''}.`;
     plusOneBlock.classList.add('hidden');
   }
 
   rsvpDetailsForm.classList.remove('hidden');
   setRsvpStatus(demoMode ? 'Demo mode is active. Connect the private Google Sheet endpoint to use your real guest list.' : 'Invitation found. Please complete your RSVP below.', demoMode ? 'warning' : 'success');
+}
+
+if (bringingPlusOne) {
+  bringingPlusOne.addEventListener('change', updatePlusOneFieldVisibility);
 }
 
 if (rsvpLookupForm) {
@@ -342,6 +380,7 @@ if (rsvpLookupForm) {
 
     setRsvpStatus('Checking your invitation...', 'warning');
     rsvpDetailsForm?.classList.add('hidden');
+    clearPlusOneDetails();
 
     try {
       const data = await lookupGuest(name, inviteCode);
@@ -367,7 +406,7 @@ if (rsvpDetailsForm) {
     const plusOneLimit = plusOneAllowed ? Math.max(1, seats - 1) : 0;
     const enteredPlusOneNames = getEnteredPlusOneNames();
     const isAttending = attendanceStatus === 'Yes';
-    const willBringPlusOne = isAttending && plusOneAllowed && (Boolean(bringingPlusOne?.checked) || enteredPlusOneNames.length > 0);
+    const willBringPlusOne = isAttending && plusOneAllowed && Boolean(bringingPlusOne?.checked);
 
     if (!attendanceStatus) {
       setRsvpStatus('Please select if you will attend.', 'error');
