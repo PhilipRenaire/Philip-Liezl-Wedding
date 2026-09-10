@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Philip & Liezl | Wedding in Dahilayan</title>
   <meta name="description" content="Wedding website for Philip and Liezl's celebration at Dahilayan Forest Park Resort in Dahilayan, Bukidnon on October 19, 2026." />
-  <link rel="stylesheet" href="styles.css?v=hero-mobile-centered-20260911-0439" />
+  <link rel="stylesheet" href="styles.css?v=details-redesign-20260911-0445" />
   <style>
     .hero {
       background:
@@ -102,6 +102,108 @@
         width: 100% !important;
         justify-content: center !important;
         align-items: center !important;
+      }
+    }
+
+    .details-section {
+      max-width: 1180px;
+    }
+
+    .details-section .section-heading {
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 34px;
+    }
+
+    .details-section .section-subtitle {
+      color: var(--text);
+      opacity: 0.82;
+    }
+
+    .details-layout {
+      align-items: stretch;
+    }
+
+    .detail-feature-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100%;
+    }
+
+    .detail-venue-list {
+      display: grid;
+      gap: 22px;
+    }
+
+    .detail-venue-block {
+      padding: 22px 0 0;
+      border-top: 1px solid rgba(75, 36, 95, 0.13);
+    }
+
+    .detail-venue-block:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .detail-address {
+      margin: 8px 0 0;
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.55;
+      opacity: 0.84;
+    }
+
+    .detail-card-soft {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .detail-card-soft p {
+      margin-bottom: 0;
+    }
+
+    .detail-note {
+      margin-top: 12px !important;
+      color: var(--deep-purple);
+      font-size: 15px;
+      line-height: 1.6;
+      opacity: 0.86;
+    }
+
+    @media (max-width: 980px) {
+      .details-layout {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .details-section {
+        padding-top: 76px !important;
+        padding-bottom: 76px !important;
+      }
+
+      .details-section .section-heading {
+        margin-bottom: 26px;
+      }
+
+      .detail-feature-card,
+      .detail-card-soft {
+        padding: 30px 24px !important;
+      }
+
+      .details-main-date {
+        font-size: 32px !important;
+      }
+
+      .details-venue {
+        font-size: 22px !important;
+      }
+
+      .detail-address {
+        font-size: 16px;
       }
     }
 
@@ -274,28 +376,50 @@
       </p>
     </section>
 
-    <section id="details" class="section details-grid">
-      <div class="card wedding-details-card">
-        <h3>Wedding Details</h3>
-        <span class="details-label">Date</span>
-        <strong class="details-main-date" style="display:block; font-size:34px; line-height:1.12; margin-bottom:18px;">October 19, 2026</strong>
-        <span class="details-label">Ceremony</span>
-        <p class="details-venue" style="margin-bottom:18px;">St. Therese of the Child Jesus Parish</p>
-        <span class="details-label">Location</span>
-        <p class="details-venue" style="margin-bottom:18px;">Dahilayan, Manolo Fortich, Bukidnon</p>
-        <span class="details-label">Venue</span>
-        <p class="details-venue">Dahilayan Forest Park Resort</p>
+    <section id="details" class="section details-section">
+      <div class="section-heading">
+        <p class="eyebrow">Wedding Details</p>
+        <h2>Ceremony & Celebration</h2>
+        <p class="section-subtitle">A cleaner guide to the most important details for our wedding day.</p>
       </div>
-      <div class="card">
-        <h3>Dress Code</h3>
-        <p><strong>Guests:</strong> Formal to semi-formal attire</p>
-        <p><strong>Guest colors:</strong> Dusty Rose, Antique Rose, Blush Mauve</p>
-        <p><strong>Please avoid:</strong> Deep purple, entourage colors, all-white outfits, and exact champagne gowns.</p>
-      </div>
-      <div class="card">
-        <h3>Weather Reminder</h3>
-        <p>Dahilayan can feel cool, especially in the afternoon and evening.</p>
-        <p>Please bring a light jacket, shawl, or coat for comfort.</p>
+
+      <div class="details-layout">
+        <div class="card detail-feature-card">
+          <span class="details-label">Date</span>
+          <strong class="details-main-date">October 19, 2026</strong>
+
+          <div class="detail-divider"></div>
+
+          <div class="detail-venue-list">
+            <div class="detail-venue-block">
+              <span class="details-label">Ceremony</span>
+              <p class="details-venue">St. Therese of the Child Jesus Parish</p>
+              <p class="detail-address">Dahilayan, Manolo Fortich, Bukidnon</p>
+            </div>
+
+            <div class="detail-venue-block">
+              <span class="details-label">Reception</span>
+              <p class="details-venue">Dahilayan Forest Park Resort</p>
+              <p class="detail-address">Dahilayan, Bukidnon</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-side-grid">
+          <div class="card detail-card-soft">
+            <div class="detail-icon">✦</div>
+            <h3>Dress Code</h3>
+            <p>Formal to semi-formal attire in Dusty Rose, Antique Rose, or Blush Mauve.</p>
+            <p class="detail-note">Please avoid deep purple, entourage colors, all-white outfits, and exact champagne gowns.</p>
+          </div>
+
+          <div class="card detail-card-soft">
+            <div class="detail-icon">❄</div>
+            <h3>Weather Reminder</h3>
+            <p>Dahilayan can feel cool, especially in the afternoon and evening.</p>
+            <p class="detail-note">A light jacket, shawl, or coat is recommended for comfort.</p>
+          </div>
+        </div>
       </div>
     </section>
 
