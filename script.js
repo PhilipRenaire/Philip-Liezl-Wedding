@@ -1,6 +1,6 @@
 // Full-screen intro video before the wedding homepage.
 (function initWeddingIntro() {
-  const introVideoSrc = 'assets/intro.mp4?v=intro-20260911';
+  const introVideoSrc = 'assets/intro.mp4?v=intro-loop-20260911';
   const introSeenKey = 'philipLiezlIntroSeen';
 
   function markIntroSeen() {
@@ -151,13 +151,13 @@
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-label', 'Wedding video intro');
     overlay.innerHTML = `
-      <video class="wedding-intro-video" autoplay muted playsinline preload="auto">
+      <video class="wedding-intro-video" autoplay muted playsinline loop preload="auto">
         <source src="${introVideoSrc}" type="video/mp4" />
       </video>
       <div class="wedding-intro-message">Tap play to start the intro video.</div>
       <div class="wedding-intro-actions">
         <button type="button" class="wedding-intro-button" data-intro-sound>Tap for Sound</button>
-        <button type="button" class="wedding-intro-button" data-intro-skip>Skip Intro</button>
+        <button type="button" class="wedding-intro-button" data-intro-enter>Enter the Celebration</button>
       </div>
     `;
 
@@ -166,18 +166,11 @@
 
     const video = overlay.querySelector('.wedding-intro-video');
     const soundButton = overlay.querySelector('[data-intro-sound]');
-    const skipButton = overlay.querySelector('[data-intro-skip]');
+    const enterButton = overlay.querySelector('[data-intro-enter]');
 
-    const fallbackTimer = setTimeout(() => {
+    enterButton?.addEventListener('click', () => {
       finishIntro(overlay);
-    }, 45000);
-
-    const endIntro = () => {
-      clearTimeout(fallbackTimer);
-      finishIntro(overlay);
-    };
-
-    skipButton?.addEventListener('click', endIntro);
+    });
 
     soundButton?.addEventListener('click', () => {
       if (!video) {
@@ -196,8 +189,9 @@
     });
 
     if (video) {
-      video.addEventListener('ended', endIntro);
-      video.addEventListener('error', endIntro);
+      video.addEventListener('error', () => {
+        finishIntro(overlay);
+      });
       video.play().catch(() => {
         overlay.classList.add('needs-tap');
       });
