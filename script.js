@@ -1,3 +1,216 @@
+// Full-screen intro video before the wedding homepage.
+(function initWeddingIntro() {
+  const introVideoSrc = 'assets/intro.mp4?v=intro-20260911';
+  const introSeenKey = 'philipLiezlIntroSeen';
+
+  function markIntroSeen() {
+    try {
+      sessionStorage.setItem(introSeenKey, 'yes');
+    } catch (error) {
+      // Continue normally if session storage is unavailable.
+    }
+  }
+
+  function hasSeenIntro() {
+    try {
+      return sessionStorage.getItem(introSeenKey) === 'yes';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function finishIntro(overlay) {
+    if (!overlay || overlay.dataset.finished === 'true') {
+      return;
+    }
+
+    overlay.dataset.finished = 'true';
+    markIntroSeen();
+    overlay.classList.add('wedding-intro-hidden');
+    document.body.style.overflow = '';
+
+    setTimeout(() => {
+      overlay.remove();
+    }, 650);
+  }
+
+  function addIntroStyles() {
+    if (document.getElementById('weddingIntroStyles')) {
+      return;
+    }
+
+    const style = document.createElement('style');
+    style.id = 'weddingIntroStyles';
+    style.textContent = `
+      .wedding-intro-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: #120a17;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        opacity: 1;
+        transition: opacity 650ms ease, visibility 650ms ease;
+      }
+
+      .wedding-intro-overlay.wedding-intro-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .wedding-intro-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .wedding-intro-actions {
+        position: absolute;
+        right: 24px;
+        bottom: 24px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .wedding-intro-button {
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        border-radius: 999px;
+        padding: 11px 18px;
+        background: rgba(18, 10, 23, 0.58);
+        color: #fff;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        transition: background 200ms ease, transform 200ms ease;
+      }
+
+      .wedding-intro-button:hover,
+      .wedding-intro-button:focus {
+        background: rgba(75, 36, 95, 0.82);
+        transform: translateY(-1px);
+      }
+
+      .wedding-intro-message {
+        position: absolute;
+        left: 50%;
+        bottom: 92px;
+        transform: translateX(-50%);
+        color: #fff;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        text-align: center;
+        background: rgba(18, 10, 23, 0.58);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        padding: 10px 16px;
+        display: none;
+      }
+
+      .wedding-intro-overlay.needs-tap .wedding-intro-message {
+        display: block;
+      }
+
+      @media (max-width: 640px) {
+        .wedding-intro-actions {
+          right: 16px;
+          bottom: 18px;
+          left: 16px;
+        }
+
+        .wedding-intro-button {
+          flex: 1 1 auto;
+          text-align: center;
+        }
+
+        .wedding-intro-message {
+          width: calc(100% - 32px);
+          bottom: 84px;
+          border-radius: 18px;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function createIntroOverlay() {
+    addIntroStyles();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'wedding-intro-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-label', 'Wedding video intro');
+    overlay.innerHTML = `
+      <video class="wedding-intro-video" autoplay muted playsinline preload="auto">
+        <source src="${introVideoSrc}" type="video/mp4" />
+      </video>
+      <div class="wedding-intro-message">Tap play to start the intro video.</div>
+      <div class="wedding-intro-actions">
+        <button type="button" class="wedding-intro-button" data-intro-sound>Tap for Sound</button>
+        <button type="button" class="wedding-intro-button" data-intro-skip>Skip Intro</button>
+      </div>
+    `;
+
+    document.body.style.overflow = 'hidden';
+    document.body.prepend(overlay);
+
+    const video = overlay.querySelector('.wedding-intro-video');
+    const soundButton = overlay.querySelector('[data-intro-sound]');
+    const skipButton = overlay.querySelector('[data-intro-skip]');
+
+    const fallbackTimer = setTimeout(() => {
+      finishIntro(overlay);
+    }, 45000);
+
+    const endIntro = () => {
+      clearTimeout(fallbackTimer);
+      finishIntro(overlay);
+    };
+
+    skipButton?.addEventListener('click', endIntro);
+
+    soundButton?.addEventListener('click', () => {
+      if (!video) {
+        return;
+      }
+
+      video.muted = false;
+      video.volume = 1;
+      video.play().catch(() => {
+        overlay.classList.add('needs-tap');
+      });
+      soundButton.textContent = 'Sound On';
+      setTimeout(() => {
+        soundButton.style.display = 'none';
+      }, 900);
+    });
+
+    if (video) {
+      video.addEventListener('ended', endIntro);
+      video.addEventListener('error', endIntro);
+      video.play().catch(() => {
+        overlay.classList.add('needs-tap');
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!hasSeenIntro()) {
+      createIntroOverlay();
+    }
+  });
+})();
+
 const menuToggle = document.querySelector('.menu-toggle');
 const navLinks = document.querySelector('.nav-links');
 
