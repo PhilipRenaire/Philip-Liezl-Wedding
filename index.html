@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Philip & Liezl | Wedding in Dahilayan</title>
   <meta name="description" content="Wedding website for Philip and Liezl's celebration at Dahilayan Forest Park Resort in Dahilayan, Bukidnon on October 19, 2026." />
-  <link rel="stylesheet" href="styles.css?v=rsvp-name-example-20260909-0030" />
+  <link rel="stylesheet" href="styles.css?v=hero-mobile-centered-20260911-0439" />
   <style>
     .hero {
       background:
@@ -34,6 +34,7 @@
     .hero-title::before {
       background-image: linear-gradient(105deg, #f2d56b 0%, #dcb333 24%, #c39415 52%, #e4c45a 76%, #d1a62b 100%) !important;
       background-size: 190% auto !important;
+      background-position: center !important;
     }
 
     .hero-title-image {
@@ -52,6 +53,56 @@
       color: var(--white) !important;
       border-color: var(--champagne) !important;
       box-shadow: none !important;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        min-height: calc(100svh - 74px) !important;
+        min-height: calc(100dvh - 74px) !important;
+        padding: 48px 18px 52px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+      }
+
+      .hero-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      .hero-title {
+        width: min(88vw, 620px) !important;
+        max-width: 100% !important;
+        margin: 8px auto 0 !important;
+        align-self: center !important;
+      }
+
+      .hero-event-details {
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        align-items: center !important;
+        text-align: center !important;
+      }
+
+      .hero-text {
+        width: min(92vw, 520px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+      }
+
+      .hero-buttons {
+        width: 100% !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
     }
 
     .rsvp-form,
@@ -441,6 +492,6 @@
     <p>Thank you for being part of our story.</p>
   </footer>
 
-  <script src="script.js?v=intro-mobile-20260911"></script>
+  <script src="script.js?v=intro-loop-20260911"></script>
 </body>
 </html>
