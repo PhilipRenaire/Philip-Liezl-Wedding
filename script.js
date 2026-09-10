@@ -1,6 +1,6 @@
 // Full-screen intro video before the wedding homepage.
 (function initWeddingIntro() {
-  const introVideoSrc = 'assets/intro.mp4?v=intro-loop-20260911';
+  const introVideoSrc = 'assets/intro.mp4?v=intro-mobile-20260911';
   const introSeenKey = 'philipLiezlIntroSeen';
 
   function markIntroSeen() {
@@ -52,6 +52,8 @@
         justify-content: center;
         overflow: hidden;
         opacity: 1;
+        min-height: 100vh;
+        min-height: 100dvh;
         transition: opacity 650ms ease, visibility 650ms ease;
       }
 
@@ -62,16 +64,21 @@
       }
 
       .wedding-intro-video {
+        position: relative;
+        z-index: 1;
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
+        background: #120a17;
       }
 
       .wedding-intro-actions {
         position: absolute;
-        right: 24px;
-        bottom: 24px;
+        right: max(24px, env(safe-area-inset-right));
+        bottom: max(24px, calc(env(safe-area-inset-bottom) + 24px));
+        left: auto;
+        z-index: 3;
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
@@ -102,7 +109,8 @@
       .wedding-intro-message {
         position: absolute;
         left: 50%;
-        bottom: 92px;
+        bottom: max(92px, calc(env(safe-area-inset-bottom) + 92px));
+        z-index: 3;
         transform: translateX(-50%);
         color: #fff;
         font-family: Arial, sans-serif;
@@ -120,22 +128,73 @@
         display: block;
       }
 
-      @media (max-width: 640px) {
+      @media (orientation: portrait), (max-width: 640px) {
+        .wedding-intro-overlay {
+          align-items: center;
+          padding: 16px 0 calc(env(safe-area-inset-bottom) + 118px);
+          background:
+            radial-gradient(circle at center, rgba(75, 36, 95, 0.45), transparent 58%),
+            #120a17;
+        }
+
+        .wedding-intro-video {
+          width: 100vw;
+          height: auto;
+          max-width: 100vw;
+          max-height: calc(100dvh - 140px);
+          object-fit: contain;
+        }
+
         .wedding-intro-actions {
-          right: 16px;
-          bottom: 18px;
-          left: 16px;
+          right: max(14px, env(safe-area-inset-right));
+          bottom: max(18px, calc(env(safe-area-inset-bottom) + 18px));
+          left: max(14px, env(safe-area-inset-left));
+          justify-content: center;
+          gap: 10px;
         }
 
         .wedding-intro-button {
           flex: 1 1 auto;
+          min-width: 0;
+          padding: 12px 14px;
           text-align: center;
+          font-size: 13px;
+        }
+
+        .wedding-intro-button[data-intro-enter] {
+          flex: 1 1 100%;
+          font-size: 14px;
+          padding: 13px 18px;
         }
 
         .wedding-intro-message {
           width: calc(100% - 32px);
-          bottom: 84px;
+          bottom: calc(env(safe-area-inset-bottom) + 96px);
           border-radius: 18px;
+        }
+      }
+
+      @media (orientation: landscape) and (max-height: 500px) {
+        .wedding-intro-video {
+          object-fit: contain;
+          width: 100vw;
+          height: 100dvh;
+        }
+
+        .wedding-intro-actions {
+          right: max(12px, env(safe-area-inset-right));
+          bottom: max(12px, calc(env(safe-area-inset-bottom) + 12px));
+          gap: 8px;
+        }
+
+        .wedding-intro-button {
+          padding: 9px 13px;
+          font-size: 12px;
+        }
+
+        .wedding-intro-message {
+          bottom: calc(env(safe-area-inset-bottom) + 66px);
+          font-size: 12px;
         }
       }
     `;
