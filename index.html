@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Philip & Liezl | Wedding in Dahilayan</title>
   <meta name="description" content="Wedding website for Philip and Liezl's celebration at Dahilayan Forest Park Resort in Dahilayan, Bukidnon on October 19, 2026." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=details-redesign-20260911-0445" />
   <style>
     .hero {
@@ -35,36 +32,21 @@
     }
 
     .hero-title {
-      display: inline-block !important;
-      width: auto !important;
-      max-width: 100% !important;
-      aspect-ratio: auto !important;
-      margin: 10px auto 0 !important;
-      line-height: 0.88 !important;
       filter: none !important;
-      font-family: "Great Vibes", "Edwardian Script ITC", "Bickham Script Pro", "Snell Roundhand", "Segoe Script", cursive !important;
-      font-size: clamp(78px, 11vw, 152px) !important;
-      font-weight: 400 !important;
-      letter-spacing: 0.01em !important;
-      color: #f1cf5f !important;
-      background-image: linear-gradient(105deg, #fff4bf 0%, #f4d568 22%, #d8a520 46%, #ffe89b 64%, #c89412 86%, #edca5d 100%) !important;
-      background-size: 150% auto !important;
-      background-position: center !important;
-      -webkit-background-clip: text !important;
-      background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-      text-shadow: none !important;
-      white-space: nowrap !important;
     }
 
-    .hero-title::before,
+    .hero-title::before {
+      background-image: linear-gradient(105deg, #fff4bf 0%, #f4d568 20%, #d8a520 46%, #ffe89b 64%, #c89412 86%, #edca5d 100%) !important;
+      background-size: 150% auto !important;
+      background-position: center !important;
+    }
+
     .hero-title::after {
       content: none !important;
       display: none !important;
     }
 
     .hero-title-image {
-      display: none !important;
       opacity: 0 !important;
       filter: none !important;
     }
@@ -105,12 +87,10 @@
       }
 
       .hero-title {
-        width: auto !important;
+        width: min(88vw, 620px) !important;
         max-width: 100% !important;
         margin: 8px auto 0 !important;
         align-self: center !important;
-        font-size: clamp(58px, 17vw, 98px) !important;
-        line-height: 0.9 !important;
       }
 
       .hero-event-details {
@@ -378,7 +358,9 @@
     <section id="home" class="hero">
       <div class="hero-content">
         <p class="eyebrow">We are getting married</p>
-        <h1 class="hero-title" aria-label="Philip and Liezl">Philip &amp; Liezl</h1>
+        <h1 class="hero-title">
+          <img src="assets/hero-names.svg" alt="Philip &amp; Liezl" class="hero-title-image" />
+        </h1>
         <div class="hero-event-details" style="display:flex; flex-direction:column; align-items:center; gap:6px; margin:18px 0 18px; text-shadow:0 5px 20px rgba(0,0,0,0.42);">
           <span class="hero-event-date" style="display:block; font-size:clamp(30px, 3.6vw, 52px); line-height:1.05; font-weight:700;">October 19, 2026</span>
           <span class="hero-event-venue" style="display:block; font-size:clamp(16px, 1.8vw, 24px); line-height:1.35;">Dahilayan Forest Park Resort</span>
