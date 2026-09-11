@@ -36,24 +36,18 @@
     }
 
     .hero-title::before {
-      background-image: linear-gradient(105deg, #fff7cf 0%, #f4da72 18%, #d9a823 42%, #fff0a8 62%, #c89412 82%, #f1cf5f 100%) !important;
-      background-size: 175% auto !important;
+      background-image: linear-gradient(105deg, #fff4bf 0%, #f4d568 20%, #d8a520 46%, #ffe89b 64%, #c89412 86%, #edca5d 100%) !important;
+      background-size: 150% auto !important;
       background-position: center !important;
     }
 
     .hero-title::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      background-image: linear-gradient(105deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0.30) 58%, rgba(255, 255, 255, 0) 76%);
-      -webkit-mask: url("assets/hero-names.svg") center / contain no-repeat;
-      mask: url("assets/hero-names.svg") center / contain no-repeat;
-      mix-blend-mode: screen;
+      content: none !important;
+      display: none !important;
     }
 
     .hero-title-image {
+      opacity: 0 !important;
       filter: none !important;
     }
 
