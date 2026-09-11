@@ -669,6 +669,21 @@ summary {
     width: min(96vw, 760px);
   }
 
+  .hero-event-details {
+    gap: 4px !important;
+    margin: 12px 0 14px !important;
+  }
+
+  .hero-event-date {
+    font-size: clamp(23px, 7.2vw, 30px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .hero-event-venue {
+    font-size: clamp(14px, 4vw, 18px) !important;
+    line-height: 1.3 !important;
+  }
+
   .details-main-date {
     font-size: 34px;
   }
