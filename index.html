@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Philip & Liezl | Wedding in Dahilayan</title>
   <meta name="description" content="Wedding website for Philip and Liezl's celebration at Dahilayan Forest Park Resort in Dahilayan, Bukidnon on October 19, 2026." />
-  <link rel="stylesheet" href="styles.css?v=details-redesign-20260911-0445" />
+  <link rel="stylesheet" href="styles.css?v=details-more-20260913" />
   <style>
     .hero {
       background:
@@ -217,6 +217,54 @@
       }
     }
 
+    #details.details-section {
+      max-width: 1180px !important;
+      padding: 90px 24px !important;
+      overflow: visible !important;
+      background: transparent !important;
+    }
+
+    #details.details-section > .section-heading {
+      display: block !important;
+    }
+
+    #details.details-section > .details-layout {
+      display: grid !important;
+    }
+
+    #details.details-section::before,
+    #details.details-section::after {
+      content: none !important;
+      display: none !important;
+    }
+
+    #details .detail-feature-card {
+      justify-content: flex-start !important;
+    }
+
+    .detail-more-actions {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: auto;
+      padding-top: 38px;
+    }
+
+    .detail-more-button {
+      border: 2px solid #dcb333 !important;
+      box-shadow: var(--shadow), 0 0 0 1px rgba(242, 213, 107, 0.28) !important;
+    }
+
+    @media (max-width: 860px) {
+      #details.details-section {
+        padding: 76px 20px !important;
+      }
+
+      .detail-more-actions {
+        justify-content: center;
+        padding-top: 30px;
+      }
+    }
+
     .rsvp-form,
     .rsvp-details-form {
       max-width: 660px;
@@ -412,6 +460,10 @@
               <p class="details-venue">Dahilayan Forest Park Resort</p>
               <p class="detail-address">Dahilayan, Bukidnon</p>
             </div>
+          </div>
+
+          <div class="detail-more-actions">
+            <a href="wedding-details.html" class="btn primary detail-more-button">More Details</a>
           </div>
         </div>
 
