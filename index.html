@@ -183,6 +183,42 @@
       opacity: 0.86;
     }
 
+    .dress-code-groups {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .dress-code-group {
+      padding: 16px 17px;
+      border-radius: 18px;
+      background: rgba(255, 250, 240, 0.76);
+      border: 1px solid rgba(199, 158, 73, 0.22);
+    }
+
+    .dress-code-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--orchid);
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .dress-code-group p {
+      margin: 0 !important;
+      line-height: 1.55;
+    }
+
+    .dress-code-colors {
+      margin-top: 6px !important;
+      color: var(--deep-purple);
+      font-size: 15px;
+    }
+
     @media (max-width: 980px) {
       .details-layout {
         grid-template-columns: 1fr !important;
@@ -214,6 +250,10 @@
 
       .detail-address {
         font-size: 16px;
+      }
+
+      .dress-code-groups {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -618,8 +658,19 @@
           <div class="card detail-card-soft">
             <div class="detail-icon">✦</div>
             <h3>Dress Code</h3>
-            <p>Formal to semi-formal attire in Dusty Rose, Antique Rose, or Blush Mauve.</p>
-            <p class="detail-note">Please avoid deep purple, entourage colors, all-white outfits, and exact champagne gowns.</p>
+            <div class="dress-code-groups">
+              <div class="dress-code-group">
+                <span class="dress-code-label">Guests</span>
+                <p>Formal to semi-formal attire</p>
+                <p class="dress-code-colors">Dusty Rose · Antique Rose · Blush Mauve</p>
+              </div>
+              <div class="dress-code-group">
+                <span class="dress-code-label">Principal Sponsors</span>
+                <p>Color palette</p>
+                <p class="dress-code-colors">Champagne · Warm Beige/Nude · Soft Taupe · Light Mocha</p>
+              </div>
+            </div>
+            <p class="detail-note">Guests: Please avoid deep purple, entourage colors, all-white outfits, and exact champagne gowns.</p>
           </div>
 
           <div class="card detail-card-soft">
