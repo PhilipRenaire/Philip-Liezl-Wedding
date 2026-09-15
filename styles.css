@@ -648,6 +648,15 @@ summary {
   pointer-events: none;
 }
 
+/* Principal Sponsors first, Guests second */
+.dress-code-groups .dress-code-group:first-child {
+  order: 2;
+}
+
+.dress-code-groups .dress-code-group:nth-child(2) {
+  order: 1;
+}
+
 @media (max-width: 980px) {
   .details-layout,
   .location-card {
