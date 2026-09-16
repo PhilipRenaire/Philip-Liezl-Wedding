@@ -15,6 +15,8 @@
     }
 
     .detail-page-hero {
+      position: relative;
+      isolation: isolate;
       max-width: none;
       min-height: 360px;
       padding: 86px 24px 54px;
@@ -24,20 +26,51 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(255, 250, 240, 0.18), rgba(255, 250, 240, 0.34)),
-        url("assets/wedding-details-banner.jpg?v=purple-floral-20260916") center center / cover no-repeat;
+      background-color: #fff8f2;
+      background-image: url("assets/wedding-details-banner.svg?v=fallback-20260916");
+      background-position: center center;
+      background-size: cover;
+      background-repeat: no-repeat;
       border-bottom: 1px solid rgba(194, 148, 69, 0.20);
+    }
+
+    .detail-page-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background-image: url("https://raw.githubusercontent.com/PhilipRenaire/Philip-Liezl-Wedding/main/assets/wedding-details-banner.jpg?purple-floral-20260916-v2");
+      background-position: center center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    .detail-page-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(circle at center, rgba(255,255,255,0.34), transparent 54%),
+        linear-gradient(180deg, rgba(255,250,240,0.08), rgba(255,250,240,0.24));
+      pointer-events: none;
+    }
+
+    .detail-page-hero .eyebrow,
+    .detail-page-hero .center-text,
+    .detail-page-script-title {
+      position: relative;
+      z-index: 1;
     }
 
     .detail-page-hero .eyebrow {
       color: var(--deep-purple);
-      text-shadow: 0 2px 12px rgba(255, 255, 255, 0.72);
+      text-shadow: 0 2px 12px rgba(255, 255, 255, 0.78);
     }
 
     .detail-page-hero .center-text {
       color: var(--text);
-      text-shadow: 0 2px 14px rgba(255, 255, 255, 0.82);
+      text-shadow: 0 2px 14px rgba(255, 255, 255, 0.88);
     }
 
     .detail-page-script-title {
@@ -138,6 +171,10 @@
       .detail-page-hero {
         min-height: 300px;
         padding: 64px 20px 40px;
+        background-position: center center;
+      }
+
+      .detail-page-hero::before {
         background-position: center center;
       }
 
