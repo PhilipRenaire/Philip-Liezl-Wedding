@@ -20,9 +20,17 @@
       text-align: center;
     }
 
-    .detail-page-hero .hero-title-small {
-      max-width: 520px;
-      margin: 10px auto 20px;
+    .detail-page-script-title {
+      width: min(92vw, 820px);
+      margin: 10px auto 18px;
+      line-height: 0;
+    }
+
+    .detail-page-script-title img {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 0 auto;
     }
 
     .detail-page-card {
@@ -110,6 +118,12 @@
         padding: 64px 20px 34px;
       }
 
+      .detail-page-script-title {
+        width: min(96vw, 680px);
+        margin-top: 8px;
+        margin-bottom: 14px;
+      }
+
       .detail-page-card {
         padding: 28px 20px;
         margin-bottom: 54px;
@@ -142,7 +156,9 @@
   <main>
     <section class="section detail-page-hero">
       <p class="eyebrow">More Details</p>
-      <h1>Wedding Day Guide</h1>
+      <h1 class="detail-page-script-title">
+        <img src="assets/wedding-day-guide.svg" alt="Wedding Day Guide" />
+      </h1>
       <p class="center-text">Everything you need to know for our ceremony, reception, schedule, dress code, and important reminders.</p>
     </section>
 
