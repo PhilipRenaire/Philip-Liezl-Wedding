@@ -16,14 +16,35 @@
 
     .detail-page-hero {
       max-width: none;
-      padding: 86px 24px 46px;
+      min-height: 360px;
+      padding: 86px 24px 54px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255, 250, 240, 0.18), rgba(255, 250, 240, 0.34)),
+        url("assets/wedding-details-banner.jpg?v=purple-floral-20260916") center center / cover no-repeat;
+      border-bottom: 1px solid rgba(194, 148, 69, 0.20);
+    }
+
+    .detail-page-hero .eyebrow {
+      color: var(--deep-purple);
+      text-shadow: 0 2px 12px rgba(255, 255, 255, 0.72);
+    }
+
+    .detail-page-hero .center-text {
+      color: var(--text);
+      text-shadow: 0 2px 14px rgba(255, 255, 255, 0.82);
     }
 
     .detail-page-script-title {
       width: min(92vw, 820px);
       margin: 10px auto 18px;
       line-height: 0;
+      filter: drop-shadow(0 4px 14px rgba(75, 36, 95, 0.16));
     }
 
     .detail-page-script-title img {
@@ -115,7 +136,9 @@
 
     @media (max-width: 860px) {
       .detail-page-hero {
-        padding: 64px 20px 34px;
+        min-height: 300px;
+        padding: 64px 20px 40px;
+        background-position: center center;
       }
 
       .detail-page-script-title {
