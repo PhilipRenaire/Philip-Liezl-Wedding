@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --deep-purple: #4b245f;
+      --orchid: #7d4f8d;
+      --champagne: #efe2c8;
+      --gold: #c79e49;
+      --text: #3c2f35;
+      --cream: #fffaf0;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(217,198,232,.36), transparent 30%),
+        radial-gradient(circle at 90% 92%, rgba(239,226,200,.72), transparent 32%),
+        linear-gradient(180deg, #fffaf0, #fff 52%, #fff8ee);
+      min-height: 100vh;
+    }
+
+    .hero {
+      padding: 54px 20px 28px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--orchid);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--deep-purple);
+      font-family: Georgia, serif;
+      font-size: clamp(42px, 8vw, 76px);
+      line-height: 1.05;
+      font-weight: 500;
+    }
+
+    .subtitle {
+      max-width: 650px;
+      margin: 16px auto 0;
+      line-height: 1.7;
+    }
+
+    .card {
+      width: min(860px, calc(100% - 28px));
+      margin: 0 auto 54px;
+      padding: 28px;
+      border-radius: 30px;
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(199,158,73,.30);
+      box-shadow: 0 24px 70px rgba(36,23,38,.12);
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    label.field {
+      display: grid;
+      gap: 8px;
+      color: var(--deep-purple);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      border: 1px solid rgba(75,36,95,.22);
+      border-radius: 17px;
+      padding: 15px 16px;
+      background: #fff;
+      color: var(--text);
+      font: 16px/1.45 Arial, sans-serif;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--orchid);
+      box-shadow: 0 0 0 4px rgba(125,79,141,.10);
+    }
+
+    .required { color: #9e5263; }
+
+    .upload-box {
+      padding: 24px;
+      border-radius: 22px;
+      border: 1.5px dashed rgba(75,36,95,.30);
+      background: rgba(255,250,240,.78);
+      text-align: center;
+    }
+
+    #files {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 12px;
+      border: 1px solid rgba(75,36,95,.18);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .small {
+      margin: 12px 0 0;
+      color: rgba(60,47,53,.72);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .notice {
+      padding: 15px 17px;
+      border-radius: 17px;
+      background: rgba(217,198,232,.28);
+      color: var(--deep-purple);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .btn {
+      justify-self: center;
+      min-width: 220px;
+      border: 2px solid #dcb333;
+      border-radius: 999px;
+      padding: 15px 24px;
+      background: var(--deep-purple);
+      color: white;
+      font: 700 15px/1 Arial, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 13px 30px rgba(75,36,95,.20);
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .progress-wrap {
+      display: none;
+      gap: 8px;
+    }
+
+    .progress-wrap.show { display: grid; }
+
+    .progress-track {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #eee6ef;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--deep-purple), var(--orchid), var(--gold));
+      transition: width .2s ease;
+    }
+
+    .status {
+      min-height: 22px;
+      color: var(--deep-purple);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .success {
+      padding: 22px;
+      border-radius: 20px;
+      background: rgba(217,198,232,.30);
+    }
+
+    @media (max-width: 620px) {
+      .hero { padding-top: 40px; }
+      .card { padding: 20px 16px; border-radius: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <p class="eyebrow">Philip &amp; Liezl · 10.19.2026</p>
+    <h1>Share Your Memories</h1>
+    <p class="subtitle">Help us see our wedding through your eyes. Share the photos and videos you captured during our celebration.</p>
+  </section>
+
+  <main class="card">
+    <form id="uploadForm">
+      <label class="field">
+        <span>Your Name <b class="required">*</b></span>
+        <input id="guestName" type="text" placeholder="First Name and Last Name" autocomplete="name" required>
+      </label>
+
+      <label class="field">
+        <span>A Message to the Couple <b class="required">*</b></span>
+        <textarea id="message" placeholder="Write a message for Philip & Liezl" required></textarea>
+      </label>
+
+      <div class="upload-box">
+        <input id="files" type="file" accept="image/*,video/*" multiple required>
+        <p class="small">Photos and videos are accepted. Maximum: 20 MB per file. Files upload one at a time.</p>
+      </div>
+
+      <div class="notice">Every upload goes to our private Pending area first. Nothing is published to the wedding album until it is approved.</div>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+        <div id="progressText" class="status"></div>
+      </div>
+
+      <button id="submitButton" class="btn" type="submit">Share With Philip &amp; Liezl</button>
+      <div id="status" class="status" aria-live="polite"></div>
+    </form>
+  </main>
+
+  <script>
+    const MAX_BYTES = 20 * 1024 * 1024;
+    const form = document.getElementById('uploadForm');
+    const submitButton = document.getElementById('submitButton');
+    const statusBox = document.getElementById('status');
+    const progressWrap = document.getElementById('progressWrap');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const guestName = document.getElementById('guestName').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const files = Array.from(document.getElementById('files').files || []);
+
+      if (!guestName || !message || !files.length) {
+        form.reportValidity();
+        return;
+      }
+
+      const tooLarge = files.find(file => file.size > MAX_BYTES);
+      if (tooLarge) {
+        statusBox.textContent = tooLarge.name + ' is larger than 20 MB. Please choose a smaller file.';
+        return;
+      }
+
+      submitButton.disabled = true;
+      progressWrap.classList.add('show');
+      statusBox.textContent = '';
+
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          progressText.textContent = 'Uploading ' + (i + 1) + ' of ' + files.length + ': ' + file.name;
+          progressBar.style.width = Math.round((i / files.length) * 100) + '%';
+
+          const base64 = await fileToBase64(file);
+          await uploadOne({
+            guestName,
+            message,
+            fileName: file.name,
+            mimeType: file.type,
+            base64
+          });
+
+          progressBar.style.width = Math.round(((i + 1) / files.length) * 100) + '%';
+        }
+
+        form.innerHTML =
+          '<div class="success">' +
+            '<p class="eyebrow">Thank You</p>' +
+            '<h2 style="margin:0 0 12px;color:#4b245f;font-family:Georgia,serif;text-align:center;">Your memories are with us.</h2>' +
+            '<p style="margin:0;text-align:center;line-height:1.7;">Your photos and videos are now in our private review area. Once approved, they may appear in the wedding album.</p>' +
+          '</div>';
+      } catch (err) {
+        statusBox.textContent = err && err.message ? err.message : 'Upload failed. Please try again.';
+        submitButton.disabled = false;
+      }
+    });
+
+    function uploadOne(payload) {
+      return new Promise((resolve, reject) => {
+        google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(error => reject(new Error(error && error.message ? error.message : String(error))))
+          .uploadWeddingMedia(payload);
+      });
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = String(reader.result || '');
+          resolve(result.includes(',') ? result.split(',')[1] : result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
