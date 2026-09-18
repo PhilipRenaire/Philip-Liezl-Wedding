@@ -65,9 +65,12 @@ const HEADERS = [
   'Reviewed At'
 ];
 
-function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Upload')
-    .setTitle('Share Your Memories | Philip & Liezl')
+function doGet(e) {
+  const page = String((e && e.parameter && e.parameter.page) || '').toLowerCase();
+  const isGallery = page === 'gallery';
+
+  return HtmlService.createHtmlOutputFromFile(isGallery ? 'Gallery' : 'Upload')
+    .setTitle(isGallery ? 'Wedding Memories | Philip & Liezl' : 'Share Your Memories | Philip & Liezl')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
@@ -151,6 +154,8 @@ function setupWeddingPhotoSystem() {
     .forSpreadsheet(spreadsheet)
     .onEdit()
     .create();
+
+  syncApprovedGallerySharing();
 
   return {
     ok: true,
@@ -534,6 +539,9 @@ function handleUploadStatusEdit(e) {
     const targetFolder = DriveApp.getFolderById(targetFolderId);
     file.moveTo(targetFolder);
 
+    const uploadType = String(sheet.getRange(row, COL.uploadType).getDisplayValue() || '').trim();
+    setGallerySharing_(file, status, uploadType);
+
     if (status === 'Pending') {
       sheet.getRange(row, COL.reviewedAt).clearContent();
     } else {
@@ -543,12 +551,109 @@ function handleUploadStatusEdit(e) {
     file.setDescription(
       'Wedding guest upload\n' +
       'Guest: ' + sheet.getRange(row, COL.guestName).getDisplayValue() + '\n' +
-      'Upload Type: ' + sheet.getRange(row, COL.uploadType).getDisplayValue() + '\n' +
+      'Upload Type: ' + uploadType + '\n' +
       'Status: ' + status
     );
   } catch (err) {
     console.error('Could not move upload:', err);
   }
+}
+
+/**
+ * Public gallery data.
+ * Only Approved Wedding Memory items are returned.
+ * Video Messages never appear here.
+ */
+function getPublicGallery() {
+  ensureSetup_();
+
+  const props = PropertiesService.getScriptProperties();
+  const spreadsheet = SpreadsheetApp.openById(props.getProperty('SPREADSHEET_ID'));
+  const sheet = spreadsheet.getSheetByName(props.getProperty('SHEET_NAME') || CONFIG.sheetName);
+  const values = sheet.getDataRange().getValues();
+
+  if (values.length <= 1) return [];
+
+  return values.slice(1)
+    .filter(row =>
+      String(row[COL.status - 1] || '').trim() === 'Approved' &&
+      String(row[COL.uploadType - 1] || '').trim() === 'Wedding Memory'
+    )
+    .map(row => {
+      const fileId = String(row[COL.driveFileId - 1] || '').trim();
+      const mimeType = String(row[COL.mimeType - 1] || '').trim();
+      const isVideo = mimeType.startsWith('video/');
+
+      return {
+        id: String(row[COL.id - 1] || ''),
+        uploadedAt: row[COL.uploadedAt - 1] instanceof Date
+          ? row[COL.uploadedAt - 1].toISOString()
+          : String(row[COL.uploadedAt - 1] || ''),
+        guestName: String(row[COL.guestName - 1] || 'Guest'),
+        originalFileName: String(row[COL.originalFileName - 1] || 'Wedding memory'),
+        mimeType: mimeType,
+        fileId: fileId,
+        kind: isVideo ? 'video' : 'photo',
+        thumbnailUrl: 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(fileId) + '&sz=w1600',
+        previewUrl: isVideo
+          ? 'https://drive.google.com/file/d/' + encodeURIComponent(fileId) + '/preview'
+          : 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(fileId) + '&sz=w2400'
+      };
+    })
+    .sort((a, b) => String(b.uploadedAt).localeCompare(String(a.uploadedAt)));
+}
+
+/**
+ * Makes approved Wedding Memory files viewable to gallery visitors,
+ * while keeping Video Messages and non-approved files private.
+ */
+function setGallerySharing_(file, status, uploadType) {
+  try {
+    const shouldBePublic = status === 'Approved' && uploadType === 'Wedding Memory';
+
+    if (shouldBePublic) {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } else {
+      file.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
+    }
+  } catch (err) {
+    console.error('Could not update gallery sharing:', err);
+  }
+}
+
+/**
+ * Re-applies gallery privacy rules to all existing uploads.
+ * setupWeddingPhotoSystem() runs this automatically.
+ */
+function syncApprovedGallerySharing() {
+  ensureSetup_();
+
+  const props = PropertiesService.getScriptProperties();
+  const spreadsheet = SpreadsheetApp.openById(props.getProperty('SPREADSHEET_ID'));
+  const sheet = spreadsheet.getSheetByName(props.getProperty('SHEET_NAME') || CONFIG.sheetName);
+  const values = sheet.getDataRange().getValues();
+
+  if (values.length <= 1) return { ok: true, updated: 0 };
+
+  let updated = 0;
+
+  values.slice(1).forEach(row => {
+    const fileId = String(row[COL.driveFileId - 1] || '').trim();
+    if (!fileId) return;
+
+    const status = String(row[COL.status - 1] || '').trim();
+    const uploadType = String(row[COL.uploadType - 1] || '').trim();
+
+    try {
+      const file = DriveApp.getFileById(fileId);
+      setGallerySharing_(file, status, uploadType);
+      updated += 1;
+    } catch (err) {
+      console.error('Could not sync file sharing for ' + fileId + ':', err);
+    }
+  });
+
+  return { ok: true, updated: updated };
 }
 
 function getUploadQueue(status) {
