@@ -520,7 +520,7 @@
             file,
             (fileUploadedBytes) => {
               const overallUploaded = completedBytes + fileUploadedBytes;
-              const percent = Math.min(100, Math.round((overallUploaded / totalBytes) * 100));
+              const percent = Math.min(99, Math.round((overallUploaded / totalBytes) * 100));
               progressBar.style.width = percent + '%';
               progressText.textContent =
                 'Uploading ' + label + ' ' + (i + 1) + ' of ' + uploads.length +
@@ -531,6 +531,9 @@
           if (!uploaded || !uploaded.id) {
             throw new Error('Google Drive did not return a file ID after upload.');
           }
+
+          progressText.textContent =
+            'Finalizing ' + label + ' ' + (i + 1) + ' of ' + uploads.length + '…';
 
           await finalizeUpload({
             id: session.id,
@@ -580,36 +583,75 @@
 
     async function uploadFileResumable(sessionUrl, file, onProgress) {
       let start = 0;
+      let retryCount = 0;
+      const maxRetries = 5;
 
       while (start < file.size) {
         const endExclusive = Math.min(start + CHUNK_SIZE, file.size);
         const chunk = file.slice(start, endExclusive);
-        const result = await sendChunk(
-          sessionUrl,
-          chunk,
-          start,
-          endExclusive - 1,
-          file.size,
-          file.type || 'application/octet-stream',
-          (loaded) => onProgress(Math.min(file.size, start + loaded))
-        );
 
-        if (result.done) {
-          onProgress(file.size);
-          return result.file;
+        try {
+          const result = await sendChunk(
+            sessionUrl,
+            chunk,
+            start,
+            endExclusive - 1,
+            file.size,
+            file.type || 'application/octet-stream',
+            (loaded) => onProgress(Math.min(file.size, start + loaded))
+          );
+
+          retryCount = 0;
+
+          if (result.done) {
+            onProgress(file.size);
+            return result.file;
+          }
+
+          // Google Drive can acknowledge fewer bytes than were sent.
+          // Always continue from the byte Drive confirms in its Range header.
+          start = typeof result.nextByte === 'number' ? result.nextByte : endExclusive;
+          onProgress(start);
+        } catch (err) {
+          retryCount += 1;
+
+          if (retryCount > maxRetries) {
+            throw err;
+          }
+
+          progressText.textContent =
+            'Connection interrupted. Resuming upload… attempt ' +
+            retryCount + ' of ' + maxRetries;
+
+          await wait(Math.min(1000 * Math.pow(2, retryCount - 1), 8000));
+
+          const status = await queryUploadStatus(sessionUrl, file.size);
+
+          if (status.done) {
+            onProgress(file.size);
+            return status.file;
+          }
+
+          start = status.nextByte;
+          onProgress(start);
         }
-
-        start = endExclusive;
-        onProgress(start);
       }
 
-      throw new Error('The upload ended before Google Drive confirmed completion.');
+      const finalStatus = await queryUploadStatus(sessionUrl, file.size);
+
+      if (finalStatus.done) {
+        onProgress(file.size);
+        return finalStatus.file;
+      }
+
+      throw new Error('Google Drive has not confirmed the upload as complete. Please try again.');
     }
 
     function sendChunk(sessionUrl, chunk, start, end, total, mimeType, onChunkProgress) {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('PUT', sessionUrl, true);
+        xhr.timeout = 180000;
         xhr.setRequestHeader('Content-Range', 'bytes ' + start + '-' + end + '/' + total);
         xhr.setRequestHeader('Content-Type', mimeType);
 
@@ -621,29 +663,94 @@
 
         xhr.onload = () => {
           if (xhr.status === 200 || xhr.status === 201) {
-            let file = {};
             try {
-              file = JSON.parse(xhr.responseText || '{}');
+              resolve({
+                done: true,
+                file: JSON.parse(xhr.responseText || '{}')
+              });
             } catch (err) {
               reject(new Error('Upload completed but Google Drive returned an unreadable response.'));
-              return;
             }
-            resolve({ done: true, file });
             return;
           }
 
           if (xhr.status === 308) {
-            resolve({ done: false });
+            resolve({
+              done: false,
+              nextByte: getNextByteFromRange(xhr.getResponseHeader('Range'), end + 1)
+            });
+            return;
+          }
+
+          if ([429, 500, 502, 503, 504].includes(xhr.status)) {
+            reject(new Error('Google Drive temporarily interrupted the upload.'));
             return;
           }
 
           reject(new Error('Google Drive upload failed (' + xhr.status + '). Please try again.'));
         };
 
-        xhr.onerror = () => reject(new Error('Network interrupted the upload. Please try again.'));
+        xhr.onerror = () => reject(new Error('Network interrupted the upload.'));
+        xhr.ontimeout = () => reject(new Error('The upload connection timed out.'));
         xhr.onabort = () => reject(new Error('The upload was cancelled.'));
         xhr.send(chunk);
       });
+    }
+
+    function queryUploadStatus(sessionUrl, totalBytes) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', sessionUrl, true);
+        xhr.timeout = 60000;
+        xhr.setRequestHeader('Content-Range', 'bytes */' + totalBytes);
+
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 201) {
+            try {
+              resolve({
+                done: true,
+                file: JSON.parse(xhr.responseText || '{}')
+              });
+            } catch (err) {
+              reject(new Error('Google Drive finished the upload but returned an unreadable response.'));
+            }
+            return;
+          }
+
+          if (xhr.status === 308) {
+            resolve({
+              done: false,
+              nextByte: getNextByteFromRange(xhr.getResponseHeader('Range'), 0)
+            });
+            return;
+          }
+
+          if (xhr.status === 404) {
+            reject(new Error('The upload session expired. Please start the upload again.'));
+            return;
+          }
+
+          reject(new Error('Could not resume the upload (' + xhr.status + ').'));
+        };
+
+        xhr.onerror = () => reject(new Error('Could not check the upload status.'));
+        xhr.ontimeout = () => reject(new Error('Checking the upload status timed out.'));
+        xhr.send();
+      });
+    }
+
+    function getNextByteFromRange(rangeHeader, fallback) {
+      if (!rangeHeader) return fallback;
+
+      const match = /bytes=0-(\d+)/i.exec(rangeHeader);
+      if (!match) return fallback;
+
+      const lastByte = Number(match[1]);
+      return Number.isFinite(lastByte) ? lastByte + 1 : fallback;
+    }
+
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     function formatBytes(bytes) {
