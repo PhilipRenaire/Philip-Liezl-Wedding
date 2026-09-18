@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Share Your Memories | Philip & Liezl</title>
+  <meta name="description" content="Share your wedding photos and videos with Philip and Liezl." />
+  <link rel="stylesheet" href="styles.css?v=photo-share-20260919" />
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 12% 6%, rgba(217, 198, 232, 0.34), transparent 30%),
+        radial-gradient(circle at 90% 92%, rgba(239, 226, 200, 0.70), transparent 32%),
+        linear-gradient(180deg, #fffaf0 0%, #ffffff 50%, #fff8ee 100%);
+    }
+
+    .share-hero {
+      max-width: none;
+      padding: 86px 24px 44px;
+      text-align: center;
+    }
+
+    .share-hero .share-title {
+      margin: 10px auto 16px;
+      font-size: clamp(46px, 6vw, 82px);
+      line-height: 1;
+      color: var(--deep-purple);
+    }
+
+    .share-shell {
+      width: min(100% - 32px, 860px);
+      margin: 0 auto 84px;
+      padding: 34px;
+      border-radius: 34px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(199, 158, 73, 0.30);
+      box-shadow: 0 28px 80px rgba(36, 23, 38, 0.12);
+    }
+
+    .share-intro {
+      max-width: 680px;
+      margin: 0 auto 26px;
+      text-align: center;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .share-form {
+      display: grid;
+      gap: 20px;
+    }
+
+    .share-field {
+      display: grid;
+      gap: 8px;
+      font-family: Arial, sans-serif;
+      color: var(--deep-purple);
+      font-weight: 700;
+    }
+
+    .share-field > span {
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .required-mark {
+      color: #a34f62;
+    }
+
+    .share-field input,
+    .share-field textarea {
+      width: 100%;
+      border: 1px solid rgba(75, 36, 95, 0.20);
+      border-radius: 18px;
+      padding: 15px 16px;
+      background: #fff;
+      color: var(--text);
+      font: 16px/1.5 Arial, sans-serif;
+      outline: none;
+    }
+
+    .share-field textarea {
+      min-height: 126px;
+      resize: vertical;
+    }
+
+    .share-field input:focus,
+    .share-field textarea:focus {
+      border-color: var(--orchid);
+      box-shadow: 0 0 0 4px rgba(125, 79, 141, 0.10);
+    }
+
+    .upload-panel {
+      padding: 24px;
+      border: 1.5px dashed rgba(75, 36, 95, 0.28);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(217, 198, 232, 0.22), transparent 40%),
+        rgba(255, 250, 240, 0.78);
+      text-align: center;
+    }
+
+    .upload-panel input[type="file"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .upload-trigger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 190px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      border: 2px solid #dcb333;
+      background: var(--deep-purple);
+      color: #fff;
+      font: 700 15px/1 Arial, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 12px 26px rgba(75, 36, 95, 0.18);
+    }
+
+    .upload-note,
+    .privacy-note {
+      margin: 12px auto 0;
+      color: rgba(60, 47, 53, 0.74);
+      font: 14px/1.55 Arial, sans-serif;
+    }
+
+    .file-summary {
+      margin-top: 14px;
+      color: var(--deep-purple);
+      font: 700 14px/1.5 Arial, sans-serif;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .preview-card {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      background: #f3edf5;
+      border: 1px solid rgba(75, 36, 95, 0.10);
+    }
+
+    .preview-card img,
+    .preview-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .preview-card .file-type {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(36, 23, 38, 0.78);
+      color: #fff;
+      font: 700 10px/1 Arial, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .moderation-note {
+      margin: 2px 0 0;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(217, 198, 232, 0.26);
+      border: 1px solid rgba(125, 79, 141, 0.12);
+      color: var(--deep-purple);
+      font: 700 14px/1.6 Arial, sans-serif;
+      text-align: center;
+    }
+
+    .share-actions {
+      display: flex;
+      justify-content: center;
+      padding-top: 4px;
+    }
+
+    .share-actions .btn {
+      min-width: 210px;
+    }
+
+    .share-status {
+      min-height: 24px;
+      text-align: center;
+      color: var(--deep-purple);
+      font: 700 14px/1.5 Arial, sans-serif;
+    }
+
+    @media (max-width: 720px) {
+      .share-hero {
+        padding: 68px 18px 32px;
+      }
+
+      .share-shell {
+        width: min(100% - 24px, 860px);
+        padding: 24px 18px;
+        border-radius: 26px;
+        margin-bottom: 58px;
+      }
+
+      .preview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="index.html#home" class="logo" aria-label="Philip and Liezl wedding home">
+        <img src="assets/logo-pl.svg" alt="P&L" class="logo-image" />
+      </a>
+      <div class="nav-links" style="display:flex;">
+        <a href="index.html#home">Home</a>
+        <a href="index.html#gallery">Gallery</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="share-hero">
+      <p class="eyebrow">Wedding Memories</p>
+      <h1 class="share-title">Share Your Memories</h1>
+      <p class="center-text">
+        Help us see the celebration through your eyes. Share the photos and videos you captured during our wedding day.
+      </p>
+    </section>
+
+    <section class="share-shell">
+      <p class="share-intro">
+        Every upload will first go to our private review area. Once Philip &amp; Liezl approve it,
+        it may be added to the wedding album.
+      </p>
+
+      <form id="memoryUploadForm" class="share-form" novalidate>
+        <label class="share-field" for="uploaderName">
+          <span>Your Name <strong class="required-mark">*</strong></span>
+          <input
+            type="text"
+            id="uploaderName"
+            name="uploaderName"
+            autocomplete="name"
+            placeholder="First Name and Last Name"
+            required
+          />
+        </label>
+
+        <label class="share-field" for="coupleMessage">
+          <span>A Message to the Couple <strong class="required-mark">*</strong></span>
+          <textarea
+            id="coupleMessage"
+            name="coupleMessage"
+            placeholder="Write a short message for Philip & Liezl"
+            required
+          ></textarea>
+        </label>
+
+        <div class="upload-panel">
+          <label class="upload-trigger" for="memoryFiles">＋ Choose Photos &amp; Videos</label>
+          <input
+            type="file"
+            id="memoryFiles"
+            name="memoryFiles"
+            accept="image/*,video/*"
+            multiple
+            required
+          />
+          <p class="upload-note">You can select multiple photos and videos at once.</p>
+          <div id="fileSummary" class="file-summary">No files selected yet.</div>
+          <div id="previewGrid" class="preview-grid" aria-live="polite"></div>
+        </div>
+
+        <p class="moderation-note">
+          Your files will not appear in the public album immediately. They will be placed in a private staging area for approval first.
+        </p>
+
+        <div class="share-actions">
+          <button type="submit" class="btn primary">Share With Philip &amp; Liezl</button>
+        </div>
+
+        <div id="shareStatus" class="share-status" aria-live="polite"></div>
+      </form>
+
+      <p class="privacy-note">
+        By submitting, you are sharing these memories with Philip &amp; Liezl for private review and possible inclusion in their wedding album.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Philip &amp; Liezl · October 19, 2026 · Dahilayan Forest Park Resort</p>
+    <p>Thank you for helping us preserve the memories of our day.</p>
+  </footer>
+
+  <script>
+    const form = document.getElementById('memoryUploadForm');
+    const fileInput = document.getElementById('memoryFiles');
+    const fileSummary = document.getElementById('fileSummary');
+    const previewGrid = document.getElementById('previewGrid');
+    const shareStatus = document.getElementById('shareStatus');
+
+    const clearPreviews = () => {
+      previewGrid.querySelectorAll('[data-preview-url]').forEach((item) => {
+        URL.revokeObjectURL(item.dataset.previewUrl);
+      });
+      previewGrid.innerHTML = '';
+    };
+
+    fileInput.addEventListener('change', () => {
+      clearPreviews();
+      const files = Array.from(fileInput.files || []);
+
+      if (!files.length) {
+        fileSummary.textContent = 'No files selected yet.';
+        return;
+      }
+
+      const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
+      const totalMB = (totalBytes / (1024 * 1024)).toFixed(1);
+      fileSummary.textContent = `${files.length} file${files.length === 1 ? '' : 's'} selected · ${totalMB} MB total`;
+
+      files.forEach((file) => {
+        const previewUrl = URL.createObjectURL(file);
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+        card.dataset.previewUrl = previewUrl;
+
+        let media;
+        if (file.type.startsWith('video/')) {
+          media = document.createElement('video');
+          media.src = previewUrl;
+          media.muted = true;
+          media.playsInline = true;
+          media.preload = 'metadata';
+        } else {
+          media = document.createElement('img');
+          media.src = previewUrl;
+          media.alt = file.name;
+        }
+
+        const label = document.createElement('span');
+        label.className = 'file-type';
+        label.textContent = file.type.startsWith('video/') ? 'Video' : 'Photo';
+
+        card.append(media, label);
+        previewGrid.appendChild(card);
+      });
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      shareStatus.textContent = '';
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      shareStatus.textContent = 'The upload page is ready. The secure staging backend will be connected next.';
+    });
+
+    window.addEventListener('beforeunload', clearPreviews);
+  </script>
+</body>
+</html>
