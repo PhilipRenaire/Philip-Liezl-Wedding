@@ -5,7 +5,8 @@ h2,
 h3,
 .box-title,
 .empty h2,
-.success h2 {
+.success h2,
+.detail-page-script-title {
   font-family: 'Great Vibes', cursive !important;
   font-weight: 400 !important;
   letter-spacing: normal !important;
@@ -20,13 +21,61 @@ h1 {
   line-height: 1.08 !important;
 }
 
+/* Main wedding hero title: keep the elegant gold treatment, now in Great Vibes. */
+.hero-title {
+  width: min(95vw, 980px) !important;
+  aspect-ratio: auto !important;
+  margin: 10px auto 0 !important;
+  color: #f4d568 !important;
+  font-family: 'Great Vibes', cursive !important;
+  font-size: clamp(72px, 11vw, 154px) !important;
+  font-weight: 400 !important;
+  line-height: 1.05 !important;
+  text-align: center !important;
+  background: linear-gradient(105deg, #fff4bf 0%, #f4d568 20%, #d8a520 46%, #ffe89b 64%, #c89412 86%, #edca5d 100%);
+  background-size: 150% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 10px 26px rgba(58, 25, 33, 0.36)) !important;
+}
+
+.hero-title::before,
+.hero-title::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* More Details hero title */
+.detail-page-script-title {
+  width: min(92vw, 820px) !important;
+  margin: 10px auto 18px !important;
+  color: var(--deep-purple, #4b245f) !important;
+  font-size: clamp(64px, 9vw, 112px) !important;
+  line-height: 1.08 !important;
+  text-align: center !important;
+  filter: drop-shadow(0 4px 14px rgba(75, 36, 95, 0.12)) !important;
+}
+
 @media (max-width: 680px) {
   h1,
   h2,
   h3,
   .box-title,
   .empty h2,
-  .success h2 {
+  .success h2,
+  .detail-page-script-title {
     line-height: 1.2 !important;
+  }
+
+  .hero-title {
+    width: min(96vw, 760px) !important;
+    font-size: clamp(66px, 18vw, 102px) !important;
+    line-height: 1.02 !important;
+  }
+
+  .detail-page-script-title {
+    width: min(96vw, 680px) !important;
+    font-size: clamp(58px, 16vw, 86px) !important;
   }
 }
