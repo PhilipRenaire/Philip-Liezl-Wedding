@@ -4,6 +4,10 @@
  * Free Google Drive staging workflow:
  * Guest Upload -> Pending Uploads -> Approved / Rejected
  *
+ * This version uses Google Drive resumable uploads so large files do not pass
+ * through Apps Script as base64. Apps Script only creates the secure upload
+ * session and logs the completed file.
+ *
  * SETUP / UPDATE
  * 1. Paste this file into Code.gs in the wedding-media Apps Script project.
  * 2. Paste wedding-photo-upload.html into Upload.html.
@@ -14,6 +18,7 @@
  * - Guest Name is required.
  * - A Video Message for the Couple is required.
  * - At least one wedding photo/video memory is required.
+ * - Maximum individual file size is 1 GB.
  * - Every uploaded file starts as Pending.
  * - Video Messages are tagged separately from Wedding Memories.
  * - Change Status in the Google Sheet to Approved or Rejected to move the file automatically.
@@ -26,7 +31,7 @@ const CONFIG = {
   rejectedFolderName: 'Rejected',
   spreadsheetName: 'Wedding Photo Uploads',
   sheetName: 'Uploads',
-  maxFileBytes: 20 * 1024 * 1024, // 20 MB per file for reliable free Apps Script uploads
+  maxFileBytes: 1024 * 1024 * 1024, // 1 GB per individual file
   allowedMimePrefixes: ['image/', 'video/'],
   allowedUploadTypes: ['Wedding Memory', 'Video Message']
 };
@@ -148,7 +153,7 @@ function setupWeddingPhotoSystem() {
 
   return {
     ok: true,
-    message: 'Wedding photo system is ready.',
+    message: 'Wedding photo system is ready for resumable uploads up to 1 GB per file.',
     rootFolderUrl: root.getUrl(),
     pendingFolderUrl: pending.getUrl(),
     approvedFolderUrl: approved.getUrl(),
@@ -157,19 +162,164 @@ function setupWeddingPhotoSystem() {
   };
 }
 
-function uploadWeddingMedia(payload) {
+/**
+ * Creates a Google Drive resumable upload session.
+ * Only the small metadata request passes through Apps Script.
+ * The guest's browser sends the actual file bytes directly to Google Drive.
+ */
+function beginWeddingMediaUpload(payload) {
   ensureSetup_();
 
   const guestName = String(payload.guestName || '').trim();
   const uploadType = String(payload.uploadType || 'Wedding Memory').trim();
   const originalFileName = sanitizeFileName_(String(payload.fileName || 'upload'));
   const mimeType = String(payload.mimeType || '').trim();
-  const base64 = String(payload.base64 || '').trim();
+  const fileSize = Number(payload.fileSize || 0);
 
+  validateUploadRequest_(guestName, uploadType, originalFileName, mimeType, fileSize);
+
+  const props = PropertiesService.getScriptProperties();
+  const pendingFolderId = props.getProperty('PENDING_FOLDER_ID');
+
+  const id = Utilities.getUuid();
+  const safeGuest = guestName.replace(/[^a-zA-Z0-9 _.-]/g, '').trim().slice(0, 60) || 'Guest';
+  const typePrefix = uploadType === 'Video Message' ? 'VIDEO MESSAGE' : 'MEMORY';
+  const storedName = typePrefix + ' - ' + safeGuest + ' - ' + id.slice(0, 8) + ' - ' + originalFileName;
+
+  const metadata = {
+    name: storedName,
+    mimeType: mimeType,
+    parents: [pendingFolderId],
+    description:
+      'Wedding guest upload\n' +
+      'Guest: ' + guestName + '\n' +
+      'Upload Type: ' + uploadType + '\n' +
+      'Status: Pending'
+  };
+
+  const endpoint =
+    'https://www.googleapis.com/upload/drive/v3/files' +
+    '?uploadType=resumable&fields=id,name,mimeType,size,webViewLink';
+
+  const response = UrlFetchApp.fetch(endpoint, {
+    method: 'post',
+    contentType: 'application/json; charset=UTF-8',
+    headers: {
+      Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
+      'X-Upload-Content-Type': mimeType,
+      'X-Upload-Content-Length': String(fileSize)
+    },
+    payload: JSON.stringify(metadata),
+    muteHttpExceptions: true,
+    followRedirects: false
+  });
+
+  const status = response.getResponseCode();
+  const headers = response.getAllHeaders();
+  const sessionUrl = headers.Location || headers.location;
+
+  if (status < 200 || status >= 300 || !sessionUrl) {
+    throw new Error('Could not start the Google Drive upload. Please try again.');
+  }
+
+  return {
+    ok: true,
+    id: id,
+    sessionUrl: String(sessionUrl),
+    fileName: originalFileName,
+    uploadType: uploadType,
+    maxFileBytes: CONFIG.maxFileBytes
+  };
+}
+
+/**
+ * Called after the browser finishes the resumable upload.
+ * Verifies the Drive file is really in the private Pending folder,
+ * then writes the tracking row to the moderation spreadsheet.
+ */
+function finalizeWeddingMedia(payload) {
+  ensureSetup_();
+
+  const id = String(payload.id || '').trim() || Utilities.getUuid();
+  const guestName = String(payload.guestName || '').trim();
+  const uploadType = String(payload.uploadType || 'Wedding Memory').trim();
+  const originalFileName = sanitizeFileName_(String(payload.fileName || 'upload'));
+  const requestedMimeType = String(payload.mimeType || '').trim();
+  const driveFileId = String(payload.driveFileId || '').trim();
+
+  if (!driveFileId) throw new Error('The uploaded Drive file could not be identified.');
+
+  const file = DriveApp.getFileById(driveFileId);
+  const actualMimeType = file.getMimeType() || requestedMimeType;
+  const actualSize = Number(file.getSize() || 0);
+
+  validateUploadRequest_(
+    guestName,
+    uploadType,
+    originalFileName,
+    actualMimeType,
+    actualSize
+  );
+
+  const props = PropertiesService.getScriptProperties();
+  const pendingFolderId = props.getProperty('PENDING_FOLDER_ID');
+
+  let isInPendingFolder = false;
+  const parents = file.getParents();
+  while (parents.hasNext()) {
+    if (parents.next().getId() === pendingFolderId) {
+      isInPendingFolder = true;
+      break;
+    }
+  }
+
+  if (!isInPendingFolder) {
+    throw new Error('The uploaded file is not in the wedding Pending folder.');
+  }
+
+  const spreadsheet = SpreadsheetApp.openById(props.getProperty('SPREADSHEET_ID'));
+  const sheet = spreadsheet.getSheetByName(props.getProperty('SHEET_NAME') || CONFIG.sheetName);
+
+  const existing = sheet
+    .getRange(2, COL.driveFileId, Math.max(sheet.getLastRow() - 1, 1), 1)
+    .createTextFinder(driveFileId)
+    .matchEntireCell(true)
+    .findNext();
+
+  if (!existing) {
+    sheet.appendRow([
+      id,
+      new Date(),
+      guestName,
+      uploadType,
+      originalFileName,
+      actualMimeType,
+      actualSize,
+      driveFileId,
+      file.getUrl(),
+      'Pending',
+      ''
+    ]);
+  }
+
+  return {
+    ok: true,
+    id: id,
+    driveFileId: driveFileId,
+    fileName: originalFileName,
+    uploadType: uploadType,
+    sizeBytes: actualSize,
+    status: 'Pending'
+  };
+}
+
+function validateUploadRequest_(guestName, uploadType, originalFileName, mimeType, fileSize) {
   if (!guestName) throw new Error('Your Name is required.');
+
   if (!CONFIG.allowedUploadTypes.includes(uploadType)) {
     throw new Error('Invalid upload type.');
   }
+
   if (!originalFileName) throw new Error('The file name is missing.');
 
   if (uploadType === 'Video Message') {
@@ -180,54 +330,13 @@ function uploadWeddingMedia(payload) {
     throw new Error('Only photo and video files are allowed.');
   }
 
-  if (!base64) throw new Error('The selected file is empty.');
-
-  const bytes = Utilities.base64Decode(base64);
-  if (bytes.length > CONFIG.maxFileBytes) {
-    throw new Error('This file is too large. Maximum size is 20 MB per file.');
+  if (!Number.isFinite(fileSize) || fileSize <= 0) {
+    throw new Error('The selected file is empty.');
   }
 
-  const props = PropertiesService.getScriptProperties();
-  const pendingFolder = DriveApp.getFolderById(props.getProperty('PENDING_FOLDER_ID'));
-
-  const id = Utilities.getUuid();
-  const safeGuest = guestName.replace(/[^a-zA-Z0-9 _.-]/g, '').trim().slice(0, 60) || 'Guest';
-  const typePrefix = uploadType === 'Video Message' ? 'VIDEO MESSAGE' : 'MEMORY';
-  const storedName = typePrefix + ' - ' + safeGuest + ' - ' + id.slice(0, 8) + ' - ' + originalFileName;
-
-  const blob = Utilities.newBlob(bytes, mimeType, storedName);
-  const file = pendingFolder.createFile(blob);
-  file.setDescription(
-    'Wedding guest upload\n' +
-    'Guest: ' + guestName + '\n' +
-    'Upload Type: ' + uploadType + '\n' +
-    'Status: Pending'
-  );
-
-  const spreadsheet = SpreadsheetApp.openById(props.getProperty('SPREADSHEET_ID'));
-  const sheet = spreadsheet.getSheetByName(props.getProperty('SHEET_NAME') || CONFIG.sheetName);
-
-  sheet.appendRow([
-    id,
-    new Date(),
-    guestName,
-    uploadType,
-    originalFileName,
-    mimeType,
-    bytes.length,
-    file.getId(),
-    file.getUrl(),
-    'Pending',
-    ''
-  ]);
-
-  return {
-    ok: true,
-    id: id,
-    fileName: originalFileName,
-    uploadType: uploadType,
-    status: 'Pending'
-  };
+  if (fileSize > CONFIG.maxFileBytes) {
+    throw new Error('This file is too large. Maximum size is 1 GB per file.');
+  }
 }
 
 /**
