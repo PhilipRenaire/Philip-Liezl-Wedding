@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+h1,
+h2,
+h3,
+.box-title,
+.empty h2,
+.success h2 {
+  font-family: 'Great Vibes', cursive !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  line-height: 1.18 !important;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1 {
+  line-height: 1.08 !important;
+}
+
+@media (max-width: 680px) {
+  h1,
+  h2,
+  h3,
+  .box-title,
+  .empty h2,
+  .success h2 {
+    line-height: 1.2 !important;
+  }
+}
