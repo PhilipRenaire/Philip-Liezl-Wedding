@@ -248,7 +248,7 @@
       height: 100%;
       border-radius: inherit;
       background: linear-gradient(90deg, var(--deep-purple), var(--orchid), var(--gold));
-      transition: width .2s ease;
+      transition: width .15s ease;
     }
 
     .status {
@@ -293,14 +293,14 @@
         <label class="record-button" for="videoMessage">Record Your Video Message for the Couple</label>
         <input id="videoMessage" class="hidden-file-input" type="file" accept="video/*" capture="user" required>
         <div id="videoSelection" class="video-selection" aria-live="polite"></div>
-        <p class="small">After recording, the video will be attached here and uploaded when you tap “Share With Philip &amp; Liezl.” Maximum: 20 MB.</p>
+        <p class="small">After recording, the video will be attached here and uploaded when you tap “Share With Philip &amp; Liezl.” Maximum: 1 GB.</p>
       </section>
 
       <section class="section-box">
         <h2 class="box-title">Share Your Wedding Photos &amp; Videos <span class="required">*</span></h2>
         <p class="box-copy">Upload the moments you captured during the celebration. You can choose several files at once.</p>
         <input id="files" type="file" accept="image/*,video/*" multiple required>
-        <p class="small">At least one wedding photo or video is required. Maximum: 20 MB per file. Files upload one at a time.</p>
+        <p class="small">At least one wedding photo or video is required. Maximum: 1 GB per file. Large uploads may take several minutes depending on your connection.</p>
       </section>
 
       <div class="notice">Everything goes to our private Pending area first. Wedding memories can only appear in the public album after approval. Video messages are tagged separately for Philip &amp; Liezl.</div>
@@ -316,7 +316,9 @@
   </main>
 
   <script>
-    const MAX_BYTES = 20 * 1024 * 1024;
+    const MAX_BYTES = 1024 * 1024 * 1024;
+    const CHUNK_SIZE = 8 * 1024 * 1024; // 8 MB; must remain a multiple of 256 KB
+
     const form = document.getElementById('uploadForm');
     const submitButton = document.getElementById('submitButton');
     const statusBox = document.getElementById('status');
@@ -334,8 +336,7 @@
         return;
       }
 
-      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-      videoSelection.textContent = 'Video ready: ' + file.name + ' · ' + sizeMB + ' MB';
+      videoSelection.textContent = 'Video ready: ' + file.name + ' · ' + formatBytes(file.size);
       videoSelection.classList.add('show');
     });
 
@@ -343,7 +344,7 @@
       event.preventDefault();
 
       const guestName = document.getElementById('guestName').value.trim();
-      const videoMessage = document.getElementById('videoMessage').files[0];
+      const videoMessage = videoMessageInput.files[0];
       const memories = Array.from(document.getElementById('files').files || []);
 
       if (!guestName || !videoMessage || !memories.length) {
@@ -359,7 +360,13 @@
       const allFiles = [videoMessage, ...memories];
       const tooLarge = allFiles.find(file => file.size > MAX_BYTES);
       if (tooLarge) {
-        statusBox.textContent = tooLarge.name + ' is larger than 20 MB. Please choose a smaller file.';
+        statusBox.textContent = tooLarge.name + ' is larger than 1 GB. Please choose a smaller file.';
+        return;
+      }
+
+      const emptyFile = allFiles.find(file => !file.size);
+      if (emptyFile) {
+        statusBox.textContent = emptyFile.name + ' appears to be empty.';
         return;
       }
 
@@ -372,25 +379,55 @@
         ...memories.map(file => ({ file, uploadType: 'Wedding Memory' }))
       ];
 
+      const totalBytes = uploads.reduce((sum, item) => sum + item.file.size, 0);
+      let completedBytes = 0;
+
       try {
         for (let i = 0; i < uploads.length; i++) {
           const item = uploads[i];
           const file = item.file;
           const label = item.uploadType === 'Video Message' ? 'video message' : 'memory';
 
-          progressText.textContent = 'Uploading ' + label + ' ' + (i + 1) + ' of ' + uploads.length + ': ' + file.name;
-          progressBar.style.width = Math.round((i / uploads.length) * 100) + '%';
+          progressText.textContent =
+            'Preparing ' + label + ' ' + (i + 1) + ' of ' + uploads.length + ': ' + file.name;
 
-          const base64 = await fileToBase64(file);
-          await uploadOne({
+          const session = await beginUpload({
             guestName,
             uploadType: item.uploadType,
             fileName: file.name,
-            mimeType: file.type,
-            base64
+            mimeType: file.type || 'application/octet-stream',
+            fileSize: file.size
           });
 
-          progressBar.style.width = Math.round(((i + 1) / uploads.length) * 100) + '%';
+          const uploaded = await uploadFileResumable(
+            session.sessionUrl,
+            file,
+            (fileUploadedBytes) => {
+              const overallUploaded = completedBytes + fileUploadedBytes;
+              const percent = Math.min(100, Math.round((overallUploaded / totalBytes) * 100));
+              progressBar.style.width = percent + '%';
+              progressText.textContent =
+                'Uploading ' + label + ' ' + (i + 1) + ' of ' + uploads.length +
+                ' · ' + percent + '% · ' + file.name;
+            }
+          );
+
+          if (!uploaded || !uploaded.id) {
+            throw new Error('Google Drive did not return a file ID after upload.');
+          }
+
+          await finalizeUpload({
+            id: session.id,
+            guestName,
+            uploadType: item.uploadType,
+            fileName: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            driveFileId: uploaded.id
+          });
+
+          completedBytes += file.size;
+          const percent = Math.min(100, Math.round((completedBytes / totalBytes) * 100));
+          progressBar.style.width = percent + '%';
         }
 
         form.innerHTML =
@@ -400,30 +437,110 @@
             '<p style="margin:0;text-align:center;line-height:1.7;">Your video message and wedding photos/videos are now in our private review area. Thank you for helping us remember our day.</p>' +
           '</div>';
       } catch (err) {
-        statusBox.textContent = err && err.message ? err.message : 'Upload failed. Please try again.';
+        statusBox.textContent =
+          (err && err.message ? err.message : 'Upload failed. Please try again.') +
+          ' If you are uploading a large video, keep this page open and use a stable Wi-Fi connection.';
         submitButton.disabled = false;
       }
     });
 
-    function uploadOne(payload) {
+    function beginUpload(payload) {
       return new Promise((resolve, reject) => {
         google.script.run
           .withSuccessHandler(resolve)
           .withFailureHandler(error => reject(new Error(error && error.message ? error.message : String(error))))
-          .uploadWeddingMedia(payload);
+          .beginWeddingMediaUpload(payload);
       });
     }
 
-    function fileToBase64(file) {
+    function finalizeUpload(payload) {
       return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = String(reader.result || '');
-          resolve(result.includes(',') ? result.split(',')[1] : result);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+        google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(error => reject(new Error(error && error.message ? error.message : String(error))))
+          .finalizeWeddingMedia(payload);
       });
+    }
+
+    async function uploadFileResumable(sessionUrl, file, onProgress) {
+      let start = 0;
+
+      while (start < file.size) {
+        const endExclusive = Math.min(start + CHUNK_SIZE, file.size);
+        const chunk = file.slice(start, endExclusive);
+        const result = await sendChunk(
+          sessionUrl,
+          chunk,
+          start,
+          endExclusive - 1,
+          file.size,
+          file.type || 'application/octet-stream',
+          (loaded) => onProgress(Math.min(file.size, start + loaded))
+        );
+
+        if (result.done) {
+          onProgress(file.size);
+          return result.file;
+        }
+
+        start = endExclusive;
+        onProgress(start);
+      }
+
+      throw new Error('The upload ended before Google Drive confirmed completion.');
+    }
+
+    function sendChunk(sessionUrl, chunk, start, end, total, mimeType, onChunkProgress) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', sessionUrl, true);
+        xhr.setRequestHeader('Content-Range', 'bytes ' + start + '-' + end + '/' + total);
+        xhr.setRequestHeader('Content-Type', mimeType);
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            onChunkProgress(event.loaded);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 201) {
+            let file = {};
+            try {
+              file = JSON.parse(xhr.responseText || '{}');
+            } catch (err) {
+              reject(new Error('Upload completed but Google Drive returned an unreadable response.'));
+              return;
+            }
+            resolve({ done: true, file });
+            return;
+          }
+
+          if (xhr.status === 308) {
+            resolve({ done: false });
+            return;
+          }
+
+          reject(new Error('Google Drive upload failed (' + xhr.status + '). Please try again.'));
+        };
+
+        xhr.onerror = () => reject(new Error('Network interrupted the upload. Please try again.'));
+        xhr.onabort = () => reject(new Error('The upload was cancelled.'));
+        xhr.send(chunk);
+      });
+    }
+
+    function formatBytes(bytes) {
+      if (bytes >= 1024 * 1024 * 1024) {
+        return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+      }
+      if (bytes >= 1024 * 1024) {
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+      }
+      if (bytes >= 1024) {
+        return (bytes / 1024).toFixed(1) + ' KB';
+      }
+      return bytes + ' bytes';
     }
   </script>
 </body>
