@@ -267,9 +267,125 @@
     }
 
     @media (max-width: 620px) {
-      .hero { padding-top: 40px; }
-      .card { padding: 20px 16px; border-radius: 24px; }
-      .section-box { padding: 18px 15px; }
+      body {
+        font-size: 17px;
+      }
+
+      .hero {
+        padding: 42px 18px 30px;
+      }
+
+      .eyebrow {
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      h1 {
+        font-size: clamp(46px, 12vw, 62px);
+        line-height: 1.06;
+      }
+
+      .subtitle {
+        margin-top: 18px;
+        font-size: 17px;
+        line-height: 1.7;
+      }
+
+      .card {
+        width: min(100% - 20px, 860px);
+        padding: 24px 18px;
+        border-radius: 24px;
+        margin-bottom: 38px;
+      }
+
+      form {
+        gap: 22px;
+      }
+
+      label.field {
+        gap: 10px;
+        font-size: 15px;
+        line-height: 1.35;
+        letter-spacing: .08em;
+      }
+
+      input[type="text"] {
+        min-height: 54px;
+        padding: 15px 16px;
+        font-size: 17px;
+        line-height: 1.5;
+      }
+
+      .section-box {
+        padding: 21px 17px;
+      }
+
+      .box-title {
+        margin-bottom: 10px;
+        font-size: 25px;
+        line-height: 1.22;
+      }
+
+      .box-copy {
+        margin-bottom: 17px;
+        font-size: 16px;
+        line-height: 1.65;
+      }
+
+      input[type="file"] {
+        padding: 14px 12px;
+        font-size: 16px;
+        line-height: 1.4;
+      }
+
+      .record-button {
+        min-height: 58px;
+        padding: 16px 18px;
+        font-size: 17px;
+        line-height: 1.35;
+      }
+
+      .record-button::before {
+        font-size: 15px;
+      }
+
+      .video-selection {
+        padding: 14px;
+        font-size: 15px;
+        line-height: 1.55;
+      }
+
+      .small {
+        margin-top: 12px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .notice {
+        padding: 17px;
+        font-size: 15.5px;
+        line-height: 1.65;
+      }
+
+      .btn {
+        width: 100%;
+        min-height: 58px;
+        padding: 16px 20px;
+        font-size: 17px;
+        line-height: 1.25;
+      }
+
+      .status {
+        min-height: 26px;
+        font-size: 15.5px;
+        line-height: 1.6;
+      }
+
+      .success {
+        padding: 24px 18px;
+        font-size: 17px;
+        line-height: 1.65;
+      }
     }
   </style>
 </head>
