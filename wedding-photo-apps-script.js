@@ -4,21 +4,18 @@
  * Free Google Drive staging workflow:
  * Guest Upload -> Pending Uploads -> Approved / Rejected
  *
- * SETUP
- * 1. In the dedicated wedding-media Google account, open script.google.com
- * 2. Create a NEW standalone project.
- * 3. Paste this file into Code.gs.
- * 4. Add an HTML file named "Upload" and paste wedding-photo-upload.html into it.
- * 5. Run setupWeddingPhotoSystem() once from the Apps Script editor and approve permissions.
- * 6. Deploy > New deployment > Web app:
- *      Execute as: Me
- *      Who has access: Anyone
- * 7. Copy the deployed Web App URL. We will connect it to share.html afterwards.
+ * SETUP / UPDATE
+ * 1. Paste this file into Code.gs in the wedding-media Apps Script project.
+ * 2. Paste wedding-photo-upload.html into Upload.html.
+ * 3. Run setupWeddingPhotoSystem() once after updating.
+ * 4. Update the existing Web App deployment to a NEW VERSION.
  *
  * NOTE:
  * - Guest Name is required.
- * - Message to the Couple is required.
- * - Every upload starts as Pending.
+ * - A Video Message for the Couple is required.
+ * - At least one wedding photo/video memory is required.
+ * - Every uploaded file starts as Pending.
+ * - Video Messages are tagged separately from Wedding Memories.
  * - Change Status in the Google Sheet to Approved or Rejected to move the file automatically.
  */
 
@@ -30,14 +27,15 @@ const CONFIG = {
   spreadsheetName: 'Wedding Photo Uploads',
   sheetName: 'Uploads',
   maxFileBytes: 20 * 1024 * 1024, // 20 MB per file for reliable free Apps Script uploads
-  allowedMimePrefixes: ['image/', 'video/']
+  allowedMimePrefixes: ['image/', 'video/'],
+  allowedUploadTypes: ['Wedding Memory', 'Video Message']
 };
 
 const COL = {
   id: 1,
   uploadedAt: 2,
   guestName: 3,
-  message: 4,
+  uploadType: 4,
   originalFileName: 5,
   mimeType: 6,
   sizeBytes: 7,
@@ -51,7 +49,7 @@ const HEADERS = [
   'ID',
   'Uploaded At',
   'Guest Name',
-  'Message to the Couple',
+  'Upload Type',
   'Original File Name',
   'MIME Type',
   'Size (Bytes)',
@@ -106,7 +104,7 @@ function setupWeddingPhotoSystem() {
   sheet.setColumnWidth(COL.id, 180);
   sheet.setColumnWidth(COL.uploadedAt, 155);
   sheet.setColumnWidth(COL.guestName, 180);
-  sheet.setColumnWidth(COL.message, 320);
+  sheet.setColumnWidth(COL.uploadType, 145);
   sheet.setColumnWidth(COL.originalFileName, 240);
   sheet.setColumnWidth(COL.mimeType, 150);
   sheet.setColumnWidth(COL.sizeBytes, 110);
@@ -118,7 +116,7 @@ function setupWeddingPhotoSystem() {
   sheet.getRange('B:B').setNumberFormat('yyyy-mm-dd hh:mm:ss');
   sheet.getRange('K:K').setNumberFormat('yyyy-mm-dd hh:mm:ss');
 
-  const rule = SpreadsheetApp.newDataValidation()
+  const statusRule = SpreadsheetApp.newDataValidation()
     .requireValueInList(['Pending', 'Approved', 'Rejected'], true)
     .setAllowInvalid(false)
     .build();
@@ -127,7 +125,7 @@ function setupWeddingPhotoSystem() {
   if (sheet.getMaxRows() < maxRows) {
     sheet.insertRowsAfter(sheet.getMaxRows(), maxRows - sheet.getMaxRows());
   }
-  sheet.getRange(2, COL.status, sheet.getMaxRows() - 1, 1).setDataValidation(rule);
+  sheet.getRange(2, COL.status, sheet.getMaxRows() - 1, 1).setDataValidation(statusRule);
 
   if (!sheet.getFilter()) {
     sheet.getRange(1, 1, sheet.getMaxRows(), HEADERS.length).createFilter();
@@ -163,17 +161,25 @@ function uploadWeddingMedia(payload) {
   ensureSetup_();
 
   const guestName = String(payload.guestName || '').trim();
-  const message = String(payload.message || '').trim();
+  const uploadType = String(payload.uploadType || 'Wedding Memory').trim();
   const originalFileName = sanitizeFileName_(String(payload.fileName || 'upload'));
   const mimeType = String(payload.mimeType || '').trim();
   const base64 = String(payload.base64 || '').trim();
 
   if (!guestName) throw new Error('Your Name is required.');
-  if (!message) throw new Error('A Message to the Couple is required.');
+  if (!CONFIG.allowedUploadTypes.includes(uploadType)) {
+    throw new Error('Invalid upload type.');
+  }
   if (!originalFileName) throw new Error('The file name is missing.');
-  if (!mimeType || !CONFIG.allowedMimePrefixes.some(prefix => mimeType.startsWith(prefix))) {
+
+  if (uploadType === 'Video Message') {
+    if (!mimeType || !mimeType.startsWith('video/')) {
+      throw new Error('Your message to the couple must be a video file.');
+    }
+  } else if (!mimeType || !CONFIG.allowedMimePrefixes.some(prefix => mimeType.startsWith(prefix))) {
     throw new Error('Only photo and video files are allowed.');
   }
+
   if (!base64) throw new Error('The selected file is empty.');
 
   const bytes = Utilities.base64Decode(base64);
@@ -186,14 +192,15 @@ function uploadWeddingMedia(payload) {
 
   const id = Utilities.getUuid();
   const safeGuest = guestName.replace(/[^a-zA-Z0-9 _.-]/g, '').trim().slice(0, 60) || 'Guest';
-  const storedName = safeGuest + ' - ' + id.slice(0, 8) + ' - ' + originalFileName;
+  const typePrefix = uploadType === 'Video Message' ? 'VIDEO MESSAGE' : 'MEMORY';
+  const storedName = typePrefix + ' - ' + safeGuest + ' - ' + id.slice(0, 8) + ' - ' + originalFileName;
 
   const blob = Utilities.newBlob(bytes, mimeType, storedName);
   const file = pendingFolder.createFile(blob);
   file.setDescription(
     'Wedding guest upload\n' +
     'Guest: ' + guestName + '\n' +
-    'Message: ' + message + '\n' +
+    'Upload Type: ' + uploadType + '\n' +
     'Status: Pending'
   );
 
@@ -204,7 +211,7 @@ function uploadWeddingMedia(payload) {
     id,
     new Date(),
     guestName,
-    message,
+    uploadType,
     originalFileName,
     mimeType,
     bytes.length,
@@ -218,6 +225,7 @@ function uploadWeddingMedia(payload) {
     ok: true,
     id: id,
     fileName: originalFileName,
+    uploadType: uploadType,
     status: 'Pending'
   };
 }
@@ -267,7 +275,7 @@ function handleUploadStatusEdit(e) {
     file.setDescription(
       'Wedding guest upload\n' +
       'Guest: ' + sheet.getRange(row, COL.guestName).getDisplayValue() + '\n' +
-      'Message: ' + sheet.getRange(row, COL.message).getDisplayValue() + '\n' +
+      'Upload Type: ' + sheet.getRange(row, COL.uploadType).getDisplayValue() + '\n' +
       'Status: ' + status
     );
   } catch (err) {
@@ -292,7 +300,7 @@ function getUploadQueue(status) {
       id: row[COL.id - 1],
       uploadedAt: row[COL.uploadedAt - 1],
       guestName: row[COL.guestName - 1],
-      message: row[COL.message - 1],
+      uploadType: row[COL.uploadType - 1],
       originalFileName: row[COL.originalFileName - 1],
       mimeType: row[COL.mimeType - 1],
       sizeBytes: row[COL.sizeBytes - 1],
