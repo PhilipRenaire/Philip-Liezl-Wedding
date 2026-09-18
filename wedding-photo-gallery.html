@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#4b245f">
+  <style>
+    :root {
+      --deep-purple: #4b245f;
+      --orchid: #7d4f8d;
+      --lavender: #d9c6e8;
+      --champagne: #efe2c8;
+      --gold: #c79e49;
+      --text: #3c2f35;
+      --cream: #fffaf0;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(217,198,232,.44), transparent 28%),
+        radial-gradient(circle at 96% 14%, rgba(239,226,200,.74), transparent 26%),
+        linear-gradient(180deg, #fffaf0 0%, #fff 46%, #fff8ee 100%);
+    }
+
+    a { color: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 68px;
+      padding: 12px clamp(18px, 4vw, 54px);
+      background: rgba(255,250,240,.92);
+      border-bottom: 1px solid rgba(199,158,73,.22);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      color: var(--deep-purple);
+      font-family: Georgia, serif;
+      font-size: 24px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: .02em;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .top-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .top-link.primary {
+      color: #fff;
+      background: var(--deep-purple);
+      border: 1px solid var(--deep-purple);
+    }
+
+    .top-link.secondary {
+      color: var(--deep-purple);
+      background: #fff;
+      border: 1px solid rgba(75,36,95,.20);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 76px 22px 48px;
+      text-align: center;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(1px);
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 280px;
+      height: 280px;
+      left: -110px;
+      top: -110px;
+      background: radial-gradient(circle, rgba(125,79,141,.18), transparent 68%);
+    }
+
+    .hero::after {
+      width: 320px;
+      height: 320px;
+      right: -130px;
+      bottom: -170px;
+      background: radial-gradient(circle, rgba(199,158,73,.18), transparent 68%);
+    }
+
+    .eyebrow {
+      margin: 0 0 11px;
+      color: var(--orchid);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--deep-purple);
+      font-family: Georgia, serif;
+      font-size: clamp(48px, 8vw, 86px);
+      line-height: 1.02;
+      font-weight: 500;
+    }
+
+    .hero-copy {
+      max-width: 700px;
+      margin: 18px auto 0;
+      font-size: 17px;
+      line-height: 1.75;
+      color: rgba(60,47,53,.78);
+    }
+
+    .gold-divider {
+      width: min(260px, 55vw);
+      height: 1px;
+      margin: 26px auto 0;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .controls {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 26px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      min-height: 42px;
+      padding: 10px 18px;
+      border: 1px solid rgba(75,36,95,.18);
+      border-radius: 999px;
+      background: rgba(255,255,255,.90);
+      color: var(--deep-purple);
+      font: 700 14px/1 Arial, sans-serif;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      color: #fff;
+      background: var(--deep-purple);
+      border-color: var(--deep-purple);
+    }
+
+    .status {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 28px;
+      min-height: 26px;
+      color: var(--deep-purple);
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .gallery {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto 82px;
+      columns: 3 300px;
+      column-gap: 16px;
+    }
+
+    .memory-card {
+      position: relative;
+      width: 100%;
+      margin: 0 0 16px;
+      break-inside: avoid;
+      overflow: hidden;
+      border: 1px solid rgba(199,158,73,.24);
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 15px 38px rgba(42,25,48,.10);
+      cursor: pointer;
+      transform: translateZ(0);
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .memory-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 21px 44px rgba(42,25,48,.15);
+    }
+
+    .memory-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 190px;
+      background: linear-gradient(135deg, #f6eff8, #fff8eb);
+      object-fit: cover;
+    }
+
+    .memory-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 15px 15px;
+    }
+
+    .memory-by {
+      color: rgba(60,47,53,.78);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .memory-kind {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(217,198,232,.35);
+      color: var(--deep-purple);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+    }
+
+    .play {
+      position: absolute;
+      inset: 0 0 48px;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+
+    .play span {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      padding-left: 3px;
+      border: 1px solid rgba(255,255,255,.58);
+      border-radius: 50%;
+      background: rgba(75,36,95,.82);
+      color: #fff;
+      font-size: 23px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.18);
+      backdrop-filter: blur(10px);
+    }
+
+    .empty {
+      width: min(720px, calc(100% - 32px));
+      margin: 18px auto 80px;
+      padding: 38px 28px;
+      border: 1px solid rgba(199,158,73,.25);
+      border-radius: 28px;
+      background: rgba(255,255,255,.92);
+      text-align: center;
+      box-shadow: 0 20px 55px rgba(42,25,48,.09);
+    }
+
+    .empty h2 {
+      margin: 0 0 10px;
+      color: var(--deep-purple);
+      font-family: Georgia, serif;
+      font-size: 30px;
+      font-weight: 500;
+    }
+
+    .empty p {
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .footer {
+      padding: 30px 20px 42px;
+      text-align: center;
+      color: rgba(60,47,53,.72);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(20,12,24,.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .lightbox.open { display: flex; }
+
+    .lightbox-panel {
+      position: relative;
+      width: min(1080px, 100%);
+      max-height: 92vh;
+      overflow: hidden;
+      border-radius: 24px;
+      background: #120e14;
+      box-shadow: 0 30px 90px rgba(0,0,0,.44);
+    }
+
+    .lightbox-media {
+      display: grid;
+      place-items: center;
+      min-height: 300px;
+      max-height: 82vh;
+      background: #120e14;
+    }
+
+    .lightbox-media img {
+      display: block;
+      max-width: 100%;
+      max-height: 82vh;
+      object-fit: contain;
+    }
+
+    .lightbox-media iframe {
+      width: 100%;
+      height: min(74vh, 720px);
+      border: 0;
+      background: #000;
+    }
+
+    .lightbox-caption {
+      padding: 13px 18px;
+      color: rgba(255,255,255,.86);
+      background: rgba(18,14,20,.98);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 50%;
+      background: rgba(0,0,0,.58);
+      color: #fff;
+      font-size: 25px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 680px) {
+      .topbar {
+        position: relative;
+        padding: 12px 14px;
+      }
+
+      .brand { font-size: 21px; }
+
+      .top-actions .secondary { display: none; }
+
+      .top-link {
+        min-height: 44px;
+        padding: 11px 14px;
+        font-size: 13px;
+      }
+
+      .hero {
+        padding: 52px 18px 38px;
+      }
+
+      .eyebrow { font-size: 13px; }
+
+      h1 {
+        font-size: clamp(47px, 14vw, 65px);
+      }
+
+      .hero-copy {
+        font-size: 17px;
+        line-height: 1.7;
+      }
+
+      .controls {
+        width: calc(100% - 20px);
+        margin-bottom: 22px;
+      }
+
+      .filter-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        font-size: 15px;
+      }
+
+      .gallery {
+        width: calc(100% - 20px);
+        columns: 2 150px;
+        column-gap: 10px;
+      }
+
+      .memory-card {
+        margin-bottom: 10px;
+        border-radius: 16px;
+      }
+
+      .memory-meta {
+        padding: 10px 11px 12px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .memory-by {
+        font-size: 12px;
+      }
+
+      .memory-kind {
+        font-size: 9px;
+      }
+
+      .play { inset: 0 0 70px; }
+
+      .play span {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+
+      .lightbox { padding: 10px; }
+
+      .lightbox-panel {
+        border-radius: 18px;
+      }
+
+      .lightbox-media iframe {
+        height: 68vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="https://philiprenaire.github.io/Philip-Liezl-Wedding/">P&amp;L</a>
+    <div class="top-actions">
+      <a class="top-link secondary" href="https://philiprenaire.github.io/Philip-Liezl-Wedding/">Wedding Home</a>
+      <a class="top-link primary" href="https://philiprenaire.github.io/Philip-Liezl-Wedding/share.html">Share Your Memories</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Philip &amp; Liezl · 10.19.2026</p>
+      <h1>Wedding Memories</h1>
+      <p class="hero-copy">A collection of beautiful moments shared by our family and friends. Every memory shown here has been personally approved by Philip &amp; Liezl.</p>
+      <div class="gold-divider"></div>
+    </section>
+
+    <div class="controls" aria-label="Gallery filters">
+      <button class="filter-btn active" type="button" data-filter="all">All Memories</button>
+      <button class="filter-btn" type="button" data-filter="photo">Photos</button>
+      <button class="filter-btn" type="button" data-filter="video">Videos</button>
+    </div>
+
+    <div id="galleryStatus" class="status">Loading approved wedding memories…</div>
+    <section id="gallery" class="gallery" aria-live="polite"></section>
+
+    <section id="emptyState" class="empty" hidden>
+      <h2>More memories are coming soon.</h2>
+      <p>Approved photos and videos will appear here as they are shared with us.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Philip &amp; Liezl · October 19, 2026 · Dahilayan Forest Park Resort<br>
+    Thank you for helping us preserve the memories of our day.
+  </footer>
+
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Wedding memory preview">
+    <div class="lightbox-panel">
+      <button id="closeLightbox" class="close-btn" type="button" aria-label="Close preview">×</button>
+      <div id="lightboxMedia" class="lightbox-media"></div>
+      <div id="lightboxCaption" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <script>
+    const gallery = document.getElementById('gallery');
+    const galleryStatus = document.getElementById('galleryStatus');
+    const emptyState = document.getElementById('emptyState');
+    const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
+    const lightbox = document.getElementById('lightbox');
+    const lightboxMedia = document.getElementById('lightboxMedia');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+    const closeLightbox = document.getElementById('closeLightbox');
+
+    let allItems = [];
+    let activeFilter = 'all';
+
+    google.script.run
+      .withSuccessHandler(items => {
+        allItems = Array.isArray(items) ? items : [];
+        galleryStatus.textContent = '';
+        renderGallery();
+      })
+      .withFailureHandler(error => {
+        galleryStatus.textContent = 'We could not load the gallery right now. Please refresh and try again.';
+        console.error(error);
+      })
+      .getPublicGallery();
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.filter;
+        filterButtons.forEach(item => item.classList.toggle('active', item === button));
+        renderGallery();
+      });
+    });
+
+    function renderGallery() {
+      const visibleItems = activeFilter === 'all'
+        ? allItems
+        : allItems.filter(item => item.kind === activeFilter);
+
+      gallery.innerHTML = '';
+
+      if (!visibleItems.length) {
+        emptyState.hidden = false;
+        if (allItems.length && activeFilter !== 'all') {
+          emptyState.querySelector('h2').textContent =
+            activeFilter === 'photo' ? 'No approved photos yet.' : 'No approved videos yet.';
+          emptyState.querySelector('p').textContent = 'Try another filter or check back again soon.';
+        } else {
+          emptyState.querySelector('h2').textContent = 'More memories are coming soon.';
+          emptyState.querySelector('p').textContent = 'Approved photos and videos will appear here as they are shared with us.';
+        }
+        return;
+      }
+
+      emptyState.hidden = true;
+
+      visibleItems.forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'memory-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', 'Open ' + item.kind + ' shared by ' + item.guestName);
+
+        const image = document.createElement('img');
+        image.src = item.thumbnailUrl;
+        image.alt = 'Wedding memory shared by ' + item.guestName;
+        image.loading = 'lazy';
+        image.referrerPolicy = 'no-referrer';
+
+        const meta = document.createElement('div');
+        meta.className = 'memory-meta';
+
+        const by = document.createElement('span');
+        by.className = 'memory-by';
+        by.textContent = 'Shared by ' + item.guestName;
+
+        const kind = document.createElement('span');
+        kind.className = 'memory-kind';
+        kind.textContent = item.kind === 'video' ? 'Video' : 'Photo';
+
+        meta.append(by, kind);
+        card.append(image);
+
+        if (item.kind === 'video') {
+          const play = document.createElement('div');
+          play.className = 'play';
+          play.innerHTML = '<span>▶</span>';
+          card.appendChild(play);
+        }
+
+        card.append(meta);
+
+        const open = () => openItem(item);
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            open();
+          }
+        });
+
+        gallery.appendChild(card);
+      });
+    }
+
+    function openItem(item) {
+      lightboxMedia.innerHTML = '';
+
+      if (item.kind === 'video') {
+        const iframe = document.createElement('iframe');
+        iframe.src = item.previewUrl;
+        iframe.allow = 'autoplay; fullscreen';
+        iframe.allowFullscreen = true;
+        iframe.title = 'Wedding video shared by ' + item.guestName;
+        lightboxMedia.appendChild(iframe);
+      } else {
+        const image = document.createElement('img');
+        image.src = item.previewUrl;
+        image.alt = 'Wedding memory shared by ' + item.guestName;
+        lightboxMedia.appendChild(image);
+      }
+
+      lightboxCaption.textContent = 'Shared by ' + item.guestName;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePreview() {
+      lightbox.classList.remove('open');
+      lightboxMedia.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    closeLightbox.addEventListener('click', closePreview);
+    lightbox.addEventListener('click', event => {
+      if (event.target === lightbox) closePreview();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && lightbox.classList.contains('open')) closePreview();
+    });
+  </script>
+</body>
+</html>
