@@ -662,6 +662,303 @@
     .hidden {
       display: none !important;
     }
+  
+    /* 2026-09-19: refined Details section */
+    #details.details-section {
+      position: relative;
+      padding-top: 96px !important;
+      padding-bottom: 104px !important;
+    }
+
+    #details .details-showcase {
+      width: min(100%, 1120px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    #details .details-date-card,
+    #details .details-dress-card {
+      min-height: 100%;
+      position: relative;
+      overflow: hidden;
+      padding: 42px 42px 38px !important;
+      border-radius: 32px !important;
+      border: 1px solid rgba(199, 158, 73, 0.32) !important;
+      box-shadow: 0 24px 66px rgba(36, 23, 38, 0.11) !important;
+    }
+
+    #details .details-date-card {
+      background:
+        radial-gradient(circle at 92% 5%, rgba(239, 226, 200, 0.42), transparent 31%),
+        radial-gradient(circle at 4% 96%, rgba(217, 198, 232, 0.18), transparent 31%),
+        linear-gradient(150deg, rgba(255,255,255,0.99), rgba(255,249,240,0.98)) !important;
+    }
+
+    #details .details-dress-card {
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(circle at 96% 4%, rgba(217, 198, 232, 0.32), transparent 34%),
+        linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,248,238,0.97)) !important;
+    }
+
+    #details .details-date-card::before,
+    #details .details-dress-card::before {
+      content: "";
+      position: absolute;
+      inset: 13px;
+      border: 1px solid rgba(199, 158, 73, 0.14);
+      border-radius: 24px;
+      pointer-events: none;
+    }
+
+    #details .detail-card-topline {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      margin-bottom: 13px;
+    }
+
+    #details .detail-card-topline::before,
+    #details .detail-card-topline::after {
+      content: "";
+      width: 42px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(199,158,73,.75));
+    }
+
+    #details .detail-card-topline::after {
+      background: linear-gradient(90deg, rgba(199,158,73,.75), transparent);
+    }
+
+    #details .detail-ornament {
+      color: #c79e49;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    #details .details-main-date {
+      position: relative;
+      z-index: 1;
+      display: block;
+      margin: 4px auto 4px !important;
+      text-align: center;
+      font-size: clamp(35px, 3.6vw, 48px) !important;
+    }
+
+    #details .detail-divider {
+      margin: 22px 0 6px !important;
+    }
+
+    #details .detail-venue-list {
+      margin-top: 12px !important;
+    }
+
+    #details .detail-venue-block {
+      padding: 28px 26px 8px !important;
+    }
+
+    #details .details-venue {
+      margin-bottom: 7px;
+      font-size: clamp(22px, 2.1vw, 28px) !important;
+      line-height: 1.25;
+    }
+
+    #details .detail-address {
+      margin-top: 0;
+      font-size: 16px;
+    }
+
+    #details .detail-card-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    #details .detail-more-button {
+      min-width: 176px;
+      padding: 13px 28px !important;
+      font-size: 14px;
+    }
+
+    #details .details-dress-card h3 {
+      position: relative;
+      z-index: 1;
+      margin: 3px 0 7px;
+      text-align: center;
+      font-size: 30px;
+    }
+
+    #details .dress-intro {
+      position: relative;
+      z-index: 1;
+      max-width: 430px;
+      margin: 0 auto 20px;
+      color: rgba(60, 47, 53, 0.76);
+      font-size: 15px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    #details .dress-code-groups {
+      position: relative;
+      z-index: 1;
+      grid-template-columns: 1fr !important;
+      gap: 12px;
+      margin-top: 0;
+    }
+
+    #details .dress-code-group {
+      padding: 15px 16px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.64);
+      border: 1px solid rgba(199,158,73,.18);
+    }
+
+    #details .dress-code-group > p {
+      font-size: 14px;
+      color: rgba(60,47,53,.78);
+    }
+
+    #details .dress-palette-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    #details .sponsor-palette {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    #details .swatch-chip {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+    }
+
+    #details .dress-swatch {
+      gap: 6px;
+    }
+
+    #details .dress-swatch span {
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    #details .detail-note {
+      position: relative;
+      z-index: 1;
+      margin: 16px auto 0 !important;
+      max-width: 460px;
+      font-size: 13px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    #details .details-dress-card .detail-card-actions {
+      margin-top: auto;
+      padding-top: 24px;
+    }
+
+    #details .dress-more-button {
+      background: #fffaf0 !important;
+      color: var(--deep-purple) !important;
+      border: 1px solid rgba(75,36,95,.24) !important;
+      box-shadow: 0 12px 28px rgba(75,36,95,.10) !important;
+    }
+
+    #details .dress-more-button:hover {
+      background: var(--deep-purple) !important;
+      color: #fff !important;
+      border-color: var(--deep-purple) !important;
+    }
+
+    @media (max-width: 900px) {
+      #details .details-showcase {
+        grid-template-columns: 1fr;
+        max-width: 720px;
+      }
+
+      #details .details-date-card,
+      #details .details-dress-card {
+        padding: 36px 28px 32px !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      #details.details-section {
+        padding: 72px 14px 80px !important;
+      }
+
+      #details .details-showcase {
+        gap: 18px;
+      }
+
+      #details .details-date-card,
+      #details .details-dress-card {
+        padding: 30px 18px 26px !important;
+        border-radius: 26px !important;
+      }
+
+      #details .details-date-card::before,
+      #details .details-dress-card::before {
+        inset: 9px;
+        border-radius: 20px;
+      }
+
+      #details .detail-venue-list {
+        grid-template-columns: 1fr !important;
+      }
+
+      #details .detail-venue-block {
+        padding: 22px 6px 8px !important;
+      }
+
+      #details .detail-venue-block + .detail-venue-block {
+        margin-top: 14px;
+        border-left: 0 !important;
+        border-top: 1px solid rgba(199,158,73,.24) !important;
+      }
+
+      #details .details-main-date {
+        font-size: 31px !important;
+      }
+
+      #details .details-venue {
+        font-size: 22px !important;
+      }
+
+      #details .dress-palette-grid,
+      #details .sponsor-palette {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #details .swatch-chip {
+        width: 54px;
+        height: 54px;
+      }
+
+      #details .dress-swatch span {
+        font-size: 12px;
+      }
+
+      #details .detail-card-actions {
+        margin-top: 24px;
+      }
+
+      #details .detail-more-button {
+        width: min(100%, 240px);
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -721,12 +1018,16 @@
       <div class="section-heading">
         <p class="eyebrow">Wedding Details</p>
         <h2>Ceremony & Celebration</h2>
-        <p class="section-subtitle">A cleaner guide to the most important details for our wedding day.</p>
+        <p class="section-subtitle">The essentials for our day, thoughtfully gathered in one elegant place.</p>
       </div>
 
-      <div class="details-layout">
-        <div class="card detail-feature-card">
-          <span class="details-label">Date</span>
+      <div class="details-showcase">
+        <article class="card detail-feature-card details-date-card">
+          <div class="detail-card-topline">
+            <span class="details-label">Our Wedding Day</span>
+            <span class="detail-ornament" aria-hidden="true">✦</span>
+          </div>
+
           <strong class="details-main-date">October 19, 2026</strong>
 
           <div class="detail-divider"></div>
@@ -744,64 +1045,75 @@
               <p class="detail-address">Dahilayan, Manolo Fortich, Bukidnon</p>
             </div>
           </div>
-        </div>
 
-  <div class="card detail-card-soft">
-  <div class="detail-icon">✦</div>
-  <h3>Dress Code</h3>
+          <div class="detail-card-actions">
+            <a href="wedding-details.html" class="btn primary detail-more-button">More Details</a>
+          </div>
+        </article>
 
-  <div class="dress-code-groups">
-    <div class="dress-code-group">
-      <span class="dress-code-label">Guests</span>
-      <p>Formal to semi-formal attire</p>
+        <article class="card detail-card-soft details-dress-card">
+          <div class="detail-card-topline">
+            <span class="details-label">Attire Guide</span>
+            <span class="detail-ornament" aria-hidden="true">✦</span>
+          </div>
 
-      <div class="dress-palette-grid">
-        <div class="dress-swatch">
-          <div class="swatch-chip swatch-dusty-rose"></div>
-          <span>Dusty Rose</span>
-        </div>
-        <div class="dress-swatch">
-          <div class="swatch-chip swatch-antique-rose"></div>
-          <span>Antique Rose</span>
-        </div>
-        <div class="dress-swatch">
-          <div class="swatch-chip swatch-blush-mauve"></div>
-          <span>Blush Mauve</span>
-        </div>
-      </div>
-    </div>
+          <h3>Dress Code</h3>
+          <p class="dress-intro">A soft, romantic palette chosen to complement our mountain celebration.</p>
 
-    <div class="dress-code-group">
-      <span class="dress-code-label">Principal Sponsors</span>
-      <p>Barong and Gown</p>
+          <div class="dress-code-groups">
+            <div class="dress-code-group">
+              <span class="dress-code-label">Guests</span>
+              <p>Formal to semi-formal attire</p>
 
-      <div class="dress-palette-grid">
-        <div class="dress-swatch">
-          <div class="swatch-chip swatch-champagne"></div>
-          <span>Champagne</span>
-        </div>
-        <div class="dress-swatch">
-          <div class="swatch-chip swatch-warm-beige"></div>
-          <span>Warm Beige / Nude</span>
-        </div>
-        <div class="dress-swatch">
-          <div class="swatch-chip swatch-soft-taupe"></div>
-          <span>Soft Taupe</span>
-        </div>
-        <div class="dress-swatch">
-          <div class="swatch-chip swatch-light-mocha"></div>
-          <span>Light Mocha</span>
-        </div>
-      </div>
-    </div>
-  </div>
+              <div class="dress-palette-grid">
+                <div class="dress-swatch">
+                  <div class="swatch-chip swatch-dusty-rose"></div>
+                  <span>Dusty Rose</span>
+                </div>
+                <div class="dress-swatch">
+                  <div class="swatch-chip swatch-antique-rose"></div>
+                  <span>Antique Rose</span>
+                </div>
+                <div class="dress-swatch">
+                  <div class="swatch-chip swatch-blush-mauve"></div>
+                  <span>Blush Mauve</span>
+                </div>
+              </div>
+            </div>
 
-  <p class="detail-note">
-    Guests: Please avoid deep purple, entourage colors, all-white outfits, and exact champagne gowns.
-  </p>
-</div>
-      <div class="detail-more-actions">
-        <a href="wedding-details.html" class="btn primary detail-more-button">More Details</a>
+            <div class="dress-code-group">
+              <span class="dress-code-label">Principal Sponsors</span>
+              <p>Barong and Gown</p>
+
+              <div class="dress-palette-grid sponsor-palette">
+                <div class="dress-swatch">
+                  <div class="swatch-chip swatch-champagne"></div>
+                  <span>Champagne</span>
+                </div>
+                <div class="dress-swatch">
+                  <div class="swatch-chip swatch-warm-beige"></div>
+                  <span>Warm Beige / Nude</span>
+                </div>
+                <div class="dress-swatch">
+                  <div class="swatch-chip swatch-soft-taupe"></div>
+                  <span>Soft Taupe</span>
+                </div>
+                <div class="dress-swatch">
+                  <div class="swatch-chip swatch-light-mocha"></div>
+                  <span>Light Mocha</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="detail-note">
+            Guests: Please avoid deep purple, entourage colors, all-white outfits, and exact champagne gowns.
+          </p>
+
+          <div class="detail-card-actions">
+            <a href="dress-code.html" class="btn secondary detail-more-button dress-more-button">More Details</a>
+          </div>
+        </article>
       </div>
     </section>
 
