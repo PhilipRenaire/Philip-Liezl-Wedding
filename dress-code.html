@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dress Code | Philip & Liezl</title>
+  <meta name="description" content="Wedding dress code and color palette for Philip and Liezl's celebration on October 19, 2026." />
+  <link rel="stylesheet" href="styles.css?v=dress-code-20260919" />
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(217,198,232,.34), transparent 28%),
+        radial-gradient(circle at 94% 14%, rgba(239,226,200,.68), transparent 28%),
+        linear-gradient(180deg, #fffaf0 0%, #fff 48%, #fff8ee 100%);
+    }
+
+    .dress-page-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 78px 22px 52px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.95), transparent 56%);
+    }
+
+    .dress-page-hero::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      width: min(300px, 55vw);
+      height: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, transparent, rgba(199,158,73,.78), transparent);
+    }
+
+    .dress-page-hero h1 {
+      margin: 4px 0 12px;
+      color: var(--deep-purple);
+      font-size: clamp(48px, 7vw, 76px);
+      line-height: 1.04;
+    }
+
+    .dress-page-hero .center-text {
+      max-width: 720px;
+      margin: 0 auto;
+      color: rgba(60,47,53,.78);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .dress-page-wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto 86px;
+    }
+
+    .dress-guide-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    .dress-guide-card {
+      position: relative;
+      overflow: hidden;
+      padding: 38px 38px 34px;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(217,198,232,.24), transparent 34%),
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,249,241,.98));
+      border: 1px solid rgba(199,158,73,.30);
+      box-shadow: 0 24px 64px rgba(36,23,38,.10);
+    }
+
+    .dress-guide-card::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(199,158,73,.13);
+      border-radius: 22px;
+      pointer-events: none;
+    }
+
+    .dress-guide-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .dress-guide-card h2 {
+      margin: 8px 0 8px;
+      text-align: center;
+      font-size: 34px;
+    }
+
+    .dress-type {
+      margin: 0 0 24px;
+      text-align: center;
+      color: rgba(60,47,53,.74);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .palette {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .palette.guest {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .palette.sponsor {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .palette-item {
+      padding: 14px 10px 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(199,158,73,.18);
+      text-align: center;
+    }
+
+    .palette-chip {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 10px;
+      border-radius: 22px;
+      border: 1px solid rgba(199,158,73,.25);
+      box-shadow: 0 10px 24px rgba(36,23,38,.08);
+      background-image:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.34), transparent 32%),
+        conic-gradient(from 180deg at 50% 50%, rgba(255,255,255,.10), rgba(0,0,0,.04), rgba(255,255,255,.18), rgba(0,0,0,.04), rgba(255,255,255,.10));
+    }
+
+    .dusty-rose { background-color:#c98d8a; }
+    .antique-rose { background-color:#b77f84; }
+    .blush-mauve { background-color:#b690a3; }
+    .champagne { background-color:#ead7b1; }
+    .warm-beige { background-color:#d8bda1; }
+    .soft-taupe { background-color:#b79f90; }
+    .light-mocha { background-color:#a98a77; }
+
+    .palette-name {
+      color: var(--deep-purple);
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .dress-note-panel {
+      margin-top: 26px;
+      padding: 26px 28px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(239,226,200,.38), transparent 34%),
+        rgba(255,255,255,.86);
+      border: 1px solid rgba(199,158,73,.24);
+      box-shadow: 0 18px 46px rgba(36,23,38,.08);
+      text-align: center;
+    }
+
+    .dress-note-panel h2 {
+      margin: 0 0 10px;
+      color: var(--deep-purple);
+      font-size: 30px;
+    }
+
+    .dress-note-panel p {
+      max-width: 760px;
+      margin: 0 auto;
+      color: rgba(60,47,53,.78);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .dress-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .screen-note {
+      margin-top: 16px;
+      color: rgba(60,47,53,.60);
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    @media (max-width: 820px) {
+      .dress-page-hero {
+        padding: 58px 18px 42px;
+      }
+
+      .dress-page-hero h1 {
+        font-size: 52px;
+      }
+
+      .dress-page-hero .center-text {
+        font-size: 16px;
+      }
+
+      .dress-guide-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dress-guide-card {
+        padding: 30px 22px 27px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .dress-page-wrap {
+        width: calc(100% - 20px);
+        margin-bottom: 60px;
+      }
+
+      .palette.guest,
+      .palette.sponsor {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .palette-chip {
+        width: 68px;
+        height: 68px;
+      }
+
+      .dress-note-panel {
+        padding: 22px 18px;
+      }
+
+      .dress-actions .btn {
+        width: min(100%, 260px);
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="index.html#home" class="logo" aria-label="Philip and Liezl wedding home">
+        <img src="assets/logo-pl.svg" alt="P&L" class="logo-image" />
+      </a>
+      <div class="nav-links" style="display:flex;">
+        <a href="index.html#details">Back to Details</a>
+        <a href="index.html#rsvp">RSVP</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="dress-page-hero">
+      <p class="eyebrow">Attire Guide</p>
+      <h1>Dress Code</h1>
+      <p class="center-text">
+        We chose a soft, romantic palette to complement the natural beauty of Dahilayan.
+        Thank you for helping us keep the celebration beautifully coordinated.
+      </p>
+    </section>
+
+    <section class="dress-page-wrap">
+      <div class="dress-guide-grid">
+        <article class="dress-guide-card">
+          <p class="eyebrow" style="text-align:center;">For Our Guests</p>
+          <h2>Formal to Semi-Formal</h2>
+          <p class="dress-type">Please choose from our dusty rose, antique rose, and blush mauve palette.</p>
+
+          <div class="palette guest">
+            <div class="palette-item">
+              <div class="palette-chip dusty-rose"></div>
+              <div class="palette-name">Dusty Rose</div>
+            </div>
+            <div class="palette-item">
+              <div class="palette-chip antique-rose"></div>
+              <div class="palette-name">Antique Rose</div>
+            </div>
+            <div class="palette-item">
+              <div class="palette-chip blush-mauve"></div>
+              <div class="palette-name">Blush Mauve</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="dress-guide-card">
+          <p class="eyebrow" style="text-align:center;">Principal Sponsors</p>
+          <h2>Barong and Gown</h2>
+          <p class="dress-type">A refined neutral palette of champagne, beige, taupe, and mocha.</p>
+
+          <div class="palette sponsor">
+            <div class="palette-item">
+              <div class="palette-chip champagne"></div>
+              <div class="palette-name">Champagne</div>
+            </div>
+            <div class="palette-item">
+              <div class="palette-chip warm-beige"></div>
+              <div class="palette-name">Warm Beige / Nude</div>
+            </div>
+            <div class="palette-item">
+              <div class="palette-chip soft-taupe"></div>
+              <div class="palette-name">Soft Taupe</div>
+            </div>
+            <div class="palette-item">
+              <div class="palette-chip light-mocha"></div>
+              <div class="palette-name">Light Mocha</div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="dress-note-panel">
+        <p class="eyebrow">A Gentle Reminder</p>
+        <h2>Colors to Please Avoid</h2>
+        <p>
+          For our guests, please avoid deep purple, entourage colors, all-white outfits,
+          and exact champagne gowns so the wedding party and principal sponsors remain visually distinct.
+        </p>
+      </div>
+
+      <p class="screen-note">Color appearance may vary slightly from one screen or fabric to another.</p>
+
+      <div class="dress-actions">
+        <a href="index.html#details" class="btn secondary">Back to Wedding Details</a>
+        <a href="index.html#rsvp" class="btn primary">RSVP</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
