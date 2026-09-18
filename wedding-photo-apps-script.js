@@ -4,9 +4,9 @@
  * Free Google Drive staging workflow:
  * Guest Upload -> Pending Uploads -> Approved / Rejected
  *
- * This version uses Google Drive resumable uploads so large files do not pass
- * through Apps Script as base64. Apps Script only creates the secure upload
- * session and logs the completed file.
+ * This version uses Google Drive resumable uploads with small chunks relayed
+ * through Apps Script. This avoids direct browser-to-Drive upload failures on
+ * mobile while still allowing files up to 1 GB.
  *
  * SETUP / UPDATE
  * 1. Paste this file into Code.gs in the wedding-media Apps Script project.
@@ -32,6 +32,7 @@ const CONFIG = {
   spreadsheetName: 'Wedding Photo Uploads',
   sheetName: 'Uploads',
   maxFileBytes: 1024 * 1024 * 1024, // 1 GB per individual file
+  maxChunkBytes: 4 * 1024 * 1024, // 4 MB chunks for mobile reliability
   allowedMimePrefixes: ['image/', 'video/'],
   allowedUploadTypes: ['Wedding Memory', 'Video Message']
 };
@@ -164,8 +165,8 @@ function setupWeddingPhotoSystem() {
 
 /**
  * Creates a Google Drive resumable upload session.
- * Only the small metadata request passes through Apps Script.
- * The guest's browser sends the actual file bytes directly to Google Drive.
+ * The browser then sends small base64 chunks to Apps Script, which forwards
+ * them to this Drive session. This avoids mobile cross-origin upload drops.
  */
 function beginWeddingMediaUpload(payload) {
   ensureSetup_();
@@ -230,6 +231,164 @@ function beginWeddingMediaUpload(payload) {
     uploadType: uploadType,
     maxFileBytes: CONFIG.maxFileBytes
   };
+}
+
+/**
+ * Relays one small resumable-upload chunk from the guest browser to Google Drive.
+ * This keeps the browser talking only to google.script.run instead of directly
+ * to the Drive resumable endpoint.
+ */
+function uploadWeddingMediaChunk(payload) {
+  ensureSetup_();
+
+  const sessionUrl = validateSessionUrl_(String(payload.sessionUrl || '').trim());
+  const start = Number(payload.start);
+  const total = Number(payload.total);
+  const mimeType = String(payload.mimeType || 'application/octet-stream').trim();
+  const base64 = String(payload.base64 || '').trim();
+
+  if (!Number.isFinite(start) || start < 0) {
+    throw new Error('Invalid upload position.');
+  }
+  if (!Number.isFinite(total) || total <= 0 || total > CONFIG.maxFileBytes) {
+    throw new Error('Invalid upload size.');
+  }
+  if (!base64) {
+    throw new Error('Upload chunk is empty.');
+  }
+
+  const bytes = Utilities.base64Decode(base64);
+  if (!bytes.length || bytes.length > CONFIG.maxChunkBytes) {
+    throw new Error('Upload chunk is too large.');
+  }
+
+  const end = start + bytes.length - 1;
+  if (end >= total) {
+    if (end !== total - 1) {
+      throw new Error('Upload chunk exceeds the declared file size.');
+    }
+  }
+
+  const response = UrlFetchApp.fetch(sessionUrl, {
+    method: 'put',
+    headers: {
+      Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
+      'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+      'Content-Type': mimeType
+    },
+    payload: bytes,
+    muteHttpExceptions: true,
+    followRedirects: false
+  });
+
+  const status = response.getResponseCode();
+
+  if (status === 200 || status === 201) {
+    let file = {};
+    try {
+      file = JSON.parse(response.getContentText() || '{}');
+    } catch (err) {
+      throw new Error('Google Drive completed the upload but returned an unreadable response.');
+    }
+
+    return {
+      ok: true,
+      done: true,
+      file: file,
+      nextByte: total
+    };
+  }
+
+  if (status === 308) {
+    const headers = response.getAllHeaders();
+    const rangeHeader = headers.Range || headers.range || '';
+    return {
+      ok: true,
+      done: false,
+      nextByte: getNextByteFromRange_(String(rangeHeader), start + bytes.length)
+    };
+  }
+
+  if ([429, 500, 502, 503, 504].includes(status)) {
+    throw new Error('Google Drive temporarily interrupted the upload.');
+  }
+
+  throw new Error('Google Drive upload failed (' + status + ').');
+}
+
+/**
+ * Checks how many bytes Google Drive has safely received for a resumable upload.
+ */
+function getWeddingMediaUploadStatus(payload) {
+  ensureSetup_();
+
+  const sessionUrl = validateSessionUrl_(String(payload.sessionUrl || '').trim());
+  const total = Number(payload.total);
+
+  if (!Number.isFinite(total) || total <= 0 || total > CONFIG.maxFileBytes) {
+    throw new Error('Invalid upload size.');
+  }
+
+  const response = UrlFetchApp.fetch(sessionUrl, {
+    method: 'put',
+    headers: {
+      Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
+      'Content-Range': 'bytes */' + total
+    },
+    payload: '',
+    muteHttpExceptions: true,
+    followRedirects: false
+  });
+
+  const status = response.getResponseCode();
+
+  if (status === 200 || status === 201) {
+    let file = {};
+    try {
+      file = JSON.parse(response.getContentText() || '{}');
+    } catch (err) {
+      throw new Error('Google Drive finished the upload but returned an unreadable response.');
+    }
+
+    return {
+      ok: true,
+      done: true,
+      file: file,
+      nextByte: total
+    };
+  }
+
+  if (status === 308) {
+    const headers = response.getAllHeaders();
+    const rangeHeader = headers.Range || headers.range || '';
+    return {
+      ok: true,
+      done: false,
+      nextByte: getNextByteFromRange_(String(rangeHeader), 0)
+    };
+  }
+
+  if (status === 404) {
+    throw new Error('The upload session expired. Please start the upload again.');
+  }
+
+  throw new Error('Could not resume the upload (' + status + ').');
+}
+
+function validateSessionUrl_(url) {
+  const allowed = /^https:\/\/www\.googleapis\.com\/upload\/drive\/v3\/files(?:\?|$)/i;
+  if (!allowed.test(url)) {
+    throw new Error('Invalid Google Drive upload session.');
+  }
+  return url;
+}
+
+function getNextByteFromRange_(rangeHeader, fallback) {
+  const match = /bytes=0-(\d+)/i.exec(String(rangeHeader || ''));
+  if (!match) return fallback;
+
+  const lastByte = Number(match[1]);
+  return Number.isFinite(lastByte) ? lastByte + 1 : fallback;
 }
 
 /**
