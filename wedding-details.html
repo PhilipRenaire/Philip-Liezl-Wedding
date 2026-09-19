@@ -111,6 +111,27 @@
       border: 1px solid rgba(75, 36, 95, 0.10);
     }
 
+    .detail-page-weather-wrap {
+      width: 100%;
+      margin: 0 auto 34px;
+    }
+
+    .detail-page-weather {
+      width: 100%;
+      text-align: center;
+      padding: 34px 40px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(217, 198, 232, 0.22), transparent 38%),
+        linear-gradient(180deg, #ffffff, #fff8ee);
+      border: 1px solid rgba(194, 148, 69, 0.26);
+    }
+
+    .detail-page-weather .detail-page-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 900px;
+      margin: 18px auto 0;
+    }
+
     .detail-page-block h2,
     .detail-page-block h3 {
       margin-top: 0;
@@ -197,6 +218,14 @@
       .detail-page-block {
         padding: 24px 20px;
       }
+
+      .detail-page-weather {
+        padding: 26px 20px;
+      }
+
+      .detail-page-weather .detail-page-list {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -219,7 +248,7 @@
       <h1 class="detail-page-script-title">
         <img src="assets/wedding-day-guide.svg" alt="Wedding Day Guide" />
       </h1>
-      <p class="center-text">Everything you need to know for our ceremony, reception, schedule, dress code, and important reminders.</p>
+      <p class="center-text">Everything you need to know for our ceremony, reception, schedule, and important reminders.</p>
     </section>
 
     <section class="detail-page-card">
@@ -243,17 +272,8 @@
         </article>
       </div>
 
-      <div class="detail-page-grid">
-        <article class="detail-page-block">
-          <span class="detail-page-kicker">Dress Code</span>
-          <h3>Formal to Semi-Formal</h3>
-          <ul class="detail-page-list">
-            <li>Guest colors: Dusty Rose, Antique Rose, or Blush Mauve.</li>
-            <li>Please avoid deep purple, entourage colors, all-white outfits, and exact champagne gowns.</li>
-          </ul>
-        </article>
-
-        <article class="detail-page-block">
+      <div class="detail-page-weather-wrap">
+        <article class="detail-page-block detail-page-weather">
           <span class="detail-page-kicker">Weather Reminder</span>
           <h3>Dahilayan Weather</h3>
           <ul class="detail-page-list">
