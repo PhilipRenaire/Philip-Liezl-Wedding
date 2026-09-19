@@ -741,3 +741,43 @@ if (rsvpDetailsForm) {
     }
   });
 }
+
+
+function updateLocationMapsFromCurrentPosition() {
+  const maps = Array.from(document.querySelectorAll('.live-directions-map'));
+  if (!maps.length || !('geolocation' in navigator)) return;
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const origin = `${position.coords.latitude},${position.coords.longitude}`;
+
+      maps.forEach((map) => {
+        const destination = map.dataset.destination;
+        if (!destination) return;
+
+        const params = new URLSearchParams({
+          output: 'embed',
+          saddr: origin,
+          daddr: destination,
+          dirflg: 'd'
+        });
+
+        map.src = `https://www.google.com/maps?${params.toString()}`;
+      });
+    },
+    () => {
+      // Keep the destination-only maps if the guest does not share location.
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 300000
+    }
+  );
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateLocationMapsFromCurrentPosition);
+} else {
+  updateLocationMapsFromCurrentPosition();
+}
