@@ -368,6 +368,44 @@
         font-size: 11px;
       }
     }
+
+    .share-nav-links .share-gallery-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 16px !important;
+      border: none !important;
+      border-radius: 999px !important;
+      background: var(--deep-purple) !important;
+      color: #ffffff !important;
+      box-shadow: 0 14px 34px rgba(75, 36, 95, 0.20);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .share-nav-links .share-gallery-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(75, 36, 95, 0.24);
+    }
+
+    .share-nav-links .share-gallery-link::after {
+      display: none !important;
+    }
+
+    @media (max-width: 860px) {
+      .share-nav-links .share-gallery-link {
+        min-height: 38px;
+        padding: 8px 10px !important;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .share-nav-links .share-gallery-link {
+        min-height: 36px;
+        padding: 7px 8px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -379,7 +417,7 @@
 
       <div class="share-nav-links">
         <a href="index.html">Back to Home</a>
-        <a href="gallery.html">Back to Gallery</a>
+        <a href="gallery.html" class="share-gallery-link">Back to Gallery</a>
       </div>
     </div>
   </nav>
