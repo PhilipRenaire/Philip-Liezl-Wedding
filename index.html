@@ -1115,6 +1115,7 @@
     }
 
     .gallery-action-card {
+      position: relative;
       width: 100%;
       max-width: 430px;
       min-height: 100%;
@@ -1122,23 +1123,79 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+      padding: 38px 34px 34px !important;
       text-align: center;
+      border: 1px solid rgba(199,158,73,.34) !important;
+      background:
+        radial-gradient(circle at 50% -8%, rgba(239,226,200,.48), transparent 38%),
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,250,240,.96)) !important;
+      box-shadow: 0 22px 54px rgba(36,23,38,.10) !important;
+    }
+
+    .gallery-action-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 94px;
+      height: 3px;
+      border-radius: 999px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, transparent, #c79e49 18%, #f0d783 50%, #c79e49 82%, transparent);
+    }
+
+    .gallery-action-icon {
+      width: 66px;
+      height: 66px;
+      margin: 0 auto 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #b98b2f;
+      background:
+        radial-gradient(circle at 35% 28%, rgba(255,255,255,.98), rgba(255,248,230,.96));
+      border: 1px solid rgba(199,158,73,.48);
+      box-shadow:
+        0 12px 28px rgba(199,158,73,.16),
+        inset 0 0 0 5px rgba(239,226,200,.28);
+    }
+
+    .gallery-action-icon svg {
+      width: 31px;
+      height: 31px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .gallery-action-card h3,
     .gallery-action-card p {
+      position: relative;
+      z-index: 1;
       width: 100%;
       text-align: center;
+    }
+
+    .gallery-action-card h3 {
+      margin-bottom: 10px;
+      font-size: 27px;
     }
 
     .gallery-action-card p {
       max-width: 340px;
       margin-left: auto;
       margin-right: auto;
+      line-height: 1.65;
     }
 
     .gallery-action-card .btn {
-      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+      margin-top: 12px;
     }
 
     #gallery .small-note {
@@ -1148,6 +1205,21 @@
     @media (max-width: 760px) {
       .gallery-action-grid {
         grid-template-columns: minmax(0, 430px) !important;
+      }
+
+      .gallery-action-card {
+        padding: 32px 24px 30px !important;
+      }
+
+      .gallery-action-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 17px;
+      }
+
+      .gallery-action-icon svg {
+        width: 28px;
+        height: 28px;
       }
     }
 
@@ -1520,12 +1592,29 @@
 
       <div class="details-grid gallery-action-grid" style="max-width:920px;margin:0 auto;">
         <div class="card gallery-action-card">
+          <div class="gallery-action-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <rect x="4.5" y="6.5" width="23" height="19" rx="3"></rect>
+              <circle cx="12" cy="13" r="2.2"></circle>
+              <path d="M7.5 22l6.2-6 4.1 3.8 2.8-2.6 4 4.8"></path>
+              <path d="M21.8 9.2h2.7"></path>
+            </svg>
+          </div>
           <h3>View Wedding Memories</h3>
           <p>Explore the photos and videos we’ve personally approved for our wedding gallery.</p>
           <a href="gallery.html" class="btn primary">Open Wedding Gallery</a>
         </div>
 
         <div class="card gallery-action-card">
+          <div class="gallery-action-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <path d="M16 21V7"></path>
+              <path d="M11 12l5-5 5 5"></path>
+              <path d="M7 18.5v5.2a2.8 2.8 0 0 0 2.8 2.8h12.4a2.8 2.8 0 0 0 2.8-2.8v-5.2"></path>
+              <path d="M10.2 16.2h-2a3 3 0 0 0-3 3v2"></path>
+              <path d="M21.8 16.2h2a3 3 0 0 1 3 3v2"></path>
+            </svg>
+          </div>
           <h3>Share Your Photos &amp; Videos</h3>
           <p>Upload your favorite moments and record a video message for Philip &amp; Liezl.</p>
           <a href="share.html" class="btn secondary">Share Your Memories</a>
