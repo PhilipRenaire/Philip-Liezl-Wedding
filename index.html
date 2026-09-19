@@ -439,6 +439,17 @@
       border-top: 0 !important;
     }
 
+    #details .detail-venue-illustration {
+      display: block;
+      width: min(100%, 230px);
+      height: 116px;
+      margin: 0 auto 14px;
+      object-fit: contain;
+      object-position: center;
+      opacity: 0.96;
+      mix-blend-mode: multiply;
+    }
+
     #details .detail-venue-block + .detail-venue-block {
       border-left: 1px solid rgba(199, 158, 73, 0.28);
     }
@@ -531,6 +542,12 @@
 
       #details .detail-venue-block {
         padding: 26px 8px 8px !important;
+      }
+
+      #details .detail-venue-illustration {
+        width: min(100%, 190px);
+        height: 96px;
+        margin-bottom: 12px;
       }
 
       #details .detail-venue-block + .detail-venue-block {
@@ -1131,12 +1148,30 @@
 
           <div class="detail-venue-list">
             <div class="detail-venue-block">
+              <img
+                src="assets/st-therese-chapel-sketch.webp"
+                alt="Purple pencil illustration of St. Therese of the Child Jesus Parish"
+                class="detail-venue-illustration"
+                width="700"
+                height="525"
+                loading="lazy"
+                decoding="async"
+              />
               <span class="details-label">Ceremony</span>
               <p class="details-venue">St. Therese of the Child Jesus Parish</p>
               <p class="detail-address">Dahilayan, Manolo Fortich, Bukidnon</p>
             </div>
 
             <div class="detail-venue-block">
+              <img
+                src="assets/dahilayan-forest-park-sketch.webp"
+                alt="Purple pencil illustration of Dahilayan Forest Park Resort"
+                class="detail-venue-illustration"
+                width="700"
+                height="525"
+                loading="lazy"
+                decoding="async"
+              />
               <span class="details-label">Reception</span>
               <p class="details-venue">Dahilayan Forest Park Resort</p>
               <p class="detail-address">Dahilayan, Manolo Fortich, Bukidnon</p>
