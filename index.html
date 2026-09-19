@@ -677,12 +677,12 @@
       display: grid;
       grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
       gap: 26px;
-      align-items: stretch;
+      align-items: start;
     }
 
     #details .details-date-card,
     #details .details-dress-card {
-      min-height: 100%;
+      min-height: auto;
       position: relative;
       overflow: hidden;
       padding: 42px 42px 38px !important;
@@ -692,6 +692,8 @@
     }
 
     #details .details-date-card {
+      align-self: start;
+      padding-bottom: 30px !important;
       background:
         radial-gradient(circle at 92% 5%, rgba(239, 226, 200, 0.42), transparent 31%),
         radial-gradient(circle at 4% 96%, rgba(217, 198, 232, 0.18), transparent 31%),
@@ -781,7 +783,7 @@
       z-index: 1;
       display: flex;
       justify-content: center;
-      margin-top: 30px;
+      margin-top: 24px;
     }
 
     #details .detail-more-button {
