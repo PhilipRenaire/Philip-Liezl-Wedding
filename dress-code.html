@@ -112,14 +112,31 @@
       z-index: 1;
     }
 
+    .dress-guide-card .eyebrow {
+      min-height: 18px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .dress-guide-card h2 {
+      min-height: 82px;
       margin: 8px 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
       font-size: 34px;
+      line-height: 1.15;
     }
 
     .dress-type {
+      min-height: 52px;
       margin: 0 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
       color: rgba(60,47,53,.74);
       font-size: 16px;
@@ -218,6 +235,12 @@
 
       .dress-guide-card {
         padding: 30px 22px 27px;
+      }
+
+      .dress-guide-card .eyebrow,
+      .dress-guide-card h2,
+      .dress-type {
+        min-height: auto;
       }
     }
 
