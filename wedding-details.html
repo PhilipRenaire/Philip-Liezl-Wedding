@@ -478,9 +478,26 @@
       }
 
       .detail-page-script-title {
-        width: min(96vw, 680px);
-        margin-top: 8px;
-        margin-bottom: 14px;
+        width: min(94vw, 680px);
+        margin: 10px auto 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 14px 18px;
+        border-radius: 20px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.92) 0%,
+          rgba(240, 232, 246, 0.90) 100%
+        );
+        box-shadow: 0 10px 28px rgba(75, 36, 95, 0.14);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+      }
+
+      .detail-page-script-title img {
+        width: 100%;
+        margin: 0 auto;
       }
 
       .detail-page-card {
