@@ -211,34 +211,47 @@ h3 {
 }
 
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
   border-radius: 999px;
-  padding: 14px 26px;
+  padding: 13px 28px;
   text-decoration: none;
-  border: 1px solid transparent;
+  text-align: center;
+  border: 2px solid #dcb333;
+  background: var(--deep-purple);
+  color: var(--white);
   cursor: pointer;
   font-family: Arial, sans-serif;
   font-weight: 700;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  box-shadow: 0 14px 34px rgba(75, 36, 95, 0.20), 0 0 0 1px rgba(242, 213, 107, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(75, 36, 95, 0.24), 0 0 0 1px rgba(242, 213, 107, 0.42);
 }
 
 .btn.primary,
-.hero .btn.primary {
+.btn.secondary,
+.hero .btn.primary,
+.hero .btn.secondary {
   background: var(--deep-purple) !important;
   color: var(--white) !important;
-  border-color: transparent !important;
-  box-shadow: var(--shadow) !important;
+  border: 2px solid #dcb333 !important;
+  box-shadow: 0 14px 34px rgba(75, 36, 95, 0.20), 0 0 0 1px rgba(242, 213, 107, 0.28) !important;
 }
 
-.btn.secondary,
-.hero .btn.secondary {
-  border-color: var(--champagne) !important;
-  color: var(--white) !important;
-  background: rgba(255, 255, 255, 0.12) !important;
+.btn.primary:hover,
+.btn.secondary:hover,
+.hero .btn.primary:hover,
+.hero .btn.secondary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(75, 36, 95, 0.24), 0 0 0 1px rgba(242, 213, 107, 0.42) !important;
 }
 
 .section {
