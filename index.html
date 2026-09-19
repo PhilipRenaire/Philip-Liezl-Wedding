@@ -677,7 +677,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
       gap: 26px;
-      align-items: start;
+      align-items: stretch;
     }
 
     #details .details-date-card,
@@ -692,8 +692,11 @@
     }
 
     #details .details-date-card {
-      align-self: start;
-      padding-bottom: 30px !important;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding-bottom: 38px !important;
       background:
         radial-gradient(circle at 92% 5%, rgba(239, 226, 200, 0.42), transparent 31%),
         radial-gradient(circle at 4% 96%, rgba(217, 198, 232, 0.18), transparent 31%),
@@ -703,6 +706,7 @@
     #details .details-dress-card {
       display: flex;
       flex-direction: column;
+      height: 100%;
       background:
         radial-gradient(circle at 96% 4%, rgba(217, 198, 232, 0.32), transparent 34%),
         linear-gradient(180deg, rgba(255,255,255,0.99), rgba(255,248,238,0.97)) !important;
@@ -763,6 +767,8 @@
       display: grid !important;
       grid-template-columns: 1fr !important;
       gap: 0 !important;
+      flex: 1 1 auto;
+      align-content: center;
       margin-top: 12px !important;
       border-top: 1px solid rgba(75, 36, 95, 0.10);
     }
@@ -796,6 +802,11 @@
       display: flex;
       justify-content: center;
       margin-top: 24px;
+    }
+
+    #details .details-date-card .detail-card-actions {
+      margin-top: auto;
+      padding-top: 24px;
     }
 
     #details .detail-more-button {
@@ -893,11 +904,18 @@
       #details .details-showcase {
         grid-template-columns: 1fr;
         max-width: 720px;
+        align-items: start;
       }
 
       #details .details-date-card,
       #details .details-dress-card {
+        height: auto;
         padding: 36px 28px 32px !important;
+      }
+
+      #details .detail-venue-list {
+        flex: initial;
+        align-content: initial;
       }
     }
 
