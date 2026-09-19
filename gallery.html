@@ -234,10 +234,11 @@
     .share-frame {
       display: block;
       width: 100%;
-      height: 1600px;
+      height: 900px;
       border: 0;
       background: transparent;
       transform: none;
+      transition: height 0.2s ease;
     }
 
     .share-fallback {
@@ -347,7 +348,7 @@
       }
 
       .share-frame {
-        height: 1800px;
+        height: 1000px;
         transform: none;
       }
     }
@@ -435,6 +436,7 @@
 
   <div class="share-frame-window">
     <iframe
+      id="weddingGalleryFrame"
       class="share-frame"
       src="https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec?page=gallery"
       title="Philip and Liezl Wedding Memories gallery"
@@ -448,6 +450,24 @@
     <p>Philip &amp; Liezl · October 19, 2026 · Dahilayan Forest Park Resort</p>
     <p>Thank you for being part of our story.</p>
   </footer>
+
+  <script>
+    (function () {
+      const frame = document.getElementById('weddingGalleryFrame');
+      if (!frame) return;
+
+      window.addEventListener('message', function (event) {
+        if (event.source !== frame.contentWindow) return;
+        const data = event.data || {};
+        if (data.type !== 'wedding-gallery-height') return;
+
+        const height = Number(data.height);
+        if (!Number.isFinite(height) || height < 200) return;
+
+        frame.style.height = Math.ceil(height) + 'px';
+      });
+    })();
+  </script>
 
   <noscript>
     <div class="share-fallback">
