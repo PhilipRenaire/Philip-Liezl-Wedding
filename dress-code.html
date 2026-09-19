@@ -27,16 +27,6 @@
         linear-gradient(180deg, #fffaf2 0%, #fffdf9 64%, #fff8ee 100%);
     }
 
-    .dress-page-hero::before {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      inset: 14px 0 0;
-      background: url("assets/logo-pl.svg") center 47% / min(250px, 34vw) auto no-repeat;
-      opacity: .035;
-      pointer-events: none;
-    }
-
     .dress-page-hero::after {
       content: "";
       position: absolute;
@@ -315,11 +305,6 @@
     @media (max-width: 820px) {
       .dress-page-hero {
         padding: 56px 18px 46px;
-      }
-
-      .dress-page-hero::before {
-        background-size: 190px auto;
-        opacity: .028;
       }
 
       .dress-hero-corner {
