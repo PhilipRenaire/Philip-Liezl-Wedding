@@ -661,6 +661,34 @@
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && lightbox.classList.contains('open')) closePreview();
     });
+
+
+    function reportGalleryHeight() {
+      requestAnimationFrame(() => {
+        const height = Math.max(
+          document.body ? document.body.scrollHeight : 0,
+          document.documentElement ? document.documentElement.scrollHeight : 0
+        );
+
+        window.parent.postMessage({
+          type: 'wedding-gallery-height',
+          height: height
+        }, '*');
+      });
+    }
+
+    window.addEventListener('load', reportGalleryHeight);
+    window.addEventListener('resize', reportGalleryHeight);
+    document.addEventListener('load', event => {
+      if (event.target && event.target.tagName === 'IMG') reportGalleryHeight();
+    }, true);
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(reportGalleryHeight).observe(document.body);
+    }
+
+    setTimeout(reportGalleryHeight, 150);
+    setTimeout(reportGalleryHeight, 600);
   </script>
 </body>
 </html>
