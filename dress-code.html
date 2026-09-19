@@ -34,6 +34,14 @@
       background: linear-gradient(90deg, transparent, rgba(199,158,73,.78), transparent);
     }
 
+    @font-face {
+      font-family: "Citadel Script Std";
+      src: local("Citadel Script Std"), local("CitadelScriptStd");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
     .dress-page-hero h1 {
       margin: 4px 0 12px;
       color: var(--deep-purple);
@@ -42,16 +50,17 @@
     }
 
     .dress-page-title {
-      width: min(92vw, 620px);
+      width: auto;
       margin: 2px auto 10px !important;
-      line-height: 0 !important;
-    }
-
-    .dress-page-title img {
-      display: block;
-      width: 100%;
-      height: auto;
-      margin: 0 auto;
+      color: var(--deep-purple) !important;
+      font-family: "Citadel Script Std", cursive !important;
+      font-size: clamp(64px, 9vw, 108px) !important;
+      font-weight: 400 !important;
+      font-style: normal !important;
+      line-height: 1.06 !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      text-align: center;
     }
 
     .dress-page-hero .center-text {
@@ -195,7 +204,9 @@
       }
 
       .dress-page-title {
-        width: min(94vw, 520px);
+        width: auto;
+        font-size: clamp(58px, 16vw, 82px) !important;
+        line-height: 1.08 !important;
       }
 
       .dress-page-hero .center-text {
@@ -332,7 +343,7 @@
   <main>
     <section class="dress-page-hero">
       <p class="eyebrow">Attire Guide</p>
-      <h1 class="dress-page-title"><img src="assets/dress-code-citadel.svg" alt="Dress Code" /></h1>
+      <h1 class="dress-page-title">Dress Code</h1>
       <p class="center-text">
         We chose a soft, romantic palette to complement the natural beauty of Dahilayan.
         Thank you for helping us keep the celebration beautifully coordinated.
