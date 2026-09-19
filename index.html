@@ -1103,6 +1103,43 @@
       }
     }
 
+
+    .gallery-action-grid {
+      justify-items: center;
+      align-items: stretch;
+    }
+
+    .gallery-action-card {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .gallery-action-card h3,
+    .gallery-action-card p {
+      width: 100%;
+      text-align: center;
+    }
+
+    .gallery-action-card p {
+      max-width: 340px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .gallery-action-card .btn {
+      margin-top: 8px;
+    }
+
+    #gallery .small-note {
+      text-align: center;
+    }
+
   </style>
 </head>
 <body>
@@ -1445,14 +1482,14 @@
         </p>
       </div>
 
-      <div class="details-grid" style="max-width:920px;margin:0 auto;">
-        <div class="card" style="text-align:center;">
+      <div class="details-grid gallery-action-grid" style="max-width:920px;margin:0 auto;">
+        <div class="card gallery-action-card">
           <h3>View Wedding Memories</h3>
           <p>Explore the photos and videos we’ve personally approved for our wedding gallery.</p>
           <a href="gallery.html" class="btn primary">Open Wedding Gallery</a>
         </div>
 
-        <div class="card" style="text-align:center;">
+        <div class="card gallery-action-card">
           <h3>Share Your Photos &amp; Videos</h3>
           <p>Upload your favorite moments and record a video message for Philip &amp; Liezl.</p>
           <a href="share.html" class="btn secondary">Share Your Memories</a>
