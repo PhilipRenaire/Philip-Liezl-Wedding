@@ -772,6 +772,31 @@
       }
     }
 
+
+    @media (min-width: 861px) {
+      .site-header .dress-page-nav a {
+        position: relative;
+        text-decoration: none !important;
+      }
+
+      .site-header .dress-page-nav a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -5px;
+        height: 2px;
+        background: #7d4f8d;
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 0.2s ease;
+      }
+
+      .site-header .dress-page-nav a:hover::after {
+        transform: scaleX(1);
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -781,8 +806,8 @@
         <img src="assets/logo-pl.svg" alt="P&L" class="logo-image" />
       </a>
       <div class="nav-links dress-page-nav">
-        <a href="index.html#details">Back to Details</a>
         <a href="index.html#rsvp">RSVP</a>
+        <a href="index.html#details">Back to Details</a>
       </div>
     </nav>
   </header>
