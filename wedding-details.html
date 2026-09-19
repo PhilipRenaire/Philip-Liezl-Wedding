@@ -468,13 +468,22 @@
 
     @media (max-width: 860px) {
       .detail-page-hero {
-        min-height: 300px;
-        padding: 64px 20px 40px;
+        width: 100%;
+        min-height: clamp(360px, 108vw, 500px);
+        padding: 72px 20px 48px;
+        background-size: cover;
         background-position: center center;
       }
 
       .detail-page-hero::before {
+        background-size: cover;
         background-position: center center;
+      }
+
+      .detail-page-hero .center-text {
+        width: min(100%, 620px);
+        margin-left: auto;
+        margin-right: auto;
       }
 
       .detail-page-script-title {
@@ -622,6 +631,28 @@
         gap: 7px;
       }
     }
+
+    @media (max-width: 520px) {
+      .detail-page-hero {
+        min-height: clamp(400px, 126vw, 500px);
+        padding: 76px 18px 46px;
+      }
+
+      .detail-page-hero,
+      .detail-page-hero::before {
+        background-position: center center;
+      }
+
+      .detail-page-script-title {
+        width: min(92vw, 520px);
+      }
+
+      .detail-page-hero .center-text {
+        font-size: 15px;
+        line-height: 1.65;
+      }
+    }
+
     /* Match the Dress Code page header buttons on phones. */
     @media (max-width: 860px) {
       .site-header .navbar {
