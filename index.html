@@ -760,11 +760,23 @@
     }
 
     #details .detail-venue-list {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
       margin-top: 12px !important;
+      border-top: 1px solid rgba(75, 36, 95, 0.10);
     }
 
     #details .detail-venue-block {
-      padding: 28px 26px 8px !important;
+      padding: 26px 26px 22px !important;
+      text-align: center;
+      border-top: 0 !important;
+    }
+
+    #details .detail-venue-block + .detail-venue-block {
+      margin-top: 0 !important;
+      border-left: 0 !important;
+      border-top: 1px solid rgba(199, 158, 73, 0.28) !important;
     }
 
     #details .details-venue {
