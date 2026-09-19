@@ -30,7 +30,7 @@
       z-index: 20;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: space-between;
       gap: 18px;
       padding: 14px 22px;
       background: rgba(255, 250, 240, 0.94);
@@ -51,6 +51,28 @@
       display: block;
       width: 84px;
       height: auto;
+    }
+
+    .share-nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 18px;
+      margin-left: auto;
+    }
+
+    .share-nav-links a {
+      color: var(--dark);
+      text-decoration: none;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .share-nav-links a:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
     }
 
     .share-frame {
@@ -78,6 +100,15 @@
         width: 62px;
       }
 
+      .share-nav-links {
+        gap: 12px;
+      }
+
+      .share-nav-links a {
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
       .share-frame {
         height: 1460px;
       }
@@ -89,6 +120,11 @@
     <a class="share-brand" href="index.html" aria-label="Philip and Liezl home">
       <img src="assets/logo-pl.svg" alt="Philip &amp; Liezl" />
     </a>
+
+    <div class="share-nav-links">
+      <a href="index.html">Back to Home</a>
+      <a href="gallery.html">Back to Gallery</a>
+    </div>
   </nav>
 
   <iframe
