@@ -380,16 +380,12 @@
       }
     }
 
-    .share-nav-links a:last-child {
-      background: var(--deep-purple);
-      color: #ffffff;
-      border: 1px solid var(--deep-purple);
-      border-radius: 999px;
-      padding: 8px 14px;
-    }
-
-    .share-nav-links a:last-child::after {
-      display: none;
+    @media (max-width: 860px) {
+      .share-nav-links a:last-child {
+        background: var(--deep-purple);
+        color: #ffffff;
+        border-color: var(--deep-purple);
+      }
     }
 
   </style>
