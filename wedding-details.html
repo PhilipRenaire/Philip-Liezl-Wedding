@@ -158,18 +158,43 @@
 
     .detail-page-reception {
       width: 100%;
-      text-align: center;
-      padding: 34px 40px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(239,226,200,.26), transparent 42%),
-        linear-gradient(180deg, #ffffff, #fff8ee);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0;
+      align-items: stretch;
+      padding: 0;
+      overflow: hidden;
+      text-align: left;
+      border-radius: 28px;
+      background: linear-gradient(180deg, #ffffff, #fff8ee);
       border: 1px solid rgba(194, 148, 69, 0.26);
     }
 
+    .detail-page-reception-content {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
     .detail-page-reception p {
-      max-width: 820px;
-      margin-left: auto;
-      margin-right: auto;
+      max-width: none;
+      margin: 8px 0;
+    }
+
+    .detail-page-reception-image {
+      min-height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .detail-page-reception-image img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      object-fit: cover;
+      object-position: center;
     }
 
     .detail-page-entourage {
@@ -215,7 +240,8 @@
       margin-top: 0;
     }
 
-    .detail-page-ceremony h2 {
+    .detail-page-ceremony h2,
+    .detail-page-reception h2 {
       font-size: 30px;
       line-height: 1.18;
     }
@@ -323,7 +349,22 @@
       }
 
       .detail-page-reception {
-        padding: 26px 20px;
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding: 0;
+      }
+
+      .detail-page-reception-content {
+        padding: 24px 20px;
+      }
+
+      .detail-page-reception-image {
+        min-height: 280px;
+      }
+
+      .detail-page-reception-image img {
+        min-height: 260px;
+        aspect-ratio: 4 / 3;
       }
 
       .detail-page-entourage {
@@ -404,13 +445,23 @@
 
 
       <div class="detail-page-reception-wrap">
-        <article class="detail-page-block detail-page-reception">
-          <span class="detail-page-kicker">Reception</span>
-          <h2>Dahilayan Forest Park Resort</h2>
-          <p><strong>Location:</strong> Dahilayan, Manolo Fortich, Bukidnon</p>
-          <p><strong>Reception Dinner:</strong> 6:00 PM</p>
-          <p>After the ceremony, guests may proceed to the reception venue for cocktails, dinner, and celebration.</p>
-          <a class="btn secondary" href="https://www.google.com/maps/search/?api=1&query=Dahilayan%20Forest%20Park%20Resort%2C%20Dahilayan%2C%20Manolo%20Fortich%2C%20Bukidnon" target="_blank" rel="noopener">Open Reception Map</a>
+        <article class="detail-page-reception">
+          <div class="detail-page-reception-content">
+            <span class="detail-page-kicker">Reception</span>
+            <h2>Dahilayan Forest Park Resort</h2>
+            <p><strong>Location:</strong> Dahilayan, Manolo Fortich, Bukidnon</p>
+            <p><strong>Reception Dinner:</strong> 6:30 PM</p>
+            <p>After the ceremony, guests may proceed to the reception venue for cocktails, dinner, and celebration.</p>
+            <a class="btn secondary" href="https://www.google.com/maps/search/?api=1&query=Dahilayan%20Forest%20Park%20Resort%2C%20Dahilayan%2C%20Manolo%20Fortich%2C%20Bukidnon" target="_blank" rel="noopener">Open Reception Map</a>
+          </div>
+          <div class="detail-page-reception-image" aria-label="Dahilayan Forest Park Resort">
+            <img
+              src="assets/dahilayan-forest-park-reception.png"
+              alt="Dahilayan Forest Park Resort entrance"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
         </article>
       </div>
 
