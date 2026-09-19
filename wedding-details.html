@@ -622,6 +622,84 @@
         gap: 7px;
       }
     }
+    /* Match the Dress Code page header buttons on phones. */
+    @media (max-width: 860px) {
+      .site-header .navbar {
+        width: 100%;
+        min-height: 64px;
+        padding: 11px 14px;
+        gap: 10px;
+      }
+
+      .site-header .logo,
+      .site-header .logo-image {
+        width: 70px;
+      }
+
+      .site-header .logo {
+        height: auto;
+        flex: 0 0 70px;
+      }
+
+      .site-header .dress-page-nav {
+        position: static !important;
+        inset: auto !important;
+        display: flex !important;
+        flex: 1 1 auto;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        min-width: 0;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
+      .site-header .dress-page-nav a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 8px 10px;
+        border: 1px solid rgba(75,36,95,.14);
+        border-radius: 999px;
+        background: rgba(255,255,255,.58);
+        color: var(--deep-purple);
+        font-size: 12px;
+        line-height: 1.1;
+        text-align: center;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .site-header .navbar {
+        padding-left: 10px;
+        padding-right: 10px;
+        gap: 7px;
+      }
+
+      .site-header .logo,
+      .site-header .logo-image {
+        width: 62px;
+      }
+
+      .site-header .logo {
+        flex-basis: 62px;
+      }
+
+      .site-header .dress-page-nav {
+        gap: 6px;
+      }
+
+      .site-header .dress-page-nav a {
+        min-height: 36px;
+        padding: 7px 8px;
+        font-size: 11px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -630,7 +708,7 @@
       <a href="index.html#home" class="logo" aria-label="Philip and Liezl wedding home">
         <img src="assets/logo-pl.svg" alt="P&L" class="logo-image" />
       </a>
-      <div class="nav-links" style="display:flex;">
+      <div class="nav-links dress-page-nav">
         <a href="index.html#details">Back to Details</a>
         <a href="index.html#rsvp">RSVP</a>
       </div>
