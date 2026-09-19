@@ -762,9 +762,12 @@ function applyCurrentLocationToVenueMaps(position) {
     if (!destination) return;
 
     const params = new URLSearchParams({
+      f: 'd',
+      source: 's_d',
       saddr: origin,
       daddr: destination,
       dirflg: 'd',
+      z: '11',
       output: 'embed'
     });
 
