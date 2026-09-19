@@ -62,19 +62,30 @@
     }
 
     .share-nav-links a {
+      position: relative;
       color: var(--dark);
-      text-decoration: none;
+      text-decoration: none !important;
       font-family: Georgia, "Times New Roman", serif;
       font-size: 15px;
       font-weight: 400;
       line-height: 1.4;
     }
 
-    .share-nav-links a:hover {
-      text-decoration: underline;
-      text-decoration-color: #b99ac8;
-      text-decoration-thickness: 2px;
-      text-underline-offset: 4px;
+    .share-nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -5px;
+      height: 2px;
+      background: #7d4f8d;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.2s ease;
+    }
+
+    .share-nav-links a:hover::after {
+      transform: scaleX(1);
     }
 
     .share-frame {
