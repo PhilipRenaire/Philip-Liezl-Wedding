@@ -380,26 +380,30 @@
       }
     }
 
-    @media (max-width: 860px) {
-      .share-nav-links a:last-child {
-        background: var(--deep-purple);
-        color: #ffffff;
-        border-color: var(--deep-purple);
-      }
+    .share-nav-links .gallery-share-link {
+      background: transparent !important;
+      color: var(--dark) !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
     }
 
+    .share-nav-links .gallery-share-link::after {
+      display: block;
+    }
 
-    @media (min-width: 861px) {
-      .share-nav-links a:last-child {
-        background: transparent !important;
-        color: var(--dark) !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        padding: 0 !important;
+    @media (max-width: 860px) {
+      .share-nav-links .gallery-share-link {
+        min-height: 38px;
+        padding: 8px 10px !important;
+        border: 1px solid var(--deep-purple) !important;
+        border-radius: 999px !important;
+        background: var(--deep-purple) !important;
+        color: #ffffff !important;
       }
 
-      .share-nav-links a:last-child::after {
-        display: block;
+      .share-nav-links .gallery-share-link::after {
+        display: none;
       }
     }
 
@@ -414,7 +418,7 @@
 
       <div class="share-nav-links">
         <a href="index.html">Back to Home</a>
-        <a href="share.html">Share Memories</a>
+        <a href="share.html" class="gallery-share-link">Share Memories</a>
       </div>
     </div>
   </nav>
