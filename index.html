@@ -1151,6 +1151,31 @@
       }
     }
 
+
+    @media (min-width: 861px) {
+      .site-header .nav-links a {
+        position: relative;
+        text-decoration: none !important;
+      }
+
+      .site-header .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -5px;
+        height: 2px;
+        background: #7d4f8d;
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 0.2s ease;
+      }
+
+      .site-header .nav-links a:hover::after {
+        transform: scaleX(1);
+      }
+    }
+
   </style>
 </head>
 <body>
