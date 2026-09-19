@@ -5,54 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Share Your Memories | Philip & Liezl</title>
   <meta name="description" content="Share your wedding photos and videos with Philip and Liezl." />
-  <meta http-equiv="refresh" content="0;url=https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec" />
-  <link rel="stylesheet" href="styles.css?v=photo-share-live-20260919" />
+  <link rel="stylesheet" href="styles.css?v=photo-share-nav-20260920" />
   <style>
+    html,
     body {
-      min-height: 100vh;
       margin: 0;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      text-align: center;
+      min-height: 100%;
       background:
-        radial-gradient(circle at 12% 6%, rgba(217, 198, 232, 0.34), transparent 30%),
-        radial-gradient(circle at 90% 92%, rgba(239, 226, 200, 0.70), transparent 32%),
+        radial-gradient(circle at 12% 6%, rgba(217, 198, 232, 0.30), transparent 30%),
+        radial-gradient(circle at 90% 92%, rgba(239, 226, 200, 0.60), transparent 32%),
         linear-gradient(180deg, #fffaf0 0%, #ffffff 50%, #fff8ee 100%);
     }
 
-    .redirect-card {
-      width: min(100%, 620px);
-      padding: 42px 28px;
-      border-radius: 30px;
-      background: rgba(255,255,255,.94);
-      border: 1px solid rgba(199,158,73,.30);
-      box-shadow: 0 24px 70px rgba(36,23,38,.12);
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
     }
 
-    .redirect-card h1 {
-      margin: 8px 0 14px;
-      color: var(--deep-purple);
+    .share-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(255, 250, 240, 0.94);
+      border-bottom: 1px solid rgba(199, 158, 73, 0.24);
+      box-shadow: 0 10px 30px rgba(36, 23, 38, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
-    .redirect-card p {
-      line-height: 1.7;
+    .share-nav .btn {
+      min-width: 150px;
     }
 
-    .redirect-card .btn {
-      margin-top: 12px;
+    .share-nav .btn.secondary {
+      background: #ffffff !important;
+      color: var(--deep-purple) !important;
+    }
+
+    .share-frame {
+      display: block;
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: calc(100vh - 78px);
+      min-height: calc(100dvh - 78px);
+      border: 0;
+      background: transparent;
+    }
+
+    .share-fallback {
+      display: none;
+      padding: 28px 18px 40px;
+      text-align: center;
+    }
+
+    @media (max-width: 620px) {
+      .share-nav {
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .share-nav .btn {
+        min-width: 0;
+        flex: 1 1 0;
+        padding: 13px 12px !important;
+        font-size: 14px;
+      }
+
+      .share-frame {
+        min-height: calc(100dvh - 72px);
+      }
     }
   </style>
-  <script>
-    window.location.replace("https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec");
-  </script>
 </head>
 <body>
-  <main class="redirect-card">
-    <p class="eyebrow">Wedding Memories</p>
-    <h1>Opening Photo & Video Upload</h1>
-    <p>If the upload page does not open automatically, tap the button below.</p>
-    <a class="btn primary" href="https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec">Open Upload Page</a>
-  </main>
+  <nav class="share-nav" aria-label="Share memories navigation">
+    <a class="btn secondary" href="index.html">Back to Home</a>
+    <a class="btn primary" href="gallery.html">Back to Gallery</a>
+  </nav>
+
+  <iframe
+    class="share-frame"
+    src="https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec"
+    title="Share Your Memories upload form"
+    loading="eager"
+    allow="camera; microphone"
+  ></iframe>
+
+  <noscript>
+    <div class="share-fallback">
+      <p>Please enable JavaScript to use the upload form.</p>
+      <a class="btn primary" href="https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec">Open Upload Page</a>
+    </div>
+  </noscript>
 </body>
 </html>
