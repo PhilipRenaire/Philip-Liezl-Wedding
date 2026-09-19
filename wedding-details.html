@@ -277,8 +277,21 @@
     }
 
     .detail-page-weather-wrap {
+      position: relative;
       width: 100%;
-      margin: 0 auto 34px;
+      margin: 42px auto 34px;
+      padding-top: 36px;
+    }
+
+    .detail-page-weather-wrap::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: min(420px, 72%);
+      height: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, transparent, rgba(199, 158, 73, 0.88), transparent);
     }
 
     .detail-page-weather {
@@ -564,6 +577,15 @@
 
       .detail-page-entourage img {
         border-radius: 16px;
+      }
+
+      .detail-page-weather-wrap {
+        margin-top: 32px;
+        padding-top: 28px;
+      }
+
+      .detail-page-weather-wrap::before {
+        width: min(280px, 76%);
       }
 
       .detail-page-weather {
