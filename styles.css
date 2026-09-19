@@ -837,3 +837,114 @@ summary {
     padding: 70px 20px;
   }
 }
+
+
+/* Homepage alternating luxury section backgrounds */
+#story,
+#details,
+#location,
+#rsvp,
+#seating,
+#gallery,
+#faqs {
+  max-width: none;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Keep homepage section content aligned while backgrounds span edge to edge. */
+#story > *,
+#location > *,
+#seating > *,
+#gallery > *,
+#faqs > * {
+  width: min(100%, 1180px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Light sections */
+#story,
+#location,
+#seating,
+#faqs {
+  background:
+    radial-gradient(circle at 10% 12%, rgba(217, 198, 232, 0.16), transparent 28%),
+    radial-gradient(circle at 90% 86%, rgba(239, 226, 200, 0.34), transparent 30%),
+    linear-gradient(180deg, #fffdf9 0%, #fffaf3 50%, #fffefb 100%) !important;
+}
+
+/* Slightly darker sections */
+#details,
+#rsvp,
+#gallery {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.38), transparent 28%),
+    radial-gradient(circle at 88% 90%, rgba(199, 158, 73, 0.10), transparent 30%),
+    linear-gradient(180deg, #eee5f0 0%, #e8dce9 52%, #efe5da 100%) !important;
+}
+
+/* Fine gold transitions keep the alternating sections polished and cohesive. */
+#story::before,
+#details::before,
+#location::before,
+#rsvp::before,
+#seating::before,
+#gallery::before,
+#faqs::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 50%;
+  width: min(92%, 1120px);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(199, 158, 73, 0.30) 24%,
+    rgba(199, 158, 73, 0.30) 76%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+#story > *,
+#details > *,
+#location > *,
+#rsvp > *,
+#seating > *,
+#gallery > *,
+#faqs > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Preserve the Wedding Details decorative inner frame above the new background. */
+#details.details-section::after {
+  z-index: 1;
+}
+
+/* Cards on darker sections get a softer ivory surface for contrast. */
+#rsvp .rsvp-card,
+#gallery .gallery-action-card {
+  background:
+    radial-gradient(circle at 50% -8%, rgba(239, 226, 200, 0.42), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,250,240,.97)) !important;
+  border-color: rgba(199,158,73,.28) !important;
+  box-shadow: 0 24px 58px rgba(50, 33, 54, 0.13) !important;
+}
+
+@media (max-width: 860px) {
+  #story,
+  #details,
+  #location,
+  #rsvp,
+  #seating,
+  #gallery,
+  #faqs {
+    background-attachment: scroll !important;
+  }
+}
