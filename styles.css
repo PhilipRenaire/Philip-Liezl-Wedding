@@ -506,12 +506,42 @@ h3 {
 
 .location-guide-list {
   display: grid;
-  gap: 28px;
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.location-guide-list .location-card {
+  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
+  align-items: stretch;
+}
+
+.location-guide-list .location-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 380px;
+  padding: 44px 42px;
+}
+
+.location-guide-list .location-copy h3 {
+  margin: 0 0 16px;
+  font-size: clamp(27px, 2.6vw, 34px);
+  line-height: 1.18;
+}
+
+.location-guide-list .location-copy p {
+  margin: 0 0 24px;
+}
+
+.location-guide-list .location-copy .btn {
+  align-self: flex-start;
+  margin-top: 2px;
 }
 
 .location-type {
   display: inline-block;
-  margin-bottom: 10px;
+  margin-bottom: 11px;
   color: var(--orchid);
   font-family: Arial, sans-serif;
   font-size: 12px;
@@ -522,6 +552,22 @@ h3 {
 
 .location-section .section-subtitle {
   max-width: 760px;
+}
+
+@media (max-width: 780px) {
+  .location-guide-list .location-card {
+    grid-template-columns: 1fr;
+  }
+
+  .location-guide-list .location-copy {
+    min-height: auto;
+    padding: 34px 26px 30px;
+    text-align: center;
+  }
+
+  .location-guide-list .location-copy .btn {
+    align-self: center;
+  }
 }
 
 .location-card {
