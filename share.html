@@ -29,14 +29,36 @@
       top: 0;
       z-index: 20;
       display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding: 14px 18px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 22px;
       background: rgba(255, 250, 240, 0.94);
       border-bottom: 1px solid rgba(199, 158, 73, 0.24);
       box-shadow: 0 10px 30px rgba(36, 23, 38, 0.08);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+    }
+
+    .share-brand {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      text-decoration: none;
+    }
+
+    .share-brand img {
+      display: block;
+      width: 84px;
+      height: auto;
+    }
+
+    .share-nav-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-left: auto;
     }
 
     .share-nav .btn {
@@ -66,15 +88,23 @@
 
     @media (max-width: 620px) {
       .share-nav {
-        gap: 10px;
-        padding: 12px;
+        gap: 12px;
+        padding: 10px 12px;
+      }
+
+      .share-brand img {
+        width: 62px;
+      }
+
+      .share-nav-actions {
+        gap: 8px;
       }
 
       .share-nav .btn {
         min-width: 0;
-        flex: 1 1 0;
-        padding: 13px 12px !important;
-        font-size: 14px;
+        padding: 11px 12px !important;
+        font-size: 13px;
+        white-space: nowrap;
       }
 
       .share-frame {
@@ -85,8 +115,14 @@
 </head>
 <body>
   <nav class="share-nav" aria-label="Share memories navigation">
-    <a class="btn secondary" href="index.html">Back to Home</a>
-    <a class="btn primary" href="gallery.html">Back to Gallery</a>
+    <a class="share-brand" href="index.html" aria-label="Philip and Liezl home">
+      <img src="assets/logo-pl.svg" alt="Philip &amp; Liezl" />
+    </a>
+
+    <div class="share-nav-actions">
+      <a class="btn secondary" href="index.html">Back to Home</a>
+      <a class="btn primary" href="gallery.html">Back to Gallery</a>
+    </div>
   </nav>
 
   <iframe
