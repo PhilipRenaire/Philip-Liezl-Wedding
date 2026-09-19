@@ -73,18 +73,30 @@
       text-shadow: 0 2px 14px rgba(255, 255, 255, 0.88);
     }
 
-    .detail-page-script-title {
-      width: min(92vw, 820px);
-      margin: 10px auto 18px;
-      line-height: 0;
-      filter: drop-shadow(0 4px 14px rgba(75, 36, 95, 0.16));
+    @font-face {
+      font-family: "Citadel Script Std";
+      src:
+        url("assets/Citadel-Script-Std-Regular.otf") format("opentype"),
+        local("Citadel Script Std"),
+        local("CitadelScriptStd");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
     }
 
-    .detail-page-script-title img {
-      display: block;
-      width: 100%;
-      height: auto;
-      margin: 0 auto;
+    .detail-page-script-title {
+      width: min(94vw, 980px);
+      margin: 8px auto 18px;
+      color: var(--deep-purple);
+      font-family: "Citadel Script Std", "Brush Script MT", cursive;
+      font-size: clamp(82px, 11vw, 142px);
+      font-weight: 400;
+      font-style: normal;
+      line-height: 1.02;
+      letter-spacing: normal;
+      text-transform: none;
+      text-align: center;
+      filter: drop-shadow(0 4px 14px rgba(75, 36, 95, 0.16));
     }
 
     .detail-page-card {
@@ -502,22 +514,17 @@
       }
 
       .detail-page-script-title {
-        width: min(94vw, 680px);
-        margin: 10px auto 14px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        width: min(96vw, 760px);
+        margin: 8px auto 14px;
         padding: 0;
-        border-radius: 0;
+        color: var(--deep-purple);
+        font-size: clamp(68px, 15vw, 104px);
+        line-height: 1.03;
+        text-align: center;
         background: transparent;
         box-shadow: none;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
-      }
-
-      .detail-page-script-title img {
-        width: 100%;
-        margin: 0 auto;
       }
 
       .detail-page-card {
@@ -677,7 +684,9 @@
       }
 
       .detail-page-script-title {
-        width: min(92vw, 520px);
+        width: min(96vw, 560px);
+        font-size: clamp(60px, 18vw, 86px);
+        line-height: 1.04;
       }
 
       .detail-page-hero .center-text {
@@ -815,9 +824,7 @@
   <main>
     <section class="section detail-page-hero">
       <p class="eyebrow">More Details</p>
-      <h1 class="detail-page-script-title">
-        <img src="assets/wedding-day-guide.svg" alt="Wedding Day Guide" />
-      </h1>
+      <h1 class="detail-page-script-title">Wedding Day Guide</h1>
       <p class="center-text">This day is more than a celebration for us; it’s the beginning of a new chapter we’ve dreamed of sharing with the people we love most. Here are the details to help you be part of every special moment, from our ceremony to the celebration that follows</p>
     </section>
 
