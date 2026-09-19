@@ -503,6 +503,27 @@ h3 {
   align-items: stretch;
 }
 
+
+.location-guide-list {
+  display: grid;
+  gap: 28px;
+}
+
+.location-type {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--orchid);
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.location-section .section-subtitle {
+  max-width: 760px;
+}
+
 .location-card {
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
