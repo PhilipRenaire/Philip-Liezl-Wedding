@@ -198,16 +198,63 @@
     }
 
     .detail-page-entourage-heading {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
       text-align: center;
-      margin: 4px auto 18px;
+      margin: 4px auto 24px;
+      padding: 36px 84px 34px;
+      border-radius: 30px;
+      background:
+        linear-gradient(90deg, transparent, rgba(199,158,73,.72), transparent) center calc(100% - 10px) / min(360px, 62%) 1px no-repeat,
+        radial-gradient(circle at 18% 10%, rgba(217,198,232,.18), transparent 34%),
+        radial-gradient(circle at 82% 8%, rgba(239,226,200,.32), transparent 36%);
+    }
+
+    .detail-page-entourage-heading::before,
+    .detail-page-entourage-heading::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      width: 148px;
+      height: 108px;
+      background: url("assets/section-botanical.svg") center / contain no-repeat;
+      opacity: .56;
+      pointer-events: none;
+    }
+
+    .detail-page-entourage-heading::before {
+      left: 0;
+      transform: translate(-24px, -2px);
+    }
+
+    .detail-page-entourage-heading::after {
+      right: 0;
+      transform: translate(24px, -2px) scaleX(-1);
+    }
+
+    .detail-page-entourage-heading > * {
+      position: relative;
+      z-index: 1;
     }
 
     .detail-page-entourage-heading .detail-page-kicker {
       margin-bottom: 8px;
+      color: #9b7430;
+    }
+
+    .detail-page-entourage-heading .detail-page-kicker::before {
+      content: "";
+      display: block;
+      width: 40px;
+      height: 25px;
+      margin: 0 auto 8px;
+      background: url("assets/section-rings.svg") center / contain no-repeat;
+      opacity: .92;
     }
 
     .detail-page-entourage-heading h2 {
-      margin: 0;
+      margin: 8px 0 0;
       font-size: 30px;
       line-height: 1.18;
     }
@@ -380,6 +427,38 @@
       .detail-page-reception-image img {
         min-height: 260px;
         aspect-ratio: 4 / 3;
+      }
+
+      .detail-page-entourage-heading {
+        margin-bottom: 20px;
+        padding: 30px 24px 32px;
+        border-radius: 24px;
+        background:
+          linear-gradient(90deg, transparent, rgba(199,158,73,.68), transparent) center calc(100% - 9px) / min(260px, 68%) 1px no-repeat,
+          radial-gradient(circle at 18% 10%, rgba(217,198,232,.15), transparent 34%),
+          radial-gradient(circle at 82% 8%, rgba(239,226,200,.26), transparent 36%);
+      }
+
+      .detail-page-entourage-heading::before,
+      .detail-page-entourage-heading::after {
+        top: 3px;
+        width: 96px;
+        height: 72px;
+        opacity: .42;
+      }
+
+      .detail-page-entourage-heading::before {
+        transform: translate(-30px, -5px);
+      }
+
+      .detail-page-entourage-heading::after {
+        transform: translate(30px, -5px) scaleX(-1);
+      }
+
+      .detail-page-entourage-heading .detail-page-kicker::before {
+        width: 34px;
+        height: 22px;
+        margin-bottom: 7px;
       }
 
       .detail-page-entourage {
