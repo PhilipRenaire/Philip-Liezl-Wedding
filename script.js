@@ -743,41 +743,88 @@ if (rsvpDetailsForm) {
 }
 
 
-function updateLocationMapsFromCurrentPosition() {
+
+function setLocationMapStatus(message, isError = false) {
+  const status = document.getElementById('locationCurrentStatus');
+  if (!status) return;
+  status.textContent = message || '';
+  status.classList.toggle('is-error', Boolean(isError));
+}
+
+function applyCurrentLocationToVenueMaps(position) {
   const maps = Array.from(document.querySelectorAll('.live-directions-map'));
-  if (!maps.length || !('geolocation' in navigator)) return;
+  if (!maps.length) return;
+
+  const origin = `${position.coords.latitude},${position.coords.longitude}`;
+
+  maps.forEach((map) => {
+    const destination = map.dataset.destination;
+    if (!destination) return;
+
+    const params = new URLSearchParams({
+      saddr: origin,
+      daddr: destination,
+      dirflg: 'd',
+      output: 'embed'
+    });
+
+    map.src = `https://www.google.com/maps?${params.toString()}`;
+  });
+
+  setLocationMapStatus('Your current location is now shown as the starting point on both maps.');
+}
+
+function requestCurrentLocationForVenueMaps() {
+  if (!('geolocation' in navigator)) {
+    setLocationMapStatus('Current location is not supported on this device.', true);
+    return;
+  }
+
+  setLocationMapStatus('Finding your current location…');
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
-      const origin = `${position.coords.latitude},${position.coords.longitude}`;
-
-      maps.forEach((map) => {
-        const destination = map.dataset.destination;
-        if (!destination) return;
-
-        const params = new URLSearchParams({
-          output: 'embed',
-          saddr: origin,
-          daddr: destination,
-          dirflg: 'd'
-        });
-
-        map.src = `https://www.google.com/maps?${params.toString()}`;
-      });
+      applyCurrentLocationToVenueMaps(position);
+      const button = document.getElementById('showCurrentLocation');
+      if (button) button.textContent = 'Current Location Added';
     },
-    () => {
-      // Keep the destination-only maps if the guest does not share location.
+    (error) => {
+      let message = 'Please allow location access in your browser to show your current location on the maps.';
+      if (error && error.code === 1) {
+        message = 'Location access is blocked. Please allow location permission for this website, then tap the button again.';
+      } else if (error && error.code === 2) {
+        message = 'Your current location could not be determined. Please try again.';
+      } else if (error && error.code === 3) {
+        message = 'Finding your location took too long. Please tap the button and try again.';
+      }
+      setLocationMapStatus(message, true);
     },
     {
       enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 300000
+      timeout: 15000,
+      maximumAge: 60000
     }
   );
 }
 
+function initVenueLocationMaps() {
+  const button = document.getElementById('showCurrentLocation');
+  if (button) {
+    button.addEventListener('click', requestCurrentLocationForVenueMaps);
+  }
+
+  // Keep the automatic attempt for browsers that already have permission.
+  if ('permissions' in navigator && navigator.permissions && navigator.permissions.query) {
+    navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+      if (result.state === 'granted') {
+        requestCurrentLocationForVenueMaps();
+      }
+    }).catch(() => {});
+  }
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', updateLocationMapsFromCurrentPosition);
+  document.addEventListener('DOMContentLoaded', initVenueLocationMaps);
 } else {
-  updateLocationMapsFromCurrentPosition();
+  initVenueLocationMaps();
 }
