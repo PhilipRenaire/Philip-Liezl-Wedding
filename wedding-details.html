@@ -119,14 +119,17 @@
     .detail-page-ceremony-combined {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 24px;
+      gap: 0;
       align-items: stretch;
-      padding: 10px;
+      padding: 0;
       overflow: hidden;
+      border-radius: 28px;
+      background: linear-gradient(180deg, #ffffff, #fff8ee);
+      border: 1px solid rgba(75, 36, 95, 0.10);
     }
 
     .detail-page-ceremony-content {
-      padding: 20px;
+      padding: 30px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -135,8 +138,8 @@
     .detail-page-church-slot {
       min-height: 100%;
       overflow: hidden;
-      border-radius: 20px;
-      background: #f7f1eb;
+      border-radius: 0;
+      background: transparent;
     }
 
     .detail-page-church-slot img {
@@ -301,17 +304,17 @@
 
       .detail-page-ceremony-combined {
         grid-template-columns: 1fr;
-        gap: 14px;
-        padding: 7px;
+        gap: 0;
+        padding: 0;
       }
 
       .detail-page-ceremony-content {
-        padding: 18px 13px;
+        padding: 24px 20px;
       }
 
       .detail-page-church-slot {
         min-height: 280px;
-        border-radius: 16px;
+        border-radius: 0;
       }
 
       .detail-page-church-slot img {
