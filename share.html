@@ -30,7 +30,7 @@
       z-index: 20;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 18px;
       padding: 14px 22px;
       background: rgba(255, 250, 240, 0.94);
@@ -53,21 +53,27 @@
       height: auto;
     }
 
-    .share-nav-actions {
+    .share-bottom-nav {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-left: auto;
+      justify-content: center;
+      gap: 28px;
+      padding: 26px 18px 34px;
+      background: transparent;
     }
 
-    .share-nav .btn {
-      min-width: 150px;
+    .share-bottom-nav a {
+      color: #111111;
+      text-decoration: none;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.4;
     }
 
-    .share-nav .btn.secondary {
-      background: #ffffff !important;
-      color: var(--deep-purple) !important;
+    .share-bottom-nav a:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
     }
 
     .share-frame {
@@ -96,15 +102,13 @@
         width: 62px;
       }
 
-      .share-nav-actions {
-        gap: 8px;
+      .share-bottom-nav {
+        gap: 22px;
+        padding: 22px 14px 30px;
       }
 
-      .share-nav .btn {
-        min-width: 0;
-        padding: 11px 12px !important;
-        font-size: 13px;
-        white-space: nowrap;
+      .share-bottom-nav a {
+        font-size: 14px;
       }
 
       .share-frame {
@@ -118,11 +122,6 @@
     <a class="share-brand" href="index.html" aria-label="Philip and Liezl home">
       <img src="assets/logo-pl.svg" alt="Philip &amp; Liezl" />
     </a>
-
-    <div class="share-nav-actions">
-      <a class="btn secondary" href="index.html">Back to Home</a>
-      <a class="btn primary" href="gallery.html">Back to Gallery</a>
-    </div>
   </nav>
 
   <iframe
