@@ -554,28 +554,6 @@ h3 {
   max-width: 760px;
 }
 
-.location-current-button {
-  margin-top: 22px;
-}
-
-.location-current-status {
-  min-height: 22px;
-  margin: 12px auto 0;
-  color: rgba(60,47,53,.68);
-  font-size: 13px;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.location-current-status.is-error {
-  color: #8a3f53;
-}
-
-@media (max-width: 780px) {
-  .location-current-button {
-    width: min(100%, 290px);
-  }
-}
 
 @media (max-width: 780px) {
   .location-guide-list .location-card {
