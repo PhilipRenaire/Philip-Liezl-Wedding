@@ -630,6 +630,17 @@
       .live-weather-days {
         gap: 7px;
       }
+
+      .live-weather-day {
+        min-width: 0;
+        padding: 10px 6px;
+      }
+
+      .live-weather-day span {
+        overflow-wrap: anywhere;
+        word-break: normal;
+        line-height: 1.25;
+      }
     }
 
     @media (max-width: 520px) {
@@ -650,6 +661,14 @@
       .detail-page-hero .center-text {
         font-size: 15px;
         line-height: 1.65;
+      }
+
+      .live-weather-day strong {
+        font-size: 11px;
+      }
+
+      .live-weather-day span {
+        font-size: 11px;
       }
     }
 
