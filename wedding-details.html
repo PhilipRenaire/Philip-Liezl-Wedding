@@ -283,7 +283,6 @@
 
     .detail-page-weather {
       width: 100%;
-      text-align: center;
       padding: 34px 40px;
       background:
         radial-gradient(circle at 50% 0%, rgba(217, 198, 232, 0.22), transparent 38%),
@@ -291,10 +290,105 @@
       border: 1px solid rgba(194, 148, 69, 0.26);
     }
 
-    .detail-page-weather .detail-page-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-width: 900px;
-      margin: 18px auto 0;
+    .weather-reminder-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, .9fr);
+      gap: 28px;
+      align-items: stretch;
+      margin-top: 20px;
+    }
+
+    .weather-reminder-copy {
+      display: flex;
+      align-items: center;
+      padding: 24px 26px;
+      border-radius: 22px;
+      background: rgba(239, 226, 200, 0.38);
+      text-align: left;
+    }
+
+    .weather-reminder-copy p {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .live-weather-card {
+      min-height: 180px;
+      padding: 22px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(194, 148, 69, 0.24);
+      box-shadow: 0 14px 34px rgba(36, 23, 38, 0.07);
+    }
+
+    .live-weather-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .live-weather-label {
+      margin: 0 0 4px;
+      color: var(--orchid);
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .live-weather-condition {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.4;
+      color: rgba(60, 47, 53, .78);
+    }
+
+    .live-weather-temp {
+      flex: 0 0 auto;
+      font-size: clamp(36px, 5vw, 50px);
+      line-height: 1;
+      font-weight: 700;
+      color: var(--deep-purple);
+      white-space: nowrap;
+    }
+
+    .live-weather-days {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .live-weather-day {
+      padding: 11px 8px;
+      border-radius: 14px;
+      background: rgba(239, 226, 200, .30);
+      text-align: center;
+    }
+
+    .live-weather-day strong,
+    .live-weather-day span {
+      display: block;
+    }
+
+    .live-weather-day strong {
+      margin-bottom: 3px;
+      font-size: 12px;
+      color: var(--deep-purple);
+    }
+
+    .live-weather-day span {
+      font-size: 13px;
+      color: rgba(60,47,53,.76);
+    }
+
+    .live-weather-status {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: rgba(60,47,53,.68);
     }
 
     .detail-page-block h2,
@@ -476,8 +570,21 @@
         padding: 26px 20px;
       }
 
-      .detail-page-weather .detail-page-list {
+      .weather-reminder-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .weather-reminder-copy {
+        padding: 20px;
+      }
+
+      .live-weather-card {
+        padding: 20px;
+      }
+
+      .live-weather-days {
+        gap: 7px;
       }
     }
   </style>
@@ -570,10 +677,28 @@
         <article class="detail-page-block detail-page-weather">
           <span class="detail-page-kicker">Weather Reminder</span>
           <h3>Dahilayan Weather</h3>
-          <ul class="detail-page-list">
-            <li>Dahilayan can feel cool, especially in the afternoon and evening.</li>
-            <li>A light jacket, shawl, or coat is recommended for comfort.</li>
-          </ul>
+
+          <div class="weather-reminder-grid">
+            <div class="weather-reminder-copy">
+              <p>Dahilayan can feel cool, especially in the afternoon and evening. A light jacket, shawl, or coat is recommended for comfort.</p>
+            </div>
+
+            <div class="live-weather-card" id="dahilayan-live-weather" aria-live="polite">
+              <div class="live-weather-top">
+                <div>
+                  <p class="live-weather-label">Live Forecast</p>
+                  <p class="live-weather-condition" id="weather-condition">Loading Dahilayan weather…</p>
+                </div>
+                <div class="live-weather-temp" id="weather-temp">--°C</div>
+              </div>
+              <div class="live-weather-days" id="weather-days">
+                <div class="live-weather-day"><strong>Today</strong><span>--° / --°</span></div>
+                <div class="live-weather-day"><strong>Tomorrow</strong><span>--° / --°</span></div>
+                <div class="live-weather-day"><strong>Next</strong><span>--° / --°</span></div>
+              </div>
+              <p class="live-weather-status" id="weather-status">Updating automatically from Dahilayan.</p>
+            </div>
+          </div>
         </article>
       </div>
 
@@ -603,5 +728,88 @@
     <p>Philip &amp; Liezl · October 19, 2026 · Dahilayan Forest Park Resort</p>
     <p>Thank you for being part of our story.</p>
   </footer>
+  <script>
+    (function () {
+      const tempEl = document.getElementById("weather-temp");
+      const conditionEl = document.getElementById("weather-condition");
+      const daysEl = document.getElementById("weather-days");
+      const statusEl = document.getElementById("weather-status");
+
+      if (!tempEl || !conditionEl || !daysEl || !statusEl) return;
+
+      const weatherText = {
+        0: "Clear skies",
+        1: "Mostly clear",
+        2: "Partly cloudy",
+        3: "Cloudy",
+        45: "Foggy",
+        48: "Foggy",
+        51: "Light drizzle",
+        53: "Drizzle",
+        55: "Heavy drizzle",
+        61: "Light rain",
+        63: "Rain",
+        65: "Heavy rain",
+        80: "Rain showers",
+        81: "Rain showers",
+        82: "Heavy showers",
+        95: "Thunderstorms",
+        96: "Thunderstorms",
+        99: "Thunderstorms"
+      };
+
+      const dayName = (dateString, index) => {
+        if (index === 0) return "Today";
+        if (index === 1) return "Tomorrow";
+        return new Intl.DateTimeFormat("en-PH", { weekday: "short", timeZone: "Asia/Manila" })
+          .format(new Date(dateString + "T12:00:00+08:00"));
+      };
+
+      const url =
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=8.21945&longitude=124.85189" +
+        "&current=temperature_2m,weather_code" +
+        "&daily=temperature_2m_max,temperature_2m_min,weather_code" +
+        "&temperature_unit=celsius" +
+        "&timezone=Asia%2FManila" +
+        "&forecast_days=3";
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) throw new Error("Weather unavailable");
+          return response.json();
+        })
+        .then(data => {
+          const currentTemp = Math.round(data.current.temperature_2m);
+          const currentCode = data.current.weather_code;
+          tempEl.textContent = currentTemp + "°C";
+          conditionEl.textContent = weatherText[currentCode] || "Current conditions";
+
+          const dates = data.daily.time || [];
+          const highs = data.daily.temperature_2m_max || [];
+          const lows = data.daily.temperature_2m_min || [];
+          const codes = data.daily.weather_code || [];
+
+          daysEl.innerHTML = dates.slice(0, 3).map((date, i) => {
+            const label = dayName(date, i);
+            const high = Math.round(highs[i]);
+            const low = Math.round(lows[i]);
+            const condition = weatherText[codes[i]] || "";
+            return '<div class="live-weather-day">' +
+              '<strong>' + label + '</strong>' +
+              '<span>' + high + '° / ' + low + '°</span>' +
+              '<span>' + condition + '</span>' +
+            '</div>';
+          }).join("");
+
+          statusEl.textContent = "Live forecast for Dahilayan · °C";
+        })
+        .catch(() => {
+          conditionEl.textContent = "Forecast temporarily unavailable";
+          tempEl.textContent = "--°C";
+          statusEl.textContent = "Please check again shortly.";
+        });
+    })();
+  </script>
 </body>
 </html>
