@@ -117,10 +117,24 @@
 
     .detail-page-church-slot {
       min-height: 100%;
-      background:
-        radial-gradient(circle at 50% 32%, rgba(217,198,232,.12), transparent 42%),
-        linear-gradient(180deg, #ffffff, #fff8ee);
-      border: 1px dashed rgba(194, 148, 69, 0.30);
+      padding: 10px;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      overflow: hidden;
+      background: rgba(255,255,255,.90);
+      border: 1px solid rgba(194, 148, 69, 0.28);
+      box-shadow: 0 22px 58px rgba(36, 23, 38, 0.10);
+    }
+
+    .detail-page-church-slot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 20px;
     }
 
     .detail-page-reception-wrap {
@@ -276,6 +290,13 @@
 
       .detail-page-church-slot {
         min-height: 280px;
+        padding: 7px;
+      }
+
+      .detail-page-church-slot img {
+        min-height: 260px;
+        aspect-ratio: 4 / 3;
+        border-radius: 16px;
       }
 
       .detail-page-reception {
@@ -335,7 +356,14 @@
           <p>Please arrive early so everyone can be seated before the ceremony begins.</p>
           <a class="btn secondary" href="https://www.google.com/maps/search/?api=1&query=St.%20Therese%20of%20the%20Child%20Jesus%20Parish%2C%20Dahilayan%2C%20Manolo%20Fortich%2C%20Bukidnon" target="_blank" rel="noopener">Open Ceremony Map</a>
         </article>
-        <article class="detail-page-block detail-page-church-slot" aria-label="Reserved space for church image"></article>
+        <article class="detail-page-block detail-page-church-slot" aria-label="St. Therese of the Child Jesus Chapel">
+          <img
+            src="assets/st-therese-chapel.jpg"
+            alt="St. Therese of the Child Jesus Chapel in Dahilayan"
+            loading="lazy"
+            decoding="async"
+          />
+        </article>
       </div>
 
       <figure class="detail-page-entourage">
