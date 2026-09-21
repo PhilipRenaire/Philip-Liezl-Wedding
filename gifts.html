@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monetary Gifts | Philip & Liezl</title>
+  <meta name="description" content="Monetary gift options for Philip and Liezl's wedding celebration." />
+  <link rel="stylesheet" href="styles.css?v=gifts-20260922" />
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 10% 5%, rgba(217,198,232,.34), transparent 29%),
+        radial-gradient(circle at 92% 88%, rgba(239,226,200,.62), transparent 32%),
+        linear-gradient(180deg, #fffaf1 0%, #ffffff 50%, #fff9ef 100%);
+    }
+
+    @font-face {
+      font-family: "Citadel Script Std";
+      src:
+        url("assets/Citadel-Script-Std-Regular.otf") format("opentype"),
+        local("Citadel Script Std"),
+        local("CitadelScriptStd");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    .gifts-hero {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      padding: 82px 24px 66px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,.98) 0%, rgba(255,255,255,.76) 32%, transparent 64%),
+        radial-gradient(circle at 14% 18%, rgba(217,198,232,.30), transparent 30%),
+        radial-gradient(circle at 86% 14%, rgba(239,226,200,.58), transparent 31%),
+        linear-gradient(180deg, #fffaf2 0%, #fffdf9 64%, #fff8ee 100%);
+      border-bottom: 1px solid rgba(199,158,73,.18);
+    }
+
+    .gifts-hero::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      width: min(360px, 62vw);
+      height: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, transparent, rgba(199,158,73,.82) 28%, rgba(199,158,73,.82) 72%, transparent);
+    }
+
+    .gifts-hero > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .gifts-hero-rings {
+      width: 42px;
+      height: 28px;
+      margin: 0 auto 8px;
+      color: #b88a2e;
+    }
+
+    .gifts-hero-rings svg,
+    .gifts-hero-corner svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    .gifts-hero-corner {
+      position: absolute;
+      z-index: 1;
+      top: 18px;
+      width: 178px;
+      height: 132px;
+      color: rgba(184,138,46,.34);
+      pointer-events: none;
+    }
+
+    .gifts-hero-corner.left {
+      left: 0;
+      transform: translate(-14px, -2px);
+    }
+
+    .gifts-hero-corner.right {
+      right: 0;
+      transform: translate(14px, -2px) scaleX(-1);
+    }
+
+    .gifts-hero .eyebrow {
+      margin-bottom: 2px;
+      color: #9b7430;
+    }
+
+    .gifts-hero h1 {
+      margin: 2px auto 10px;
+      color: var(--deep-purple);
+      font-family: "Citadel Script Std", "Brush Script MT", cursive;
+      font-size: clamp(78px, 11vw, 132px);
+      line-height: 1.06;
+      font-weight: 400;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    .gifts-hero p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: rgba(60,47,53,.78);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .gifts-main {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      padding: 76px 24px 88px;
+    }
+
+    .gifts-intro {
+      max-width: 820px;
+      margin: 0 auto 42px;
+      text-align: center;
+    }
+
+    .gifts-intro h2 {
+      margin: 6px 0 14px;
+      color: var(--deep-purple);
+      font-size: clamp(30px, 4vw, 42px);
+      line-height: 1.2;
+    }
+
+    .gifts-intro p {
+      margin: 0 auto;
+      max-width: 760px;
+      font-size: 18px;
+      line-height: 1.8;
+      color: rgba(60,47,53,.80);
+    }
+
+    .gift-qr-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 26px;
+      max-width: 940px;
+      margin: 0 auto;
+    }
+
+    .gift-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 410px;
+      padding: 34px 30px 32px;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 50% -6%, rgba(217,198,232,.25), transparent 38%),
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,250,241,.98));
+      border: 1px solid rgba(199,158,73,.30);
+      box-shadow: 0 22px 58px rgba(36,23,38,.10);
+      text-align: center;
+    }
+
+    .gift-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 130px;
+      height: 4px;
+      transform: translateX(-50%);
+      border-radius: 0 0 999px 999px;
+      background: linear-gradient(90deg, #9d79aa, #6f417f, #9d79aa);
+    }
+
+    .gift-icon {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 50%;
+      background: rgba(217,198,232,.34);
+      color: var(--deep-purple);
+      box-shadow: inset 0 0 0 1px rgba(75,36,95,.10);
+    }
+
+    .gift-icon svg {
+      width: 30px;
+      height: 30px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .gift-card .gift-label {
+      margin: 0 0 6px;
+      color: #9b7430;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .gift-card h3 {
+      margin: 0 0 18px;
+      color: var(--deep-purple);
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    .qr-placeholder {
+      position: relative;
+      width: min(100%, 230px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      border-radius: 24px;
+      border: 1px dashed rgba(75,36,95,.34);
+      background:
+        linear-gradient(45deg, rgba(217,198,232,.12) 25%, transparent 25% 75%, rgba(217,198,232,.12) 75%),
+        linear-gradient(45deg, rgba(217,198,232,.12) 25%, transparent 25% 75%, rgba(217,198,232,.12) 75%);
+      background-position: 0 0, 12px 12px;
+      background-size: 24px 24px;
+      color: rgba(75,36,95,.70);
+    }
+
+    .qr-placeholder::before,
+    .qr-placeholder::after {
+      content: "";
+      position: absolute;
+      width: 38px;
+      height: 38px;
+      border-color: rgba(112,64,128,.72);
+      pointer-events: none;
+    }
+
+    .qr-placeholder::before {
+      top: 12px;
+      left: 12px;
+      border-top: 3px solid;
+      border-left: 3px solid;
+      border-radius: 8px 0 0 0;
+    }
+
+    .qr-placeholder::after {
+      right: 12px;
+      bottom: 12px;
+      border-right: 3px solid;
+      border-bottom: 3px solid;
+      border-radius: 0 0 8px 0;
+    }
+
+    .qr-placeholder span {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.88);
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 22px rgba(75,36,95,.08);
+    }
+
+    .gift-card .gift-note {
+      margin: 0;
+      max-width: 310px;
+      color: rgba(60,47,53,.68);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .gifts-reminder {
+      max-width: 760px;
+      margin: 38px auto 0;
+      padding: 22px 26px;
+      border-radius: 22px;
+      background: rgba(239,226,200,.34);
+      border: 1px solid rgba(199,158,73,.20);
+      text-align: center;
+      color: rgba(60,47,53,.78);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .gifts-reminder strong {
+      color: var(--deep-purple);
+    }
+
+    @media (min-width: 861px) {
+      .site-header .nav-links a {
+        position: relative;
+        text-decoration: none !important;
+      }
+
+      .site-header .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -5px;
+        height: 2px;
+        background: #7d4f8d;
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 0.2s ease;
+      }
+
+      .site-header .nav-links a:hover::after {
+        transform: scaleX(1);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .gifts-hero {
+        padding: 62px 18px 52px;
+      }
+
+      .gifts-hero-corner {
+        width: 112px;
+        height: 84px;
+        top: 12px;
+        color: rgba(184,138,46,.26);
+      }
+
+      .gifts-hero-rings {
+        width: 36px;
+        height: 24px;
+      }
+
+      .gifts-hero h1 {
+        font-size: clamp(64px, 19vw, 94px);
+      }
+
+      .gifts-hero p,
+      .gifts-intro p {
+        font-size: 16px;
+      }
+
+      .gifts-main {
+        padding: 58px 18px 70px;
+      }
+
+      .gift-qr-grid {
+        grid-template-columns: 1fr;
+        max-width: 470px;
+      }
+
+      .gift-card {
+        min-height: auto;
+        padding: 30px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="index.html#home" class="logo" aria-label="Philip and Liezl wedding home">
+        <img src="assets/logo-pl.svg" alt="P&L" class="logo-image" />
+      </a>
+      <button class="menu-toggle" aria-label="Open menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html#home">Home</a>
+        <a href="index.html#details">Details</a>
+        <a href="index.html#rsvp">RSVP</a>
+        <a href="index.html#seating">Seating</a>
+        <a href="index.html#location">Location</a>
+        <a href="gifts.html">Gifts</a>
+        <a href="index.html#faqs">FAQs</a>
+        <a href="index.html#gallery">Wedding Memories</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="gifts-hero">
+      <span class="gifts-hero-corner left" aria-hidden="true">
+        <svg viewBox="0 0 180 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 119C43 91 51 48 104 20" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M42 89C22 86 17 72 18 59C34 60 46 70 42 89Z" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M61 64C48 48 53 34 64 26C74 39 74 54 61 64Z" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M78 46C80 27 94 20 108 20C106 35 96 46 78 46Z" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M31 101C45 97 56 101 62 113C48 117 36 112 31 101Z" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="107" cy="20" r="3.5" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M111 18C124 14 138 16 149 24" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+      </span>
+
+      <span class="gifts-hero-corner right" aria-hidden="true">
+        <svg viewBox="0 0 180 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 119C43 91 51 48 104 20" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M42 89C22 86 17 72 18 59C34 60 46 70 42 89Z" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M61 64C48 48 53 34 64 26C74 39 74 54 61 64Z" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M78 46C80 27 94 20 108 20C106 35 96 46 78 46Z" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M31 101C45 97 56 101 62 113C48 117 36 112 31 101Z" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="107" cy="20" r="3.5" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M111 18C124 14 138 16 149 24" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+      </span>
+
+      <div class="gifts-hero-rings" aria-hidden="true">
+        <svg viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="16" r="9.5" stroke="currentColor" stroke-width="1.6"/>
+          <circle cx="30" cy="16" r="9.5" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M16.2 5.8L18 2.8L19.8 5.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <p class="eyebrow">With Love &amp; Gratitude</p>
+      <h1>Monetary Gifts</h1>
+      <p>Your presence on our wedding day is already a gift to us. For those who wish to bless us further, you may use any of the QR options below.</p>
+    </section>
+
+    <section class="gifts-main">
+      <div class="gifts-intro">
+        <p class="eyebrow">A Thoughtful Gesture</p>
+        <h2>Thank You for Celebrating With Us</h2>
+        <p>We are deeply grateful for your love, prayers, and presence. If you would like to give a monetary gift, simply scan the QR code for your preferred bank or e-wallet.</p>
+      </div>
+
+      <div class="gift-qr-grid">
+        <article class="gift-card">
+          <div class="gift-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M5 13h22M7 13v11M13 13v11M19 13v11M25 13v11M4 25h24M16 5l12 6H4l12-6Z"/></svg>
+          </div>
+          <p class="gift-label">Bank / E-Wallet</p>
+          <h3>QR Code 1</h3>
+          <div class="qr-placeholder"><span>QR Code Here</span></div>
+          <p class="gift-note">This space is ready for your first bank or e-wallet QR code.</p>
+        </article>
+
+        <article class="gift-card">
+          <div class="gift-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M5 13h22M7 13v11M13 13v11M19 13v11M25 13v11M4 25h24M16 5l12 6H4l12-6Z"/></svg>
+          </div>
+          <p class="gift-label">Bank / E-Wallet</p>
+          <h3>QR Code 2</h3>
+          <div class="qr-placeholder"><span>QR Code Here</span></div>
+          <p class="gift-note">This space is ready for your second bank or e-wallet QR code.</p>
+        </article>
+
+        <article class="gift-card">
+          <div class="gift-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M5 13h22M7 13v11M13 13v11M19 13v11M25 13v11M4 25h24M16 5l12 6H4l12-6Z"/></svg>
+          </div>
+          <p class="gift-label">Bank / E-Wallet</p>
+          <h3>QR Code 3</h3>
+          <div class="qr-placeholder"><span>QR Code Here</span></div>
+          <p class="gift-note">This space is ready for your third bank or e-wallet QR code.</p>
+        </article>
+
+        <article class="gift-card">
+          <div class="gift-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M5 13h22M7 13v11M13 13v11M19 13v11M25 13v11M4 25h24M16 5l12 6H4l12-6Z"/></svg>
+          </div>
+          <p class="gift-label">Bank / E-Wallet</p>
+          <h3>QR Code 4</h3>
+          <div class="qr-placeholder"><span>QR Code Here</span></div>
+          <p class="gift-note">This space is ready for an additional bank or e-wallet QR code.</p>
+        </article>
+      </div>
+
+      <div class="gifts-reminder">
+        <strong>A gentle reminder:</strong> Please double-check the recipient name displayed in your banking or e-wallet app before completing your transfer.
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Philip &amp; Liezl · October 19, 2026 · Dahilayan Forest Park Resort</p>
+    <p>Thank you for being part of our story.</p>
+  </footer>
+
+  <script>
+    (function () {
+      const menuToggle = document.querySelector('.menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
+
+      if (!menuToggle || !navLinks) return;
+
+      menuToggle.addEventListener('click', function () {
+        navLinks.classList.toggle('open');
+      });
+
+      navLinks.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          navLinks.classList.remove('open');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
