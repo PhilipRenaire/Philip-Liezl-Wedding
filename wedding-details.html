@@ -341,12 +341,70 @@
     }
 
     .weather-reminder-copy {
-      display: flex;
+      position: relative;
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr);
+      gap: 22px;
       align-items: center;
-      padding: 24px 26px;
+      padding: 24px 28px 24px 24px;
       border-radius: 22px;
-      background: rgba(239, 226, 200, 0.38);
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 7% 50%, rgba(125,79,141,.16), transparent 32%),
+        rgba(239, 226, 200, 0.38);
+      border: 1px solid rgba(125,79,141,.16);
       text-align: left;
+    }
+
+    .weather-reminder-copy::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      bottom: 18px;
+      left: 0;
+      width: 4px;
+      border-radius: 0 999px 999px 0;
+      background: linear-gradient(180deg, #9b73a9, #6e3f80);
+      opacity: .88;
+    }
+
+    .weather-reminder-icon {
+      width: 78px;
+      height: 78px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #704080;
+      background:
+        radial-gradient(circle at 35% 28%, rgba(255,255,255,.92), rgba(235,222,241,.88) 55%, rgba(217,198,232,.72));
+      border: 1px solid rgba(112,64,128,.24);
+      box-shadow:
+        0 12px 28px rgba(75,36,95,.13),
+        inset 0 0 0 5px rgba(255,255,255,.48);
+    }
+
+    .weather-reminder-icon svg {
+      width: 56px;
+      height: 56px;
+      overflow: visible;
+    }
+
+    .weather-reminder-icon circle,
+    .weather-reminder-icon path {
+      stroke: currentColor;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .weather-reminder-icon circle {
+      stroke-width: 1.35;
+      opacity: .42;
+    }
+
+    .weather-reminder-icon .weather-reminder-spark {
+      fill: rgba(125,79,141,.16);
+      stroke-width: 1.5;
     }
 
     .weather-reminder-copy p {
@@ -671,7 +729,19 @@
       }
 
       .weather-reminder-copy {
-        padding: 20px;
+        grid-template-columns: 68px minmax(0, 1fr);
+        gap: 16px;
+        padding: 20px 20px 20px 18px;
+      }
+
+      .weather-reminder-icon {
+        width: 64px;
+        height: 64px;
+      }
+
+      .weather-reminder-icon svg {
+        width: 46px;
+        height: 46px;
       }
 
       .live-weather-card {
@@ -1019,6 +1089,15 @@
 
           <div class="weather-reminder-grid">
             <div class="weather-reminder-copy">
+              <div class="weather-reminder-icon" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none">
+                  <circle cx="32" cy="32" r="26"></circle>
+                  <path d="M18 27h18c5.5 0 5.5-8 0-8-3.1 0-5.1 1.8-5.7 4.1"></path>
+                  <path d="M16 34h27c6.2 0 6.2 9 0 9-3.2 0-5.4-1.7-6.1-4"></path>
+                  <path d="M21 42h10"></path>
+                  <path class="weather-reminder-spark" d="M47 17l1.6 3.4 3.4 1.6-3.4 1.6L47 27l-1.6-3.4L42 22l3.4-1.6L47 17Z"></path>
+                </svg>
+              </div>
               <p>Dahilayan can feel cool, especially in the afternoon and evening. A light jacket, shawl, or coat is recommended for comfort.</p>
             </div>
 
