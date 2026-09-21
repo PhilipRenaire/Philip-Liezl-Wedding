@@ -389,6 +389,11 @@ h3 {
   line-height: 1.35;
 }
 
+.details-venue-subline {
+  display: block;
+  margin-top: 4px;
+}
+
 .detail-divider {
   width: 100%;
   height: 1px;
