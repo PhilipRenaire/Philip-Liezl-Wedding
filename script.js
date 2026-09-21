@@ -344,7 +344,7 @@ function searchSeat() {
   const guest = seatingData.find((item) => normalize(item.name).includes(query));
 
   if (!guest) {
-    result.textContent = 'We could not find that name yet. Please check your spelling or contact the wedding coordinator.';
+    result.textContent = "We're still putting the finishing touches on our seating plan. Check back here at least one week before the big day to see where you'll be sitting. We can't wait to celebrate with you!";
     return;
   }
 
