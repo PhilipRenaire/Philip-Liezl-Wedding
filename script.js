@@ -762,15 +762,14 @@ function applyCurrentLocationToVenueMaps(position) {
     if (!destination) return;
 
     const params = new URLSearchParams({
-      f: 'd',
-      source: 's_d',
       saddr: origin,
       daddr: destination,
       dirflg: 'd',
-      z: '11',
       output: 'embed'
     });
 
+    // Let Google Maps auto-fit the full route so both the current-location
+    // marker (A) and destination marker (B) remain visible in the mini map.
     map.src = `https://www.google.com/maps?${params.toString()}`;
   });
 
@@ -811,19 +810,9 @@ function requestCurrentLocationForVenueMaps() {
 }
 
 function initVenueLocationMaps() {
-  const button = document.getElementById('showCurrentLocation');
-  if (button) {
-    button.addEventListener('click', requestCurrentLocationForVenueMaps);
-  }
-
-  // Keep the automatic attempt for browsers that already have permission.
-  if ('permissions' in navigator && navigator.permissions && navigator.permissions.query) {
-    navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-      if (result.state === 'granted') {
-        requestCurrentLocationForVenueMaps();
-      }
-    }).catch(() => {});
-  }
+  // Request the guest's live location as soon as the location section is available.
+  // On first visit the browser may show its normal location-permission prompt.
+  requestCurrentLocationForVenueMaps();
 }
 
 if (document.readyState === 'loading') {
