@@ -369,7 +369,7 @@
       }
     }
 
-    .share-nav-links .share-gallery-link {
+    .nav-links .share-gallery-link {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -383,44 +383,78 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
 
-    .share-nav-links .share-gallery-link:hover {
+    .nav-links .share-gallery-link:hover {
       transform: translateY(-3px);
       box-shadow: 0 18px 40px rgba(75, 36, 95, 0.24);
     }
 
-    .share-nav-links .share-gallery-link::after {
+    .nav-links .share-gallery-link::after {
       display: none !important;
     }
 
     @media (max-width: 860px) {
-      .share-nav-links .share-gallery-link {
+      .nav-links .share-gallery-link {
         min-height: 38px;
         padding: 8px 10px !important;
       }
     }
 
     @media (max-width: 380px) {
-      .share-nav-links .share-gallery-link {
+      .nav-links .share-gallery-link {
         min-height: 36px;
         padding: 7px 8px !important;
+      }
+    }
+
+  
+    @media (min-width: 861px) {
+      .site-header .nav-links a {
+        position: relative;
+        text-decoration: none !important;
+      }
+
+      .site-header .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -5px;
+        height: 2px;
+        background: #7d4f8d;
+        transform: scaleX(0);
+        transform-origin: center;
+        transition: transform 0.2s ease;
+      }
+
+      .site-header .nav-links a:hover::after {
+        transform: scaleX(1);
+      }
+
+      .site-header .nav-links .share-gallery-link::after {
+        display: none !important;
       }
     }
 
   </style>
 </head>
 <body>
-  <nav class="share-nav" aria-label="Share memories navigation">
-    <div class="share-nav-inner">
-      <a class="share-brand" href="index.html" aria-label="Philip and Liezl home">
-        <img src="assets/logo-pl.svg" alt="Philip &amp; Liezl" />
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="index.html#home" class="logo" aria-label="Philip and Liezl wedding home">
+        <img src="assets/logo-pl.svg" alt="P&L" class="logo-image" />
       </a>
-
-      <div class="share-nav-links">
-        <a href="index.html">Back to Home</a>
-        <a href="gallery.html" class="share-gallery-link">Back to Gallery</a>
+      <button class="menu-toggle" aria-label="Open menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html#home">Home</a>
+        <a href="index.html#details">Details</a>
+        <a href="index.html#rsvp">RSVP</a>
+        <a href="index.html#seating">Seating</a>
+        <a href="index.html#location">Location</a>
+        <a href="index.html#faqs">FAQs</a>
+        <a href="gallery.html" class="share-gallery-link">Wedding Memories</a>
       </div>
-    </div>
-  </nav>
+    </nav>
+  </header>
 
   <section class="share-hero">
     <span class="share-hero-corner left" aria-hidden="true">
@@ -475,6 +509,26 @@
     <p>Philip &amp; Liezl · October 19, 2026 · Dahilayan Forest Park Resort</p>
     <p>Thank you for being part of our story.</p>
   </footer>
+
+
+  <script>
+    (function () {
+      const menuToggle = document.querySelector('.menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
+
+      if (!menuToggle || !navLinks) return;
+
+      menuToggle.addEventListener('click', function () {
+        navLinks.classList.toggle('open');
+      });
+
+      navLinks.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          navLinks.classList.remove('open');
+        });
+      });
+    })();
+  </script>
 
   <noscript>
     <div class="share-fallback">
