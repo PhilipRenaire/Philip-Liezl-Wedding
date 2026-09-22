@@ -820,3 +820,91 @@ if (document.readyState === 'loading') {
 } else {
   initVenueLocationMaps();
 }
+
+
+// Live Dahilayan weather for the homepage FAQ.
+(function initFaqDahilayanWeather() {
+  const tempEl = document.getElementById('faq-weather-temp');
+  const conditionEl = document.getElementById('faq-weather-condition');
+  const daysEl = document.getElementById('faq-weather-days');
+  const statusEl = document.getElementById('faq-weather-status');
+
+  if (!tempEl || !conditionEl || !daysEl || !statusEl) return;
+
+  const weatherText = {
+    0: 'Clear skies',
+    1: 'Mostly clear',
+    2: 'Partly cloudy',
+    3: 'Cloudy',
+    45: 'Foggy',
+    48: 'Foggy',
+    51: 'Light drizzle',
+    53: 'Drizzle',
+    55: 'Heavy drizzle',
+    61: 'Light rain',
+    63: 'Rain',
+    65: 'Heavy rain',
+    80: 'Rain showers',
+    81: 'Rain showers',
+    82: 'Heavy showers',
+    95: 'Thunderstorms',
+    96: 'Thunderstorms',
+    99: 'Thunderstorms'
+  };
+
+  const dayName = (dateString, index) => {
+    if (index === 0) return 'Today';
+    if (index === 1) return 'Tomorrow';
+    return new Intl.DateTimeFormat('en-PH', {
+      weekday: 'short',
+      timeZone: 'Asia/Manila'
+    }).format(new Date(dateString + 'T12:00:00+08:00'));
+  };
+
+  const url =
+    'https://api.open-meteo.com/v1/forecast' +
+    '?latitude=8.21945&longitude=124.85189' +
+    '&current=temperature_2m,weather_code' +
+    '&daily=temperature_2m_max,temperature_2m_min,weather_code' +
+    '&temperature_unit=celsius' +
+    '&timezone=Asia%2FManila' +
+    '&forecast_days=3';
+
+  fetch(url)
+    .then(response => {
+      if (!response.ok) throw new Error('Weather unavailable');
+      return response.json();
+    })
+    .then(data => {
+      const currentTemp = Math.round(data.current.temperature_2m);
+      const currentCode = data.current.weather_code;
+
+      tempEl.textContent = currentTemp + '°C';
+      conditionEl.textContent = weatherText[currentCode] || 'Current conditions';
+
+      const dates = data.daily.time || [];
+      const highs = data.daily.temperature_2m_max || [];
+      const lows = data.daily.temperature_2m_min || [];
+      const codes = data.daily.weather_code || [];
+
+      daysEl.innerHTML = dates.slice(0,3).map((date,index) => {
+        const label = dayName(date,index);
+        const high = Math.round(highs[index]);
+        const low = Math.round(lows[index]);
+        const condition = weatherText[codes[index]] || '';
+
+        return '<div class="faq-live-weather-day">' +
+          '<strong>' + label + '</strong>' +
+          '<span>' + high + '° / ' + low + '°</span>' +
+          '<span>' + condition + '</span>' +
+        '</div>';
+      }).join('');
+
+      statusEl.textContent = 'Live forecast for Dahilayan';
+    })
+    .catch(() => {
+      conditionEl.textContent = 'Forecast temporarily unavailable';
+      tempEl.textContent = '--°C';
+      statusEl.textContent = 'Please check again shortly.';
+    });
+})();
