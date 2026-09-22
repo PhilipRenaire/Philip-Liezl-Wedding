@@ -961,3 +961,129 @@ summary {
     background-attachment: scroll !important;
   }
 }
+
+
+/* Live Dahilayan forecast inside the homepage FAQ */
+.faq-live-weather-card {
+  margin-top: 18px;
+  min-height: 180px;
+  padding: 22px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(217,198,232,.20), transparent 38%),
+    rgba(255,255,255,.88);
+  border: 1px solid rgba(194,148,69,.24);
+  box-shadow: 0 14px 34px rgba(36,23,38,.07);
+}
+
+.faq-live-weather-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.faq-live-weather-label {
+  margin: 0 0 4px !important;
+  color: var(--orchid);
+  font-family: Arial, sans-serif;
+  font-size: 11px !important;
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1.4 !important;
+  text-transform: uppercase;
+}
+
+.faq-live-weather-condition {
+  margin: 0 !important;
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  color: rgba(60,47,53,.78);
+}
+
+.faq-live-weather-temp {
+  flex: 0 0 auto;
+  font-size: clamp(36px,5vw,50px);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--deep-purple);
+  white-space: nowrap;
+}
+
+.faq-live-weather-days {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 9px;
+}
+
+.faq-live-weather-day {
+  padding: 11px 8px;
+  border-radius: 14px;
+  background: rgba(239,226,200,.30);
+  text-align: center;
+}
+
+.faq-live-weather-day strong,
+.faq-live-weather-day span {
+  display: block;
+}
+
+.faq-live-weather-day strong {
+  margin-bottom: 3px;
+  font-size: 12px;
+  color: var(--deep-purple);
+}
+
+.faq-live-weather-day span {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(60,47,53,.76);
+}
+
+.faq-live-weather-status {
+  margin: 4px 0 0 !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: rgba(60,47,53,.68);
+}
+
+@media (max-width: 560px) {
+  .faq-live-weather-card {
+    padding: 18px;
+  }
+
+  .faq-live-weather-top {
+    align-items: flex-start;
+  }
+
+  .faq-live-weather-temp {
+    font-size: 36px;
+  }
+
+  .faq-live-weather-days {
+    grid-template-columns: 1fr;
+  }
+
+  .faq-live-weather-day {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    text-align: left;
+    padding: 10px 12px;
+  }
+
+  .faq-live-weather-day strong {
+    margin: 0;
+  }
+
+  .faq-live-weather-day span {
+    text-align: right;
+  }
+
+  .faq-live-weather-day span + span {
+    grid-column: 1 / -1;
+    margin-top: 3px;
+    text-align: left;
+  }
+}
