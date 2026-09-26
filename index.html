@@ -1261,6 +1261,366 @@
     }
 
 
+    /* Our Story — romantic editorial layout */
+    #story.story-section {
+      position: relative;
+      max-width: none !important;
+      overflow: hidden;
+      padding-top: 96px !important;
+      padding-bottom: 112px !important;
+      background:
+        radial-gradient(circle at 9% 9%, rgba(217,198,232,.22), transparent 30%),
+        radial-gradient(circle at 91% 91%, rgba(239,226,200,.50), transparent 31%),
+        linear-gradient(180deg, #fffdf9 0%, #ffffff 48%, #fffaf1 100%) !important;
+    }
+
+    #story.story-section::before,
+    #story.story-section::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px solid rgba(199,158,73,.12);
+      pointer-events: none;
+    }
+
+    #story.story-section::before {
+      left: -175px;
+      top: 230px;
+      box-shadow: 0 0 0 24px rgba(217,198,232,.045), 0 0 0 48px rgba(199,158,73,.025);
+    }
+
+    #story.story-section::after {
+      right: -175px;
+      bottom: 240px;
+      box-shadow: 0 0 0 24px rgba(239,226,200,.07), 0 0 0 48px rgba(199,158,73,.025);
+    }
+
+    .story-chapters {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 1160px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .story-chapter {
+      position: relative;
+      overflow: hidden;
+      padding: 38px 34px 36px;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 50% -8%, rgba(239,226,200,.36), transparent 36%),
+        linear-gradient(155deg, rgba(255,255,255,.99), rgba(255,250,242,.97));
+      border: 1px solid rgba(199,158,73,.30);
+      box-shadow: 0 24px 60px rgba(47,29,50,.09);
+      text-align: center;
+    }
+
+    .story-chapter::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 94px;
+      height: 3px;
+      transform: translateX(-50%);
+      border-radius: 0 0 999px 999px;
+      background: linear-gradient(90deg, transparent, #c79e49 18%, #f0d783 50%, #c79e49 82%, transparent);
+    }
+
+    .story-chapter-featured {
+      background:
+        radial-gradient(circle at 50% -10%, rgba(217,198,232,.34), transparent 38%),
+        linear-gradient(155deg, rgba(255,255,255,.99), rgba(250,244,253,.97));
+      border-color: rgba(125,79,141,.22);
+    }
+
+    .story-chapter-icon {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      color: #7d4f8d;
+      background:
+        radial-gradient(circle at 35% 27%, rgba(255,255,255,.98) 0 18%, rgba(247,240,250,.98) 52%, rgba(231,217,239,.91) 100%);
+      border: 1px solid rgba(125,79,141,.22);
+      box-shadow:
+        0 15px 34px rgba(75,36,95,.12),
+        inset 0 0 0 5px rgba(255,255,255,.58);
+    }
+
+    .story-chapter-icon::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      right: 8px;
+      width: 7px;
+      height: 7px;
+      transform: rotate(45deg);
+      background: linear-gradient(135deg, #f4df92, #b98525);
+      box-shadow: 0 0 10px rgba(199,158,73,.24);
+    }
+
+    .story-chapter-icon svg {
+      width: 44px;
+      height: 44px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.45;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .story-chapter-kicker {
+      margin: 0 0 7px !important;
+      color: #9b7430 !important;
+      font-family: Arial, sans-serif;
+      font-size: 11px !important;
+      font-weight: 700;
+      letter-spacing: .16em;
+      line-height: 1.4 !important;
+      text-transform: uppercase;
+    }
+
+    .story-chapter h3 {
+      margin: 0 0 16px;
+      color: var(--deep-purple);
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .story-chapter p:not(.story-chapter-kicker) {
+      margin: 0 auto 13px;
+      color: rgba(60,47,53,.78);
+      font-size: 16px;
+      line-height: 1.75;
+      text-align: left;
+    }
+
+    .story-chapter p:last-child {
+      margin-bottom: 0;
+    }
+
+    .story-quote {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 900px);
+      margin: 42px auto 58px;
+      padding: 25px 70px 27px;
+      border: 0;
+      border-radius: 999px;
+      text-align: center;
+      color: var(--deep-purple);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.35), rgba(239,226,200,.52) 18%, rgba(239,226,200,.52) 82%, rgba(255,255,255,.35));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.78);
+    }
+
+    .story-quote::before,
+    .story-quote::after {
+      content: "✦";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #c79e49;
+      font-size: 13px;
+    }
+
+    .story-quote::before { left: 36px; }
+    .story-quote::after { right: 36px; }
+
+    .story-quote span {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(20px, 2.3vw, 28px);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .story-journey-heading {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 780px);
+      margin: 0 auto 34px;
+      text-align: center;
+    }
+
+    .story-journey-heading .eyebrow {
+      margin-bottom: 8px;
+      color: #9b7430;
+    }
+
+    .story-journey-heading h3 {
+      margin: 0 0 10px;
+      color: var(--deep-purple);
+      font-size: clamp(29px, 4vw, 40px);
+      line-height: 1.2;
+    }
+
+    .story-journey-heading > p:last-child {
+      margin: 0 auto;
+      color: rgba(60,47,53,.72);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .story-journey-grid {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px 64px;
+    }
+
+    .story-journey-grid::before {
+      content: "";
+      position: absolute;
+      top: 20px;
+      bottom: 20px;
+      left: 50%;
+      width: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, transparent, rgba(199,158,73,.56) 6%, rgba(199,158,73,.56) 94%, transparent);
+    }
+
+    .story-milestone {
+      position: relative;
+      min-height: 142px;
+      padding: 24px 28px 22px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(199,158,73,.22);
+      box-shadow: 0 14px 34px rgba(48,31,50,.065);
+    }
+
+    .story-milestone::after {
+      content: "";
+      position: absolute;
+      top: 30px;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      transform: rotate(45deg);
+      background: #c79e49;
+      border: 2px solid #fffaf1;
+      box-shadow: 0 0 0 1px rgba(199,158,73,.52);
+    }
+
+    .story-milestone:nth-child(odd)::after {
+      right: -38px;
+    }
+
+    .story-milestone:nth-child(even)::after {
+      left: -38px;
+    }
+
+    .story-year {
+      display: inline-block;
+      margin-bottom: 7px;
+      color: #9b7430;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .story-milestone h4 {
+      margin: 0 0 7px;
+      color: var(--deep-purple);
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .story-milestone p {
+      margin: 0;
+      color: rgba(60,47,53,.72);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .story-milestone-final {
+      background:
+        radial-gradient(circle at 86% 5%, rgba(217,198,232,.28), transparent 42%),
+        linear-gradient(145deg, rgba(255,255,255,.98), rgba(255,249,239,.98));
+      border-color: rgba(125,79,141,.22);
+    }
+
+    .story-milestone-final h4 {
+      font-size: 23px;
+    }
+
+    @media (max-width: 980px) {
+      .story-chapters {
+        grid-template-columns: 1fr;
+        max-width: 760px;
+      }
+
+      .story-chapter {
+        padding-left: 38px;
+        padding-right: 38px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      #story.story-section {
+        padding-top: 72px !important;
+        padding-bottom: 84px !important;
+      }
+
+      .story-chapter {
+        padding: 32px 24px 30px;
+        border-radius: 26px;
+      }
+
+      .story-chapter p:not(.story-chapter-kicker) {
+        font-size: 15.5px;
+      }
+
+      .story-quote {
+        margin: 34px auto 48px;
+        padding: 22px 42px 24px;
+        border-radius: 24px;
+      }
+
+      .story-quote::before { left: 18px; }
+      .story-quote::after { right: 18px; }
+
+      .story-journey-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding-left: 26px;
+      }
+
+      .story-journey-grid::before {
+        left: 8px;
+        transform: none;
+      }
+
+      .story-milestone {
+        min-height: 0;
+        padding: 22px 23px 21px;
+      }
+
+      .story-milestone:nth-child(odd)::after,
+      .story-milestone:nth-child(even)::after {
+        left: -23px;
+        right: auto;
+        top: 27px;
+      }
+    }
+
+
     /* Elegant monetary gifts preview */
     .gifts-home-section {
       position: relative;
@@ -1552,15 +1912,140 @@
       </div>
     </section>
 
-    <section id="story" class="section intro-section">
+    <section id="story" class="section intro-section story-section">
       <div class="section-heading">
         <p class="eyebrow">Our Story</p>
-        <h2>A celebration of love, family, and faith</h2>
+        <h2>From Our First Run to Forever</h2>
+        <p class="section-subtitle">A story shaped by miles, unexpected detours, faith, and choosing each other through every climb.</p>
       </div>
-      <p class="center-text">
-        This website will be our official guide for the wedding day. You’ll find the venue details,
-        dress code, seating arrangement, directions, and important reminders here.
-      </p>
+
+      <div class="story-chapters">
+        <article class="story-chapter">
+          <div class="story-chapter-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M10 35c5-8 10-12 15-12 4.8 0 6.8 4 11 4 2.6 0 4.8-1.1 7-3.3"></path>
+              <path d="M10 35h9"></path>
+              <circle cx="15" cy="14" r="4"></circle>
+              <circle cx="33" cy="12" r="4"></circle>
+              <path d="M15 18v9l-4 8"></path>
+              <path d="M15 23l7 4"></path>
+              <path d="M33 16v8l5 6"></path>
+              <path d="M33 21l-6 4"></path>
+            </svg>
+          </div>
+          <p class="story-chapter-kicker">September 2019</p>
+          <h3>How We Met</h3>
+          <p>We met through a running community in Vertis North, Quezon City. Philip was one of the coaches, and Liezl was one of the trainees. Somewhere between exhausting running drills and pre-race nerves, every run started to feel like another excuse to see each other.</p>
+          <p>Road runs soon became trail runs, hiking trips, food trips, and countless adventures together. Along the way, we realized we had found the perfect teammate for life—someone ready for both the easy roads and the steep climbs.</p>
+        </article>
+
+        <article class="story-chapter story-chapter-featured">
+          <div class="story-chapter-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <circle cx="19" cy="25" r="10"></circle>
+              <circle cx="29" cy="25" r="10"></circle>
+              <path d="M17 13l2-5 2 5"></path>
+              <path d="M27 13l2-5 2 5"></path>
+              <path d="M8 38h32"></path>
+              <path d="M35 8l1.2 2.8L39 12l-2.8 1.2L35 16l-1.2-2.8L31 12l2.8-1.2L35 8Z"></path>
+            </svg>
+          </div>
+          <p class="story-chapter-kicker">September 2023</p>
+          <h3>The Proposal</h3>
+          <p>Fast-forward to our trip to Singapore. Philip planned to propose beneath the glowing Supertrees at Gardens by the Bay, but before he could ask, the park closed and the lights went completely dark.</p>
+          <p>He quickly changed course and brought Liezl to the Merlion instead. With the skyline glowing and the city lights reflecting on the water, Philip asked the question—and Liezl said yes. It was not the original plan, but it became completely ours.</p>
+        </article>
+
+        <article class="story-chapter">
+          <div class="story-chapter-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M24 7v10"></path>
+              <path d="M19 12h10"></path>
+              <path d="M13 39V22l11-7 11 7v17"></path>
+              <path d="M10 39h28"></path>
+              <path d="M20 39v-9h8v9"></path>
+              <path d="M15 26h4"></path>
+              <path d="M29 26h4"></path>
+            </svg>
+          </div>
+          <p class="story-chapter-kicker">Through Every Season</p>
+          <h3>Faith &amp; Us</h3>
+          <p>Running is what got us moving, but our faith is what keeps us together. Sunday Mass has been our anchor from the very beginning, no matter how busy life gets.</p>
+          <p>Running taught us how to keep moving through long roads and difficult climbs. Our faith teaches us how to keep pace with each other, side by side. Now we are ready for the next journey—one we hope to walk together for the rest of our lives.</p>
+        </article>
+      </div>
+
+      <blockquote class="story-quote">
+        <span>“Running brought us together. Faith keeps us together.”</span>
+      </blockquote>
+
+      <div class="story-journey-heading">
+        <p class="eyebrow">Miles We’ve Shared</p>
+        <h3>Little Moments, Big Memories</h3>
+        <p>From first dates and trail runs to mountain climbs, pets, and a proposal with a change of plans—these are some of the moments that made our story ours.</p>
+      </div>
+
+      <div class="story-journey-grid">
+        <article class="story-milestone">
+          <span class="story-year">2019</span>
+          <h4>Our First Date</h4>
+          <p>Fisher Mall—and Liezl’s signature hairstyle making an unforgettable appearance.</p>
+        </article>
+
+        <article class="story-milestone">
+          <span class="story-year">2019</span>
+          <h4>Our First Photo Together</h4>
+          <p>Amoranto, Quezon City. Back when we were still very hardworking runners.</p>
+        </article>
+
+        <article class="story-milestone">
+          <span class="story-year">2019</span>
+          <h4>First Out-of-Town Adventure</h4>
+          <p>Batangas gave us one very memorable—and slightly traumatic—trail run. Somehow, we still signed up for more.</p>
+        </article>
+
+        <article class="story-milestone">
+          <span class="story-year">2023</span>
+          <h4>Eunuch Joined the Team</h4>
+          <p>Our little family grew, and life immediately became a little more playful.</p>
+        </article>
+
+        <article class="story-milestone">
+          <span class="story-year">2023</span>
+          <h4>Our First 30K Trail Run</h4>
+          <p>Datu Salumay brought scorching heat, tired legs, and—thankfully—lechon waiting at the finish line.</p>
+        </article>
+
+        <article class="story-milestone">
+          <span class="story-year">2023</span>
+          <h4>She Said Yes</h4>
+          <p>Singapore. A proposal that did not go exactly as planned, which somehow made it even more unforgettable.</p>
+        </article>
+
+        <article class="story-milestone">
+          <span class="story-year">2024</span>
+          <h4>Our First Major Climb</h4>
+          <p>Mt. Kitanglad—our first major summit together, with a view that made every step completely worth it.</p>
+        </article>
+
+        <article class="story-milestone">
+          <span class="story-year">2025</span>
+          <h4>A Hike With a Lesson</h4>
+          <p>Mt. Kilakiron gave us our first hiking injury and one lasting reminder: never take on a serious climb without training.</p>
+        </article>
+
+        <article class="story-milestone">
+          <span class="story-year">2026</span>
+          <h4>Double Trouble</h4>
+          <p>Manchi joined Eunuch, officially doubling the chaos—and the love—in our little family.</p>
+        </article>
+
+        <article class="story-milestone story-milestone-final">
+          <span class="story-year">10 · 19 · 2026</span>
+          <h4>Our Forever</h4>
+          <p>The next chapter begins in Dahilayan, surrounded by the people who have shared the journey with us.</p>
+        </article>
+      </div>
     </section>
 
     <section id="details" class="section details-section">
