@@ -1906,22 +1906,55 @@
       </div>
     </section>
 
-    <section id="seating" class="section muted">
+    <section id="seating" class="section muted seating-lookup-section">
       <div class="section-heading">
         <p class="eyebrow">Reception Guide</p>
         <h2>Find Your Table</h2>
+        <p class="section-subtitle">We've saved a special place for you. Enter your full name to find your assigned table at our wedding reception.</p>
       </div>
-      <p class="center-text">
-        Type your name below to check your assigned table. This section uses sample names for now.
-      </p>
-      <div class="search-box">
-        <input type="text" id="seatSearch" placeholder="Enter your First Name and Last Name" />
-        <button id="searchButton" class="btn primary">Search</button>
-      </div>
-      <div id="seatResult" class="seat-result">
-        Your table assignment will appear here.
+
+      <div class="seating-lookup-card">
+        <div class="seating-lookup-decoration" aria-hidden="true">✦</div>
+        <p class="seating-lookup-overline">Your Seat Awaits</p>
+        <form id="seatLookupForm" class="search-box seating-search-box" autocomplete="off">
+          <label class="seating-input-label" for="seatSearch">Full Name</label>
+          <input type="text" id="seatSearch" name="seatSearch"
+                 placeholder="Enter your first name and last name"
+                 maxlength="120" autocomplete="name" required />
+          <button type="submit" id="searchButton" class="btn primary">Find My Table</button>
+        </form>
+        <p class="seating-lookup-note">Please use the name listed on your invitation.</p>
+        <p id="seatResult" class="seat-result" role="status" aria-live="polite" hidden></p>
       </div>
     </section>
+
+    <div class="seat-modal" id="seatModal" role="dialog" aria-modal="true"
+         aria-labelledby="seatModalName" aria-describedby="seatModalMessage" hidden>
+      <div class="seat-modal-panel">
+        <button type="button" class="seat-modal-close" id="seatModalClose"
+                aria-label="Close seating plan">&times;</button>
+        <div class="seat-modal-content">
+          <div class="seat-modal-welcome">
+            <span class="seat-modal-kicker">A Place for You</span>
+            <span class="seat-modal-ornament" aria-hidden="true">✦</span>
+            <h2 id="seatModalName">Welcome!</h2>
+            <p class="seat-modal-celebration">We're so glad you can celebrate with us.</p>
+            <div class="seat-modal-assignment">
+              <span>Your Assigned Seat</span>
+              <strong id="seatModalTable">Table 1</strong>
+            </div>
+            <p id="seatModalMessage" class="seat-modal-message"></p>
+            <p class="seat-modal-signoff">With love, <em>Philip &amp; Liezl</em></p>
+          </div>
+          <figure class="seat-modal-figure">
+            <div id="seatMap" class="seat-modal-map" aria-label="Reception seating diagram"></div>
+            <figcaption><span class="seat-map-legend-dot" aria-hidden="true"></span>
+              Your assigned table is highlighted in lavender and gold.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
 
     <section id="gallery" class="section gallery-section muted">
       <div class="section-heading">
@@ -2084,6 +2117,7 @@
     <p>Thank you for being part of our story.</p>
   </footer>
 
-  <script src="script.js?v=intro-loop-20260911"></script>
+  <script src="script.js?v=seating-20261016"></script>
+  <script src="seating.js?v=seating-20261016"></script>
 </body>
 </html>
