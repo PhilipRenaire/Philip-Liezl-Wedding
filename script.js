@@ -314,50 +314,10 @@ if (countdownElements.days && countdownElements.hours && countdownElements.minut
   setInterval(updateCountdown, 1000);
 }
 
-// Sample seating data. Do not place private guest data in a public repository.
-const seatingData = [
-  { name: 'Sample Guest', table: 'Table 1', group: 'Family' },
-  { name: 'Maria Santos', table: 'Table 2', group: 'Relatives' },
-  { name: 'Juan Dela Cruz', table: 'Table 3', group: 'Friends' }
-];
-
-const searchInput = document.getElementById('seatSearch');
-const searchButton = document.getElementById('searchButton');
-const result = document.getElementById('seatResult');
-
+// Seating lookups now live in seating.js. Guest names are not stored here.
+// Keep this shared helper for the RSVP form.
 function normalize(value) {
   return String(value || '').toLowerCase().trim().replace(/\s+/g, ' ');
-}
-
-function searchSeat() {
-  if (!searchInput || !result) {
-    return;
-  }
-
-  const query = normalize(searchInput.value);
-
-  if (!query) {
-    result.textContent = 'Please enter your name to check your table assignment.';
-    return;
-  }
-
-  const guest = seatingData.find((item) => normalize(item.name).includes(query));
-
-  if (!guest) {
-    result.textContent = "We're still putting the finishing touches on our seating plan. Check back here at least one week before the big day to see where you'll be sitting. We can't wait to celebrate with you!";
-    return;
-  }
-
-  result.innerHTML = `<strong>${guest.name}</strong><br>You are assigned to <strong>${guest.table}</strong><br><span>${guest.group}</span>`;
-}
-
-if (searchButton && searchInput) {
-  searchButton.addEventListener('click', searchSeat);
-  searchInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      searchSeat();
-    }
-  });
 }
 
 // RSVP plus-one lookup. Keep the real guest list private in Google Sheets, not in this public file.
