@@ -179,6 +179,14 @@
       }
     }
 
+    .optional-label {
+      color: var(--orchid);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: none;
+    }
+
     .card {
       width: min(860px, calc(100% - 28px));
       margin: 0 auto 54px;
@@ -547,7 +555,7 @@
     </div>
 
     <h1>Share Your Memories</h1>
-    <p class="subtitle">Help us see our wedding through your eyes. Share the photos and videos you captured, and leave us a little video message to remember the day by.</p>
+    <p class="subtitle">Help us see our wedding through your eyes. Share the photos and videos you captured, and, if you wish, leave us a little video message to remember the day by.</p>
     <div class="hero-divider" aria-hidden="true"><span>◆</span></div>
   </section>
 
@@ -559,12 +567,12 @@
       </label>
 
       <section class="section-box video-message">
-        <h2 class="box-title">Video Message for the Couple <span class="required">*</span></h2>
-        <p class="box-copy">Tap the button below to open your phone camera and record a short greeting, wish, or message for Philip &amp; Liezl.</p>
+        <h2 class="box-title">Video Message for the Couple <span class="optional-label">(Optional)</span></h2>
+        <p class="box-copy">If you wish, tap below to record a short greeting, wish, or message for Philip &amp; Liezl. You can share your photos and videos without recording a message.</p>
         <label class="record-button" for="videoMessage">Record Your Video Message for the Couple</label>
-        <input id="videoMessage" class="hidden-file-input" type="file" accept="video/*" capture="user" required>
+        <input id="videoMessage" class="hidden-file-input" type="file" accept="video/*" capture="user">
         <div id="videoSelection" class="video-selection" aria-live="polite"></div>
-        <p class="small">After recording, the video will be attached here and uploaded when you tap “Share With Philip &amp; Liezl.” Maximum: 10 GB.</p>
+        <p class="small">Optional. If recorded, your message will upload with your wedding memories when you tap “Share With Philip &amp; Liezl.” Maximum: 10 GB per file.</p>
       </section>
 
       <section class="section-box">
@@ -618,17 +626,17 @@
       const videoMessage = videoMessageInput.files[0];
       const memories = Array.from(document.getElementById('files').files || []);
 
-      if (!guestName || !videoMessage || !memories.length) {
+      if (!guestName || !memories.length) {
         form.reportValidity();
         return;
       }
 
-      if (!videoMessage.type.startsWith('video/')) {
+      if (videoMessage && !videoMessage.type.startsWith('video/')) {
         statusBox.textContent = 'Please choose a video file for your message to the couple.';
         return;
       }
 
-      const allFiles = [videoMessage, ...memories];
+      const allFiles = videoMessage ? [videoMessage, ...memories] : memories;
       const tooLarge = allFiles.find(file => file.size > MAX_BYTES);
       if (tooLarge) {
         statusBox.textContent = tooLarge.name + ' is larger than 10 GB. Please choose a smaller file.';
@@ -646,7 +654,7 @@
       statusBox.textContent = '';
 
       const uploads = [
-        { file: videoMessage, uploadType: 'Video Message' },
+        ...(videoMessage ? [{ file: videoMessage, uploadType: 'Video Message' }] : []),
         ...memories.map(file => ({ file, uploadType: 'Wedding Memory' }))
       ];
 
@@ -708,7 +716,7 @@
           '<div class="success">' +
             '<p class="eyebrow">Thank You</p>' +
             '<h2 style="margin:0 0 12px;color:#4b245f;font-family:Georgia,serif;text-align:center;">Your memories are with us.</h2>' +
-            '<p style="margin:0;text-align:center;line-height:1.7;">Your video message and wedding photos/videos are now in our private review area. Thank you for helping us remember our day.</p>' +
+            '<p style="margin:0;text-align:center;line-height:1.7;">Your wedding photos and videos' + (videoMessage ? ', along with your video message,' : '') + ' are now in our private review area. Thank you for helping us remember our day.</p>' +
           '</div>';
       } catch (err) {
         statusBox.textContent =
