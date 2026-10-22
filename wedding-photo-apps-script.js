@@ -11,7 +11,8 @@
  * SETUP / UPDATE
  * 1. Paste this file into Code.gs in the wedding-media Apps Script project.
  * 2. Paste wedding-photo-upload.html into Upload.html.
- * 3. Run setupWeddingPhotoSystem() once after updating.
+ * 3. Run setupWeddingPhotoSystem() once after updating. This installs the
+ *    five-minute Approved-folder sync trigger and imports existing direct uploads.
  * 4. Update the existing Web App deployment to a NEW VERSION.
  *
  * NOTE:
@@ -22,6 +23,9 @@
  * - Every uploaded file starts as Pending.
  * - Video Messages are tagged separately from Wedding Memories.
  * - Change Status in the Google Sheet to Approved or Rejected to move the file automatically.
+ * - Photos and videos added directly to the Approved Drive folder are registered
+ *   in the sheet and made viewable in the gallery within approximately 5 minutes.
+ * - Existing sheet records are never re-imported or auto-approved by folder sync.
  */
 
 const CONFIG = {
@@ -155,11 +159,21 @@ function setupWeddingPhotoSystem() {
     .onEdit()
     .create();
 
+  // The regular sheet-edit trigger handles guest-upload moderation.
+  // This time trigger imports newly added files from the Approved Drive folder.
+  deleteTriggersByHandler_('syncApprovedFolderToGallery');
+  ScriptApp.newTrigger('syncApprovedFolderToGallery')
+    .timeBased()
+    .everyMinutes(5)
+    .create();
+
   syncApprovedGallerySharing();
+  const approvedFolderSync = syncApprovedFolderToGallery();
 
   return {
     ok: true,
-    message: 'Wedding photo system is ready for resumable uploads up to 10 GB per file.',
+    message: 'Wedding memories are ready for resumable uploads up to 10 GB per file and automatic Approved-folder gallery sync.',
+    approvedFolderSync: approvedFolderSync,
     rootFolderUrl: root.getUrl(),
     pendingFolderUrl: pending.getUrl(),
     approvedFolderUrl: approved.getUrl(),
@@ -654,6 +668,107 @@ function syncApprovedGallerySharing() {
   });
 
   return { ok: true, updated: updated };
+}
+
+/**
+ * Imports new photos and videos that were uploaded directly into the Approved
+ * Google Drive folder (for example, by the couple using Drive's upload UI).
+ *
+ * Does not change existing upload records or override moderation statuses.
+ * File IDs are the deduplication keys so repeated sync runs are safe.
+ * Installed by setupWeddingPhotoSystem() as a five-minute time trigger.
+ * You may also run this function manually for an immediate sync.
+ */
+function syncApprovedFolderToGallery() {
+  ensureSetup_();
+
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(20000)) {
+    return { ok: false, message: 'Approved-folder sync is already running.' };
+  }
+
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const folder = DriveApp.getFolderById(props.getProperty('APPROVED_FOLDER_ID'));
+    const spreadsheet = SpreadsheetApp.openById(props.getProperty('SPREADSHEET_ID'));
+    const sheet = spreadsheet.getSheetByName(props.getProperty('SHEET_NAME') || CONFIG.sheetName);
+
+    // Check every tracked ID, including Pending and Rejected items: moving a
+    // tracked item into Approved must never silently bypass the approval sheet.
+    const lastRow = sheet.getLastRow();
+    const knownIds = new Set(
+      lastRow > 1
+        ? sheet.getRange(2, COL.driveFileId, lastRow - 1, 1)
+            .getValues().map(row => String(row[0] || '').trim()).filter(Boolean)
+        : []
+    );
+
+    const iterator = folder.getFiles();
+    const rows = [];
+    let alreadyTracked = 0;
+    let unsupported = 0;
+    let failures = 0;
+
+    while (iterator.hasNext()) {
+      const file = iterator.next();
+      const fileId = file.getId();
+
+      if (knownIds.has(fileId)) {
+        alreadyTracked += 1;
+        continue;
+      }
+
+      const mimeType = String(file.getMimeType() || '');
+      if (!CONFIG.allowedMimePrefixes.some(prefix => mimeType.startsWith(prefix))) {
+        unsupported += 1;
+        continue;
+      }
+
+      try {
+        // Only new direct uploads become public gallery items. If public
+        // sharing is restricted, leave the file untracked and retry next sync.
+        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+        rows.push([
+          Utilities.getUuid(),
+          file.getDateCreated() || new Date(),
+          'Philip & Liezl',
+          'Wedding Memory',
+          file.getName(),
+          mimeType,
+          Number(file.getSize() || 0),
+          fileId,
+          file.getUrl(),
+          'Approved',
+          new Date()
+        ]);
+        knownIds.add(fileId);
+      } catch (err) {
+        failures += 1;
+        console.error('Could not register direct Approved upload ' + fileId + ':', err);
+      }
+    }
+
+    if (rows.length) {
+      const nextRow = sheet.getLastRow() + 1;
+      const lastNeededRow = nextRow + rows.length - 1;
+      if (lastNeededRow > sheet.getMaxRows()) {
+        sheet.insertRowsAfter(sheet.getMaxRows(), lastNeededRow - sheet.getMaxRows());
+      }
+      sheet.getRange(nextRow, 1, rows.length, HEADERS.length).setValues(rows);
+      SpreadsheetApp.flush();
+    }
+
+    return {
+      ok: true,
+      imported: rows.length,
+      alreadyTracked: alreadyTracked,
+      unsupported: unsupported,
+      failures: failures
+    };
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function getUploadQueue(status) {
