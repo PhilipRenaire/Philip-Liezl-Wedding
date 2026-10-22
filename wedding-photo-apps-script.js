@@ -6,7 +6,7 @@
  *
  * This version uses Google Drive resumable uploads with small chunks relayed
  * through Apps Script. This avoids direct browser-to-Drive upload failures on
- * mobile while still allowing files up to 1 GB.
+ * mobile while still allowing files up to 10 GB.
  *
  * SETUP / UPDATE
  * 1. Paste this file into Code.gs in the wedding-media Apps Script project.
@@ -18,7 +18,7 @@
  * - Guest Name is required.
  * - A Video Message for the Couple is required.
  * - At least one wedding photo/video memory is required.
- * - Maximum individual file size is 1 GB.
+ * - Maximum individual file size is 10 GB.
  * - Every uploaded file starts as Pending.
  * - Video Messages are tagged separately from Wedding Memories.
  * - Change Status in the Google Sheet to Approved or Rejected to move the file automatically.
@@ -31,7 +31,7 @@ const CONFIG = {
   rejectedFolderName: 'Rejected',
   spreadsheetName: 'Wedding Photo Uploads',
   sheetName: 'Uploads',
-  maxFileBytes: 1024 * 1024 * 1024, // 1 GB per individual file
+  maxFileBytes: 10 * 1024 * 1024 * 1024, // 10 GB per individual file
   maxChunkBytes: 4 * 1024 * 1024, // 4 MB chunks for mobile reliability
   allowedMimePrefixes: ['image/', 'video/'],
   allowedUploadTypes: ['Wedding Memory', 'Video Message']
@@ -159,7 +159,7 @@ function setupWeddingPhotoSystem() {
 
   return {
     ok: true,
-    message: 'Wedding photo system is ready for resumable uploads up to 1 GB per file.',
+    message: 'Wedding photo system is ready for resumable uploads up to 10 GB per file.',
     rootFolderUrl: root.getUrl(),
     pendingFolderUrl: pending.getUrl(),
     approvedFolderUrl: approved.getUrl(),
@@ -499,7 +499,7 @@ function validateUploadRequest_(guestName, uploadType, originalFileName, mimeTyp
   }
 
   if (fileSize > CONFIG.maxFileBytes) {
-    throw new Error('This file is too large. Maximum size is 1 GB per file.');
+    throw new Error('This file is too large. Maximum size is 10 GB per file.');
   }
 }
 
