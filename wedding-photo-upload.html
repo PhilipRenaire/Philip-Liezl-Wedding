@@ -564,14 +564,14 @@
         <label class="record-button" for="videoMessage">Record Your Video Message for the Couple</label>
         <input id="videoMessage" class="hidden-file-input" type="file" accept="video/*" capture="user" required>
         <div id="videoSelection" class="video-selection" aria-live="polite"></div>
-        <p class="small">After recording, the video will be attached here and uploaded when you tap “Share With Philip &amp; Liezl.” Maximum: 1 GB.</p>
+        <p class="small">After recording, the video will be attached here and uploaded when you tap “Share With Philip &amp; Liezl.” Maximum: 10 GB.</p>
       </section>
 
       <section class="section-box">
         <h2 class="box-title">Share Your Wedding Photos &amp; Videos <span class="required">*</span></h2>
         <p class="box-copy">Upload the moments you captured during the celebration. You can choose several files at once.</p>
         <input id="files" type="file" accept="image/*,video/*" multiple required>
-        <p class="small">At least one wedding photo or video is required. Maximum: 1 GB per file. Large uploads are sent in small secure parts, so keep this page open until it finishes.</p>
+        <p class="small">At least one wedding photo or video is required. Maximum: 10 GB per file. Large uploads are sent in small secure parts, so keep this page open until it finishes.</p>
       </section>
 
       <div class="notice">Everything goes to our private Pending area first. Wedding memories can only appear in the public album after approval. Video messages are tagged separately for Philip &amp; Liezl.</div>
@@ -587,7 +587,7 @@
   </main>
 
   <script>
-    const MAX_BYTES = 1024 * 1024 * 1024;
+    const MAX_BYTES = 10 * 1024 * 1024 * 1024;
     const CHUNK_SIZE = 4 * 1024 * 1024; // 4 MB chunks for more reliable mobile uploads
 
     const form = document.getElementById('uploadForm');
@@ -631,7 +631,7 @@
       const allFiles = [videoMessage, ...memories];
       const tooLarge = allFiles.find(file => file.size > MAX_BYTES);
       if (tooLarge) {
-        statusBox.textContent = tooLarge.name + ' is larger than 1 GB. Please choose a smaller file.';
+        statusBox.textContent = tooLarge.name + ' is larger than 10 GB. Please choose a smaller file.';
         return;
       }
 
