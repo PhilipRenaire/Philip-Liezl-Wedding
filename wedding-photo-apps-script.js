@@ -16,7 +16,7 @@
  *
  * NOTE:
  * - Guest Name is required.
- * - A Video Message for the Couple is required.
+ * - A Video Message for the Couple is optional; guests can upload memories without one.
  * - At least one wedding photo/video memory is required.
  * - Maximum individual file size is 10 GB.
  * - Every uploaded file starts as Pending.
