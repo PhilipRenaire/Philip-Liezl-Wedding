@@ -70,10 +70,16 @@ const HEADERS = [
 ];
 
 function doGet(e) {
-  const page = String((e && e.parameter && e.parameter.page) || '').toLowerCase();
+  const params = (e && e.parameter) || {};
+  const page = String(params.page || '').toLowerCase();
   const isGallery = page === 'gallery';
 
-  return HtmlService.createHtmlOutputFromFile(isGallery ? 'Gallery' : 'Upload')
+  // Hide the internal gallery header/hero only when the gallery is embedded
+  // inside the wedding website. Keep the full header for standalone visits.
+  const template = HtmlService.createTemplateFromFile(isGallery ? 'Gallery' : 'Upload');
+  template.isEmbeddedGallery = isGallery && String(params.embedded || '') === '1';
+
+  return template.evaluate()
     .setTitle(isGallery ? 'Wedding Memories | Philip & Liezl' : 'Share Your Memories | Philip & Liezl')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
