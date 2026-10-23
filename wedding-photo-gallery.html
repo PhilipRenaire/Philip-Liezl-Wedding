@@ -425,11 +425,17 @@
       transition: background .2s ease, opacity .24s ease;
     }
 
-    /* Desktop arrows appear while the cursor is moving, or during keyboard focus. */
-    .lightbox-panel.nav-visible .lightbox-nav:not([hidden]),
-    .lightbox-panel:focus-within .lightbox-nav:not([hidden]) {
+    /* Both desktop and mobile arrows fade out after two seconds. */
+    .lightbox-panel.nav-visible .lightbox-nav:not([hidden]) {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .lightbox-nav:focus-visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
 
     .lightbox-nav:hover,
@@ -447,12 +453,30 @@
     /* Allow vertical page gestures, but reserve horizontal swipes for memories. */
     .lightbox-panel { touch-action: pan-y; }
 
-    /* Touch devices use swipes, without on-screen navigation arrows. */
+    /* Video iframes swallow the parent's swipe events on mobile.
+       Transparent side gesture areas sit above only the edges of videos,
+       leaving the centre player and bottom playback controls interactive. */
+    .mobile-video-swipe-edge { display: none; }
+
     @media (hover: none), (pointer: coarse) {
-      .lightbox-nav,
-      .lightbox-panel.nav-visible .lightbox-nav:not([hidden]) {
-        display: none !important;
+      .lightbox-nav:not([hidden]) {
+        /* Even after fading, touching the arrow's position still works. */
+        pointer-events: auto;
       }
+
+      .lightbox-panel.video-active .mobile-video-swipe-edge {
+        display: block;
+        position: absolute;
+        top: 58px;
+        bottom: 64px;
+        width: 23%;
+        z-index: 2;
+        background: transparent;
+        touch-action: pan-y;
+      }
+
+      .mobile-video-swipe-edge-left { left: 0; }
+      .mobile-video-swipe-edge-right { right: 0; }
     }
 
     @media (max-width: 680px) {
@@ -619,6 +643,8 @@
       <button id="lightboxPrev" class="lightbox-nav lightbox-nav-prev" type="button" aria-label="Previous memory" hidden>‹</button>
       <button id="lightboxNext" class="lightbox-nav lightbox-nav-next" type="button" aria-label="Next memory" hidden>›</button>
       <div id="lightboxMedia" class="lightbox-media"></div>
+      <div class="mobile-video-swipe-edge mobile-video-swipe-edge-left" aria-hidden="true"></div>
+      <div class="mobile-video-swipe-edge mobile-video-swipe-edge-right" aria-hidden="true"></div>
       <div id="lightboxCaption" class="lightbox-caption"></div>
     </div>
   </div>
@@ -788,6 +814,7 @@
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden';
       resizeVideoPlayer();
+      revealNavigation();
     }
 
     function closePreview() {
@@ -809,17 +836,24 @@
     window.addEventListener('resize', resizeVideoPlayer);
 
     let navHideTimer;
+
+    function revealNavigation() {
+      clearTimeout(navHideTimer);
+      if (!lightbox.classList.contains('open') || lightboxItems.length < 2) return;
+      lightboxPanel.classList.add('nav-visible');
+      navHideTimer = setTimeout(() => {
+        lightboxPanel.classList.remove('nav-visible');
+      }, 2000);
+    }
+
     lightboxPanel.addEventListener('pointermove', event => {
       if (event.pointerType !== 'mouse' || !lightbox.classList.contains('open')) return;
       if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-      lightboxPanel.classList.add('nav-visible');
-      clearTimeout(navHideTimer);
-      navHideTimer = setTimeout(() => {
-        lightboxPanel.classList.remove('nav-visible');
-      }, 2200);
+      revealNavigation();
     });
 
     lightboxPanel.addEventListener('pointerleave', () => {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
       clearTimeout(navHideTimer);
       lightboxPanel.classList.remove('nav-visible');
     });
@@ -842,8 +876,22 @@
       }
     });
 
+    // Use both touch and pointer gestures for broader iOS/Android support.
+    // The video-edge strips let these events reach us around Drive's iframe.
     let gestureStart = null;
+    let pointerGestureStart = null;
+    let lastSwipeAt = 0;
+
+    function finishSwipe(deltaX, deltaY) {
+      if (Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+      const now = Date.now();
+      if (now - lastSwipeAt < 350) return; // Deduplicate pointerup + touchend.
+      lastSwipeAt = now;
+      navigatePreview(deltaX < 0 ? 1 : -1);
+    }
+
     lightboxPanel.addEventListener('touchstart', event => {
+      revealNavigation();
       gestureStart = null;
       if (event.touches.length !== 1 || event.target.closest('button')) return;
       const touch = event.touches[0];
@@ -853,19 +901,28 @@
     lightboxPanel.addEventListener('touchend', event => {
       if (!gestureStart || event.changedTouches.length !== 1) return;
       const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - gestureStart.x;
-      const deltaY = touch.clientY - gestureStart.y;
+      finishSwipe(touch.clientX - gestureStart.x, touch.clientY - gestureStart.y);
       gestureStart = null;
-
-      // Ignore taps and vertical scrolling; navigate only for deliberate swipes.
-      if (Math.abs(deltaX) >= 55 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
-        navigatePreview(deltaX < 0 ? 1 : -1);
-      }
     }, { passive: true });
 
     lightboxPanel.addEventListener('touchcancel', () => {
       gestureStart = null;
     }, { passive: true });
+
+    lightboxPanel.addEventListener('pointerdown', event => {
+      if (event.pointerType !== 'touch' || event.target.closest('button')) return;
+      pointerGestureStart = { x: event.clientX, y: event.clientY };
+    });
+
+    lightboxPanel.addEventListener('pointerup', event => {
+      if (event.pointerType !== 'touch' || !pointerGestureStart) return;
+      finishSwipe(event.clientX - pointerGestureStart.x, event.clientY - pointerGestureStart.y);
+      pointerGestureStart = null;
+    });
+
+    lightboxPanel.addEventListener('pointercancel', () => {
+      pointerGestureStart = null;
+    });
 
 
     function reportGalleryHeight() {
