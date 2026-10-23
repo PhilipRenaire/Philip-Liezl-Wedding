@@ -579,7 +579,7 @@
         <h2 class="box-title">Share Your Wedding Photos &amp; Videos <span class="required">*</span></h2>
         <p class="box-copy">Upload the moments you captured during the celebration. You can choose several files at once.</p>
         <input id="files" type="file" accept="image/*,video/*" multiple required>
-        <p class="small">At least one wedding photo or video is required. Maximum: 10 GB per file. Large uploads are sent in small secure parts, so keep this page open until it finishes.</p>
+        <p class="small">At least one wedding photo or video is required. Maximum: 10 GB per file. Fast direct uploads are used when supported, with automatic recovery on other browsers. Keep this page open until uploads finish.</p>
       </section>
 
       <div class="notice">Everything goes to our private Pending area first. Wedding memories can only appear in the public album after approval. Video messages are tagged separately for Philip &amp; Liezl.</div>
@@ -596,7 +596,9 @@
 
   <script>
     const MAX_BYTES = 10 * 1024 * 1024 * 1024;
-    const CHUNK_SIZE = 4 * 1024 * 1024; // 4 MB chunks for more reliable mobile uploads
+    const DIRECT_CHUNK_SIZE = 16 * 1024 * 1024; // 16 MiB, multiple of Drive's 256 KiB alignment
+    const RELAY_CHUNK_SIZE = 4 * 1024 * 1024; // Keep existing Apps Script compatibility
+    const MAX_PARALLEL_FILES = 2; // Run two independent files at once
 
     const form = document.getElementById('uploadForm');
     const submitButton = document.getElementById('submitButton');
@@ -659,10 +661,14 @@
       ];
 
       const totalBytes = uploads.reduce((sum, item) => sum + item.file.size, 0);
-      let completedBytes = 0;
+      const fileProgress = uploads.map(() => 0);
+      let nextFileIndex = 0;
 
-      try {
-        for (let i = 0; i < uploads.length; i++) {
+      // Upload at most two different files simultaneously. Drive's chunks
+      // for any individual file must still be sent in order.
+      async function uploadNextFiles() {
+        while (nextFileIndex < uploads.length) {
+          const i = nextFileIndex++;
           const item = uploads[i];
           const file = item.file;
           const label = item.uploadType === 'Video Message' ? 'video message' : 'memory';
@@ -682,7 +688,8 @@
             session.sessionUrl,
             file,
             (fileUploadedBytes) => {
-              const overallUploaded = completedBytes + fileUploadedBytes;
+              fileProgress[i] = Math.min(file.size, fileUploadedBytes);
+              const overallUploaded = fileProgress.reduce((sum, bytes) => sum + bytes, 0);
               const percent = Math.min(99, Math.round((overallUploaded / totalBytes) * 100));
               progressBar.style.width = percent + '%';
               progressText.textContent =
@@ -707,10 +714,22 @@
             driveFileId: uploaded.id
           });
 
-          completedBytes += file.size;
-          const percent = Math.min(100, Math.round((completedBytes / totalBytes) * 100));
-          progressBar.style.width = percent + '%';
+          fileProgress[i] = file.size;
+          const overallUploaded = fileProgress.reduce((sum, bytes) => sum + bytes, 0);
+          progressBar.style.width =
+            Math.min(100, Math.round((overallUploaded / totalBytes) * 100)) + '%';
         }
+      }
+
+      try {
+        // Wait for every active worker to settle even if another file fails.
+        // This avoids re-enabling the form while a second upload is still running.
+        const workerCount = Math.min(MAX_PARALLEL_FILES, uploads.length);
+        const outcomes = await Promise.allSettled(
+          Array.from({ length: workerCount }, () => uploadNextFiles())
+        );
+        const failure = outcomes.find(outcome => outcome.status === 'rejected');
+        if (failure) throw failure.reason;
 
         form.innerHTML =
           '<div class="success">' +
@@ -744,24 +763,36 @@
       });
     }
 
+    /**
+     * Fast route: PUT raw binary chunks to a Drive session created by the
+     * server. No Drive account OAuth token is exposed to wedding guests.
+     * If CORS or a mobile browser blocks direct PUT requests, confirm Drive's
+     * saved offset and resume using the existing Apps Script relay instead.
+     */
     async function uploadFileResumable(sessionUrl, file, onProgress) {
       let start = 0;
+      let useDirect = typeof fetch === 'function';
       let retryCount = 0;
       const maxRetries = 8;
 
       while (start < file.size) {
-        const endExclusive = Math.min(start + CHUNK_SIZE, file.size);
-        const chunk = file.slice(start, endExclusive);
+        const chunkSize = useDirect ? DIRECT_CHUNK_SIZE : RELAY_CHUNK_SIZE;
+        const endExclusive = Math.min(start + chunkSize, file.size);
 
         try {
-          const base64 = await blobToBase64(chunk);
-          const result = await uploadChunk({
-            sessionUrl,
-            start,
-            total: file.size,
-            mimeType: file.type || 'application/octet-stream',
-            base64
-          });
+          let result;
+          if (useDirect) {
+            result = await uploadDirectChunk(sessionUrl, file, start, endExclusive);
+          } else {
+            const base64 = await blobToBase64(file.slice(start, endExclusive));
+            result = await uploadChunk({
+              sessionUrl,
+              start,
+              total: file.size,
+              mimeType: file.type || 'application/octet-stream',
+              base64
+            });
+          }
 
           retryCount = 0;
 
@@ -771,59 +802,97 @@
           }
 
           const nextByte = Number(result && result.nextByte);
-          start = Number.isFinite(nextByte) && nextByte > start
-            ? nextByte
-            : endExclusive;
-
+          if (!Number.isFinite(nextByte) || nextByte <= start || nextByte > file.size) {
+            throw new Error('Google Drive did not confirm upload progress.');
+          }
+          start = nextByte;
           onProgress(start);
         } catch (err) {
-          retryCount += 1;
+          if (useDirect) {
+            // A blocked CORS request should switch paths immediately rather
+            // than repeatedly triggering browser network errors.
+            useDirect = false;
+            progressText.textContent = 'Switching to compatible upload mode…';
+          } else {
+            retryCount += 1;
+            if (retryCount > maxRetries) {
+              throw new Error(
+                'The connection was interrupted too many times. Please keep this page open and try again on a stable connection.'
+              );
+            }
 
-          if (retryCount > maxRetries) {
-            throw new Error(
-              'The connection was interrupted too many times. Please keep this page open and try again on a stable connection.'
-            );
+            progressText.textContent =
+              'Connection interrupted. Safely resuming… attempt ' +
+              retryCount + ' of ' + maxRetries;
+
+            await wait(Math.min(1200 * Math.pow(1.7, retryCount - 1), 10000));
           }
 
-          progressText.textContent =
-            'Connection interrupted. Safely resuming… attempt ' +
-            retryCount + ' of ' + maxRetries;
-
-          await wait(Math.min(1200 * Math.pow(1.7, retryCount - 1), 10000));
-
-          try {
-            const status = await getUploadStatus({
-              sessionUrl,
-              total: file.size
-            });
-
-            if (status && status.done) {
-              onProgress(file.size);
-              return status.file;
+          // A timed-out PUT may have been accepted by Drive. Always ask the
+          // server for the confirmed offset before sending any more data.
+          let recovered = false;
+          for (let attempt = 0; attempt < 4; attempt++) {
+            if (attempt) await wait(1000 * attempt);
+            try {
+              const status = await getUploadStatus({ sessionUrl, total: file.size });
+              if (status && status.done) {
+                onProgress(file.size);
+                return status.file;
+              }
+              const confirmedByte = Number(status && status.nextByte);
+              if (Number.isFinite(confirmedByte) && confirmedByte >= 0 && confirmedByte <= file.size) {
+                start = confirmedByte;
+                onProgress(start);
+                recovered = true;
+                break;
+              }
+            } catch (statusErr) {
+              // Retry the safe status query, never a chunk at an unknown offset.
             }
-
-            const confirmedByte = Number(status && status.nextByte);
-            if (Number.isFinite(confirmedByte) && confirmedByte >= 0) {
-              start = confirmedByte;
-              onProgress(start);
-            }
-          } catch (statusErr) {
-            // If even the status check briefly loses connection, keep retrying.
+          }
+          if (!recovered) {
+            throw new Error(
+              'Could not verify the upload after an interruption. Please retry on a stable connection.'
+            );
           }
         }
       }
 
-      const finalStatus = await getUploadStatus({
-        sessionUrl,
-        total: file.size
-      });
-
+      const finalStatus = await getUploadStatus({ sessionUrl, total: file.size });
       if (finalStatus && finalStatus.done) {
         onProgress(file.size);
         return finalStatus.file;
       }
 
       throw new Error('Google Drive has not confirmed the upload as complete. Please try again.');
+    }
+
+    async function uploadDirectChunk(sessionUrl, file, start, endExclusive) {
+      const response = await fetch(sessionUrl, {
+        method: 'PUT',
+        mode: 'cors',
+        credentials: 'omit',
+        headers: {
+          'Content-Range': 'bytes ' + start + '-' + (endExclusive - 1) + '/' + file.size,
+          'Content-Type': file.type || 'application/octet-stream'
+        },
+        body: file.slice(start, endExclusive)
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        return { done: true, file: await response.json(), nextByte: file.size };
+      }
+      if (response.status === 308) {
+        // Not every browser exposes the Range response header via CORS; a
+        // successful 308 for this PUT confirms that the chunk was received.
+        const rangeHeader = response.headers.get('Range') || '';
+        const match = /bytes=0-(\d+)/i.exec(rangeHeader);
+        return {
+          done: false,
+          nextByte: match ? Number(match[1]) + 1 : endExclusive
+        };
+      }
+      throw new Error('Direct upload unavailable (' + response.status + ').');
     }
 
     function uploadChunk(payload) {
