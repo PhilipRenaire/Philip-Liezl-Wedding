@@ -681,7 +681,8 @@
             uploadType: item.uploadType,
             fileName: file.name,
             mimeType: file.type || 'application/octet-stream',
-            fileSize: file.size
+            fileSize: file.size,
+            clientOrigin: location.origin
           });
 
           const uploaded = await uploadFileResumable(
