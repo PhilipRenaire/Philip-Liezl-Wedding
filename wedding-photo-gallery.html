@@ -420,7 +420,16 @@
       box-shadow: 0 9px 26px rgba(0,0,0,.24);
       backdrop-filter: blur(8px);
       cursor: pointer;
-      transition: background .2s ease;
+      opacity: 0;
+      pointer-events: none;
+      transition: background .2s ease, opacity .24s ease;
+    }
+
+    /* Desktop arrows appear while the cursor is moving, or during keyboard focus. */
+    .lightbox-panel.nav-visible .lightbox-nav:not([hidden]),
+    .lightbox-panel:focus-within .lightbox-nav:not([hidden]) {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .lightbox-nav:hover,
@@ -437,6 +446,14 @@
 
     /* Allow vertical page gestures, but reserve horizontal swipes for memories. */
     .lightbox-panel { touch-action: pan-y; }
+
+    /* Touch devices use swipes, without on-screen navigation arrows. */
+    @media (hover: none), (pointer: coarse) {
+      .lightbox-nav,
+      .lightbox-panel.nav-visible .lightbox-nav:not([hidden]) {
+        display: none !important;
+      }
+    }
 
     @media (max-width: 680px) {
       .lightbox-nav {
@@ -776,7 +793,8 @@
     function closePreview() {
       lightbox.classList.remove('open');
       lightboxMedia.innerHTML = '';
-      lightbox.querySelector('.lightbox-panel').classList.remove('video-active');
+      lightbox.querySelector('.lightbox-panel').classList.remove('video-active', 'nav-visible');
+      clearTimeout(navHideTimer);
       document.body.style.overflow = '';
       currentItemIndex = -1;
     }
@@ -789,6 +807,22 @@
     }
 
     window.addEventListener('resize', resizeVideoPlayer);
+
+    let navHideTimer;
+    lightboxPanel.addEventListener('pointermove', event => {
+      if (event.pointerType !== 'mouse' || !lightbox.classList.contains('open')) return;
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      lightboxPanel.classList.add('nav-visible');
+      clearTimeout(navHideTimer);
+      navHideTimer = setTimeout(() => {
+        lightboxPanel.classList.remove('nav-visible');
+      }, 2200);
+    });
+
+    lightboxPanel.addEventListener('pointerleave', () => {
+      clearTimeout(navHideTimer);
+      lightboxPanel.classList.remove('nav-visible');
+    });
 
     closeLightbox.addEventListener('click', closePreview);
     lightboxPrev.addEventListener('click', () => navigatePreview(-1));
