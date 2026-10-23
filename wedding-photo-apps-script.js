@@ -221,22 +221,42 @@ function beginWeddingMediaUpload(payload) {
     'https://www.googleapis.com/upload/drive/v3/files' +
     '?uploadType=resumable&fields=id,name,mimeType,size,webViewLink';
 
-  const response = UrlFetchApp.fetch(endpoint, {
+  // When the browser will send data directly, include the trusted
+  // HtmlService iframe origin when opening the upload session. This helps
+  // Google return the CORS headers needed for the browser's binary PUTs.
+  const clientOrigin = String(payload.clientOrigin || '').trim();
+  const allowedOrigin = /^https:\/\/(?:[a-z0-9-]+\.)*googleusercontent\.com$/i.test(clientOrigin) ||
+    clientOrigin === 'https://script.google.com';
+  const uploadHeaders = {
+    Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
+    'X-Upload-Content-Type': mimeType,
+    'X-Upload-Content-Length': String(fileSize)
+  };
+  if (allowedOrigin) uploadHeaders.Origin = clientOrigin;
+
+  const request = {
     method: 'post',
     contentType: 'application/json; charset=UTF-8',
-    headers: {
-      Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
-      'X-Upload-Content-Type': mimeType,
-      'X-Upload-Content-Length': String(fileSize)
-    },
+    headers: uploadHeaders,
     payload: JSON.stringify(metadata),
     muteHttpExceptions: true,
     followRedirects: false
-  });
+  };
 
-  const status = response.getResponseCode();
-  const headers = response.getAllHeaders();
-  const sessionUrl = headers.Location || headers.location;
+  let response = UrlFetchApp.fetch(endpoint, request);
+  let status = response.getResponseCode();
+  let headers = response.getAllHeaders();
+  let sessionUrl = headers.Location || headers.location;
+
+  // Some Google backends may reject an explicit Origin header. Fall back to
+  // the prior session-creation behavior rather than breaking uploads.
+  if ((status < 200 || status >= 300 || !sessionUrl) && allowedOrigin) {
+    delete uploadHeaders.Origin;
+    response = UrlFetchApp.fetch(endpoint, request);
+    status = response.getResponseCode();
+    headers = response.getAllHeaders();
+    sessionUrl = headers.Location || headers.location;
+  }
 
   if (status < 200 || status >= 300 || !sessionUrl) {
     throw new Error('Could not start the Google Drive upload. Please try again.');
