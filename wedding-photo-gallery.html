@@ -31,6 +31,12 @@
 
     a { color: inherit; }
 
+    /* The outer wedding site supplies the header, hero, and footer. */
+    <? if (typeof isEmbeddedGallery !== 'undefined' && isEmbeddedGallery) { ?>
+    .topbar, .hero, .footer { display: none !important; }
+    .controls { margin-top: 20px !important; }
+    <? } ?>
+
     .topbar {
       position: sticky;
       top: 0;
@@ -353,11 +359,23 @@
       object-fit: contain;
     }
 
-    .lightbox-media iframe {
+    .video-frame-viewport {
+      position: relative;
       width: 100%;
       height: min(74vh, 720px);
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-frame-viewport iframe {
+      position: absolute;
+      inset: 0 auto auto 0;
+      display: block;
+      width: 100%;
+      height: 100%;
       border: 0;
       background: #000;
+      transform-origin: top left;
     }
 
     .lightbox-caption {
@@ -466,8 +484,21 @@
         border-radius: 18px;
       }
 
-      .lightbox-media iframe {
-        height: 68vh;
+      .lightbox-panel.video-active {
+        max-height: calc(100dvh - 16px);
+        max-height: calc(100vh - 16px);
+      }
+
+      .lightbox-panel.video-active .lightbox-media {
+        display: block;
+        min-height: 0;
+        max-height: none;
+      }
+
+      .video-frame-viewport {
+        height: min(76dvh, 800px);
+        height: calc(100vh - 115px);
+        max-height: 780px;
       }
     }
   </style>
@@ -581,24 +612,11 @@
       emptyState.hidden = true;
 
       visibleItems.forEach(item => {
-        // Drive's embedded player has oversized controls on mobile browsers.
-        // Use the full Google Drive player on mobile, while keeping the
-        // in-page lightbox for desktop and photo previews on all devices.
-        const isVideo = item.kind === 'video';
-        const card = document.createElement(isVideo ? 'a' : 'article');
+        const card = document.createElement('article');
         card.className = 'memory-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
         card.setAttribute('aria-label', 'Open ' + item.kind + ' shared by ' + item.guestName);
-
-        if (isVideo) {
-          card.href = item.fileId
-            ? 'https://drive.google.com/file/d/' + encodeURIComponent(item.fileId) + '/view'
-            : item.previewUrl;
-          card.target = '_blank';
-          card.rel = 'noopener noreferrer';
-        } else {
-          card.tabIndex = 0;
-          card.setAttribute('role', 'button');
-        }
 
         const image = document.createElement('img');
         image.src = item.thumbnailUrl;
@@ -615,12 +633,12 @@
 
         const kind = document.createElement('span');
         kind.className = 'memory-kind';
-        kind.textContent = isVideo ? 'Video' : 'Photo';
+        kind.textContent = item.kind === 'video' ? 'Video' : 'Photo';
 
         meta.append(by, kind);
         card.append(image);
 
-        if (isVideo) {
+        if (item.kind === 'video') {
           const play = document.createElement('div');
           play.className = 'play';
           play.innerHTML = '<span>▶</span>';
@@ -629,47 +647,58 @@
 
         card.append(meta);
 
-        const useMobileVideoPlayer = () =>
-          window.matchMedia('(max-width: 860px), (pointer: coarse)').matches;
-
-        if (isVideo) {
-          card.addEventListener('click', event => {
-            if (useMobileVideoPlayer()) return; // Real link opens Drive in a new tab.
-            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        const open = () => openItem(item);
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            openItem(item);
-          });
-          card.addEventListener('keydown', event => {
-            if (event.key === ' ' && !useMobileVideoPlayer()) {
-              event.preventDefault();
-              openItem(item);
-            }
-          });
-        } else {
-          const open = () => openItem(item);
-          card.addEventListener('click', open);
-          card.addEventListener('keydown', event => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              open();
-            }
-          });
-        }
+            open();
+          }
+        });
 
         gallery.appendChild(card);
       });
     }
 
+    function resizeVideoPlayer() {
+      const viewport = lightboxMedia.querySelector('.video-frame-viewport');
+      const iframe = viewport && viewport.querySelector('iframe');
+      if (!viewport || !iframe) return;
+
+      // Google Drive's embedded controls became oversized on mobile.
+      // Give its player a 960px desktop-sized viewport, then shrink the
+      // entire iframe (including its controls) to the actual mobile width.
+      if (window.matchMedia('(max-width: 860px), (pointer: coarse)').matches) {
+        const desktopWidth = 960;
+        const scale = viewport.clientWidth / desktopWidth;
+        if (!scale) return;
+        iframe.style.width = desktopWidth + 'px';
+        iframe.style.height = Math.ceil(viewport.clientHeight / scale) + 'px';
+        iframe.style.transform = 'scale(' + scale + ')';
+      } else {
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.transform = 'none';
+      }
+    }
+
     function openItem(item) {
       lightboxMedia.innerHTML = '';
+      const panel = lightbox.querySelector('.lightbox-panel');
+      panel.classList.toggle('video-active', item.kind === 'video');
 
       if (item.kind === 'video') {
+        // Embed the public preview instead of sending visitors to a Drive
+        // /view page, which may open the Drive app or request account login.
+        const viewport = document.createElement('div');
+        viewport.className = 'video-frame-viewport';
         const iframe = document.createElement('iframe');
         iframe.src = item.previewUrl;
-        iframe.allow = 'autoplay; fullscreen';
+        iframe.allow = 'autoplay; fullscreen; picture-in-picture';
         iframe.allowFullscreen = true;
         iframe.title = 'Wedding video shared by ' + item.guestName;
-        lightboxMedia.appendChild(iframe);
+        viewport.appendChild(iframe);
+        lightboxMedia.appendChild(viewport);
       } else {
         const image = document.createElement('img');
         image.src = item.previewUrl;
@@ -680,13 +709,17 @@
       lightboxCaption.textContent = 'Shared by ' + item.guestName;
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden';
+      resizeVideoPlayer();
     }
 
     function closePreview() {
       lightbox.classList.remove('open');
       lightboxMedia.innerHTML = '';
+      lightbox.querySelector('.lightbox-panel').classList.remove('video-active');
       document.body.style.overflow = '';
     }
+
+    window.addEventListener('resize', resizeVideoPlayer);
 
     closeLightbox.addEventListener('click', closePreview);
     lightbox.addEventListener('click', event => {
