@@ -203,6 +203,7 @@
 
     .memory-card {
       position: relative;
+      display: block;
       width: 100%;
       margin: 0 0 16px;
       break-inside: avoid;
@@ -210,6 +211,8 @@
       border: 1px solid rgba(199,158,73,.24);
       border-radius: 22px;
       background: #fff;
+      color: inherit;
+      text-decoration: none;
       box-shadow: 0 15px 38px rgba(42,25,48,.10);
       cursor: pointer;
       transform: translateZ(0);
@@ -578,11 +581,24 @@
       emptyState.hidden = true;
 
       visibleItems.forEach(item => {
-        const card = document.createElement('article');
+        // Drive's embedded player has oversized controls on mobile browsers.
+        // Use the full Google Drive player on mobile, while keeping the
+        // in-page lightbox for desktop and photo previews on all devices.
+        const isVideo = item.kind === 'video';
+        const card = document.createElement(isVideo ? 'a' : 'article');
         card.className = 'memory-card';
-        card.tabIndex = 0;
-        card.setAttribute('role', 'button');
         card.setAttribute('aria-label', 'Open ' + item.kind + ' shared by ' + item.guestName);
+
+        if (isVideo) {
+          card.href = item.fileId
+            ? 'https://drive.google.com/file/d/' + encodeURIComponent(item.fileId) + '/view'
+            : item.previewUrl;
+          card.target = '_blank';
+          card.rel = 'noopener noreferrer';
+        } else {
+          card.tabIndex = 0;
+          card.setAttribute('role', 'button');
+        }
 
         const image = document.createElement('img');
         image.src = item.thumbnailUrl;
@@ -599,12 +615,12 @@
 
         const kind = document.createElement('span');
         kind.className = 'memory-kind';
-        kind.textContent = item.kind === 'video' ? 'Video' : 'Photo';
+        kind.textContent = isVideo ? 'Video' : 'Photo';
 
         meta.append(by, kind);
         card.append(image);
 
-        if (item.kind === 'video') {
+        if (isVideo) {
           const play = document.createElement('div');
           play.className = 'play';
           play.innerHTML = '<span>▶</span>';
@@ -613,14 +629,32 @@
 
         card.append(meta);
 
-        const open = () => openItem(item);
-        card.addEventListener('click', open);
-        card.addEventListener('keydown', event => {
-          if (event.key === 'Enter' || event.key === ' ') {
+        const useMobileVideoPlayer = () =>
+          window.matchMedia('(max-width: 860px), (pointer: coarse)').matches;
+
+        if (isVideo) {
+          card.addEventListener('click', event => {
+            if (useMobileVideoPlayer()) return; // Real link opens Drive in a new tab.
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
             event.preventDefault();
-            open();
-          }
-        });
+            openItem(item);
+          });
+          card.addEventListener('keydown', event => {
+            if (event.key === ' ' && !useMobileVideoPlayer()) {
+              event.preventDefault();
+              openItem(item);
+            }
+          });
+        } else {
+          const open = () => openItem(item);
+          card.addEventListener('click', open);
+          card.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              open();
+            }
+          });
+        }
 
         gallery.appendChild(card);
       });
