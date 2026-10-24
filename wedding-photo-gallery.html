@@ -350,7 +350,17 @@
       place-items: center;
       min-height: 300px;
       max-height: 82vh;
+      overflow: hidden;
       background: #120e14;
+    }
+
+    .gallery-slide-content {
+      grid-area: 1 / 1;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      min-width: 0;
+      backface-visibility: hidden;
     }
 
     .lightbox-media img {
@@ -580,7 +590,7 @@
       }
 
       .lightbox-panel.video-active .lightbox-media {
-        display: block;
+        display: grid;
         min-height: 0;
         max-height: none;
       }
@@ -762,7 +772,7 @@
     }
 
     function resizeVideoPlayer() {
-      const viewport = lightboxMedia.querySelector('.video-frame-viewport');
+      const viewport = lightboxMedia.querySelector('.gallery-slide-content:last-child .video-frame-viewport');
       const iframe = viewport && viewport.querySelector('iframe');
       if (!viewport || !iframe) return;
 
@@ -783,12 +793,29 @@
       }
     }
 
-    function openItem(item) {
+    let slideAnimations = [];
+    let slideVersion = 0;
+
+    function cancelSlide() {
+      slideVersion++;
+      slideAnimations.forEach(animation => animation.cancel());
+      slideAnimations = [];
+      const slides = lightboxMedia.querySelectorAll('.gallery-slide-content');
+      slides.forEach((slide, index) => {
+        if (index < slides.length - 1) slide.remove();
+      });
+    }
+
+    function openItem(item, direction = 0) {
+      cancelSlide();
+      const previous = lightboxMedia.querySelector('.gallery-slide-content');
+      const isSwitching = lightbox.classList.contains('open') && direction !== 0;
       currentItemIndex = lightboxItems.indexOf(item);
       const hasMultipleItems = lightboxItems.length > 1;
       lightboxPrev.hidden = !hasMultipleItems;
       lightboxNext.hidden = !hasMultipleItems;
-      lightboxMedia.innerHTML = '';
+      const slide = document.createElement('div');
+      slide.className = 'gallery-slide-content';
       const panel = lightbox.querySelector('.lightbox-panel');
       panel.classList.toggle('video-active', item.kind === 'video');
 
@@ -803,12 +830,42 @@
         iframe.allowFullscreen = true;
         iframe.title = 'Wedding video shared by ' + item.guestName;
         viewport.appendChild(iframe);
-        lightboxMedia.appendChild(viewport);
+        slide.appendChild(viewport);
       } else {
         const image = document.createElement('img');
         image.src = item.previewUrl;
         image.alt = 'Wedding memory shared by ' + item.guestName;
-        lightboxMedia.appendChild(image);
+        image.draggable = false;
+        slide.appendChild(image);
+      }
+
+      const shouldAnimate = isSwitching && previous && slide.animate &&
+        window.matchMedia('(max-width: 860px), (pointer: coarse)').matches &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (shouldAnimate) {
+        lightboxMedia.appendChild(slide);
+        const distance = direction > 0 ? 100 : -100;
+        const options = { duration: 320, easing: 'cubic-bezier(.22, .8, .26, 1)', fill: 'forwards' };
+        const outgoing = previous.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(' + (-distance) + '%)' }
+        ], options);
+        const incoming = slide.animate([
+          { transform: 'translateX(' + distance + '%)' },
+          { transform: 'translateX(0)' }
+        ], options);
+        slideAnimations = [outgoing, incoming];
+        const version = slideVersion;
+        Promise.all(slideAnimations.map(animation => animation.finished.catch(() => {})))
+          .then(() => {
+            if (version !== slideVersion) return;
+            previous.remove();
+            incoming.cancel();
+            slideAnimations = [];
+          });
+      } else {
+        lightboxMedia.replaceChildren(slide);
       }
 
       lightboxCaption.textContent = 'Shared by ' + item.guestName;
@@ -819,6 +876,7 @@
     }
 
     function closePreview() {
+      cancelSlide();
       lightbox.classList.remove('open');
       lightboxMedia.innerHTML = '';
       lightbox.querySelector('.lightbox-panel').classList.remove('video-active', 'nav-visible');
@@ -831,7 +889,7 @@
       if (!lightbox.classList.contains('open') || lightboxItems.length < 2) return;
       const nextIndex = (currentItemIndex + direction + lightboxItems.length) % lightboxItems.length;
       // Replacing the video iframe also stops playback of the previous clip.
-      openItem(lightboxItems[nextIndex]);
+      openItem(lightboxItems[nextIndex], direction);
     }
 
     window.addEventListener('resize', resizeVideoPlayer);
