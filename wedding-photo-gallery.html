@@ -190,6 +190,154 @@
       border-color: var(--deep-purple);
     }
 
+    /* Editorial-style album covers, with wedding-purple and champagne accents. */
+    .album-browser {
+      width: min(1180px, calc(100% - 28px));
+      margin: 24px auto 28px;
+    }
+
+    .album-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 17px;
+    }
+
+    .album-header h2 {
+      margin: 0 0 5px;
+      color: var(--deep-purple);
+      font: 500 clamp(24px, 4vw, 34px)/1.15 Georgia, serif;
+    }
+
+    .album-header p {
+      margin: 0;
+      color: rgba(60,47,53,.72);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .album-all {
+      flex: 0 0 auto;
+      border: 1px solid rgba(125,79,141,.36);
+      border-radius: 999px;
+      padding: 10px 15px;
+      color: var(--deep-purple);
+      background: white;
+      font: 700 13px Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .album-all.is-active {
+      color: white;
+      background: var(--deep-purple);
+      border-color: var(--deep-purple);
+    }
+
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: 13px;
+    }
+
+    .album-card {
+      min-width: 0;
+      overflow: hidden;
+      padding: 0;
+      text-align: left;
+      border: 1px solid rgba(199,158,73,.27);
+      border-radius: 19px;
+      background: rgba(255,255,255,.97);
+      box-shadow: 0 12px 32px rgba(42,25,48,.10);
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .album-card:hover, .album-card:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 42px rgba(42,25,48,.16);
+    }
+
+    .album-card.is-active {
+      border: 2px solid var(--deep-purple);
+      box-shadow: 0 0 0 3px rgba(125,79,141,.14), 0 18px 42px rgba(42,25,48,.12);
+    }
+
+    .album-cover {
+      height: 130px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(255,255,255,.75),transparent 45%),
+        linear-gradient(135deg,#efe2f2,#d9c6e8 52%,#f6ebd5);
+    }
+
+    .album-cover img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .album-cover::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px solid rgba(255,255,255,.64);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    .album-monogram {
+      position: relative;
+      color: rgba(75,36,95,.58);
+      font: italic 37px Georgia, serif;
+    }
+
+    .album-info {
+      display: grid;
+      gap: 5px;
+      padding: 13px 13px 16px;
+    }
+
+    .album-name {
+      display: block;
+      color: var(--deep-purple);
+      font: 600 15px/1.25 Georgia, serif;
+      overflow-wrap: anywhere;
+    }
+
+    .album-count {
+      display: block;
+      color: rgba(60,47,53,.66);
+      font: 12px/1.4 Arial, sans-serif;
+    }
+
+    .album-current {
+      width: min(1180px, calc(100% - 32px));
+      margin: 8px auto 0;
+      color: var(--deep-purple);
+      font: 500 24px/1.3 Georgia, serif;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .album-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+    }
+
+    @media (max-width: 530px) {
+      .album-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+      .album-cover { height: 112px; }
+      .album-name { font-size: 14px; }
+      .album-header { align-items: start; }
+      .album-header h2 { font-size: 25px; }
+      .album-all { font-size: 12px; padding: 10px; }
+    }
+
     .status {
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto 28px;
@@ -629,8 +777,20 @@
       <div class="gold-divider"></div>
     </section>
 
-    <div class="controls" aria-label="Gallery filters">
-      <button class="filter-btn active" type="button" data-filter="all">All Memories</button>
+    <section class="album-browser" aria-label="Wedding photo albums">
+      <div class="album-header">
+        <div>
+          <h2>Our Albums</h2>
+          <p>Explore the moments, one celebration at a time.</p>
+        </div>
+        <button type="button" id="viewAllAlbums" class="album-all is-active" aria-pressed="true">All Memories</button>
+      </div>
+      <div id="albumGrid" class="album-grid"></div>
+    </section>
+
+    <h2 id="galleryAlbumTitle" class="album-current">All Wedding Memories</h2>
+    <div class="controls" aria-label="Photo and video filters">
+      <button class="filter-btn active" type="button" data-filter="all">All Photos &amp; Videos</button>
       <button class="filter-btn" type="button" data-filter="photo">Photos</button>
       <button class="filter-btn" type="button" data-filter="video">Videos</button>
     </div>
@@ -665,6 +825,17 @@
     const galleryStatus = document.getElementById('galleryStatus');
     const emptyState = document.getElementById('emptyState');
     const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
+    const albumGrid = document.getElementById('albumGrid');
+    const albumTitle = document.getElementById('galleryAlbumTitle');
+    const viewAllAlbums = document.getElementById('viewAllAlbums');
+    const ALBUMS = [
+      'Wedding Day-Ceremony',
+      'Wedding Day-Reception',
+      'Prenup',
+      'Bridal Shower',
+      'E&S Photobooth'
+    ];
+    let activeAlbum = '';
     const lightbox = document.getElementById('lightbox');
     const lightboxMedia = document.getElementById('lightboxMedia');
     const lightboxCaption = document.getElementById('lightboxCaption');
@@ -682,6 +853,7 @@
       .withSuccessHandler(items => {
         allItems = Array.isArray(items) ? items : [];
         galleryStatus.textContent = '';
+        renderAlbums();
         renderGallery();
       })
       .withFailureHandler(error => {
@@ -698,10 +870,70 @@
       });
     });
 
+    function selectAlbum(album) {
+      activeAlbum = ALBUMS.includes(album) ? album : '';
+      activeFilter = 'all';
+      filterButtons.forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+      renderAlbums();
+      renderGallery();
+      document.getElementById('galleryAlbumTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    viewAllAlbums.addEventListener('click', () => selectAlbum(''));
+
+    function renderAlbums() {
+      albumGrid.replaceChildren();
+      viewAllAlbums.classList.toggle('is-active', !activeAlbum);
+      viewAllAlbums.setAttribute('aria-pressed', String(!activeAlbum));
+      albumTitle.textContent = activeAlbum || 'All Wedding Memories';
+
+      ALBUMS.forEach((name, index) => {
+        const items = allItems.filter(item => item.album === name);
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'album-card' + (activeAlbum === name ? ' is-active' : '');
+        card.setAttribute('aria-pressed', String(activeAlbum === name));
+        card.setAttribute('aria-label', name + ', ' + items.length + ' memories');
+
+        const cover = document.createElement('span');
+        cover.className = 'album-cover';
+        const monogram = document.createElement('span');
+        monogram.className = 'album-monogram';
+        monogram.textContent = 'P & L';
+        cover.appendChild(monogram);
+
+        if (items.length) {
+          const photo = document.createElement('img');
+          photo.src = items[0].thumbnailUrl;
+          photo.alt = '';
+          photo.loading = 'lazy';
+          photo.referrerPolicy = 'no-referrer';
+          photo.addEventListener('error', () => photo.remove(), { once: true });
+          cover.appendChild(photo);
+        }
+
+        const info = document.createElement('span');
+        info.className = 'album-info';
+        const title = document.createElement('strong');
+        title.className = 'album-name';
+        title.textContent = name;
+        const count = document.createElement('span');
+        count.className = 'album-count';
+        count.textContent = items.length ? items.length + (items.length === 1 ? ' memory' : ' memories') : 'Coming soon';
+        info.append(title, count);
+        card.append(cover, info);
+        card.addEventListener('click', () => selectAlbum(name));
+        albumGrid.appendChild(card);
+      });
+    }
+
     function renderGallery() {
+      const albumItems = activeAlbum
+        ? allItems.filter(item => item.album === activeAlbum)
+        : allItems;
       const visibleItems = activeFilter === 'all'
-        ? allItems
-        : allItems.filter(item => item.kind === activeFilter);
+        ? albumItems
+        : albumItems.filter(item => item.kind === activeFilter);
 
       // Navigate within whichever filter the guest is currently viewing.
       lightboxItems = visibleItems;
@@ -709,7 +941,10 @@
 
       if (!visibleItems.length) {
         emptyState.hidden = false;
-        if (allItems.length && activeFilter !== 'all') {
+        if (activeAlbum && activeFilter === 'all') {
+          emptyState.querySelector('h2').textContent = 'More memories are coming soon.';
+          emptyState.querySelector('p').textContent = 'Approved photos and videos for ' + activeAlbum + ' will appear here.';
+        } else if (albumItems.length && activeFilter !== 'all') {
           emptyState.querySelector('h2').textContent =
             activeFilter === 'photo' ? 'No approved photos yet.' : 'No approved videos yet.';
           emptyState.querySelector('p').textContent = 'Try another filter or check back again soon.';
