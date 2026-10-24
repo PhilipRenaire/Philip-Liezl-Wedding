@@ -1219,32 +1219,73 @@
     });
 
 
-    function reportGalleryHeight() {
-      requestAnimationFrame(() => {
-        const height = Math.max(
-          document.body ? document.body.scrollHeight : 0,
-          document.documentElement ? document.documentElement.scrollHeight : 0
+    // In iOS Safari, scrolling a cross-origin iframe can get stuck. Let the
+    // wedding website scroll as a single document by telling it the actual
+    // gallery height after album changes and image loads.
+    (function reportDynamicGalleryHeight() {
+      let scheduled = false;
+      let lastHeight = 0;
+      const main = document.querySelector('main');
+      const footer = document.querySelector('.footer');
+
+      function publishHeight() {
+        scheduled = false;
+        // Do not use body.scrollHeight: it includes min-height:100vh, which
+        // can grow with the iframe and create an endless resize loop.
+        const lastVisibleSection = footer &&
+          getComputedStyle(footer).display !== 'none' ? footer : main;
+        if (!lastVisibleSection) return;
+
+        const height = Math.ceil(
+          lastVisibleSection.getBoundingClientRect().bottom + window.scrollY + 20
         );
+        if (!Number.isFinite(height) || height < 200) return;
+        if (Math.abs(height - lastHeight) < 2) return;
+        lastHeight = height;
 
-        window.parent.postMessage({
-          type: 'wedding-gallery-height',
-          height: height
-        }, '*');
-      });
-    }
+        const message = { type: 'wedding-gallery-height', height: height };
+        if (window.parent !== window) window.parent.postMessage(message, '*');
+        if (window.top !== window.parent && window.top !== window) {
+          window.top.postMessage(message, '*');
+        }
+      }
 
-    window.addEventListener('load', reportGalleryHeight);
-    window.addEventListener('resize', reportGalleryHeight);
-    document.addEventListener('load', event => {
-      if (event.target && event.target.tagName === 'IMG') reportGalleryHeight();
-    }, true);
+      function scheduleHeight() {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(publishHeight);
+      }
 
-    if ('ResizeObserver' in window) {
-      new ResizeObserver(reportGalleryHeight).observe(document.body);
-    }
+      window.addEventListener('load', scheduleHeight);
+      window.addEventListener('resize', scheduleHeight);
+      window.addEventListener('orientationchange', scheduleHeight);
+      window.addEventListener('pageshow', scheduleHeight);
+      document.addEventListener('load', event => {
+        if (event.target && event.target.tagName === 'IMG') scheduleHeight();
+      }, true);
 
-    setTimeout(reportGalleryHeight, 150);
-    setTimeout(reportGalleryHeight, 600);
+      if (typeof ResizeObserver !== 'undefined') {
+        const observer = new ResizeObserver(scheduleHeight);
+        if (main) observer.observe(main);
+        if (footer) observer.observe(footer);
+      }
+
+      if (typeof MutationObserver !== 'undefined' && main) {
+        new MutationObserver(scheduleHeight).observe(main, {
+          subtree: true,
+          childList: true,
+          characterData: true
+        });
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(scheduleHeight);
+      }
+
+      scheduleHeight();
+      setTimeout(scheduleHeight, 250);
+      setTimeout(scheduleHeight, 1200);
+    })();
   </script>
 </body>
 </html>
