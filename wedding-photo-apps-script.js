@@ -38,7 +38,14 @@ const CONFIG = {
   maxFileBytes: 10 * 1024 * 1024 * 1024, // 10 GB per individual file
   maxChunkBytes: 4 * 1024 * 1024, // 4 MB chunks for mobile reliability
   allowedMimePrefixes: ['image/', 'video/'],
-  allowedUploadTypes: ['Wedding Memory', 'Video Message']
+  allowedUploadTypes: ['Wedding Memory', 'Video Message'],
+  albums: [
+    'Wedding Day-Ceremony',
+    'Wedding Day-Reception',
+    'Prenup',
+    'Bridal Shower',
+    'E&S Photobooth'
+  ]
 };
 
 const COL = {
@@ -52,7 +59,8 @@ const COL = {
   driveFileId: 8,
   driveLink: 9,
   status: 10,
-  reviewedAt: 11
+  reviewedAt: 11,
+  album: 12
 };
 
 const HEADERS = [
@@ -66,7 +74,8 @@ const HEADERS = [
   'Drive File ID',
   'Drive Link',
   'Status',
-  'Reviewed At'
+  'Reviewed At',
+  'Album'
 ];
 
 function doGet(e) {
@@ -131,6 +140,7 @@ function setupWeddingPhotoSystem() {
   sheet.setColumnWidth(COL.driveLink, 220);
   sheet.setColumnWidth(COL.status, 115);
   sheet.setColumnWidth(COL.reviewedAt, 155);
+  sheet.setColumnWidth(COL.album, 210);
 
   sheet.getRange('B:B').setNumberFormat('yyyy-mm-dd hh:mm:ss');
   sheet.getRange('K:K').setNumberFormat('yyyy-mm-dd hh:mm:ss');
@@ -145,6 +155,13 @@ function setupWeddingPhotoSystem() {
     sheet.insertRowsAfter(sheet.getMaxRows(), maxRows - sheet.getMaxRows());
   }
   sheet.getRange(2, COL.status, sheet.getMaxRows() - 1, 1).setDataValidation(statusRule);
+
+  // Keep every existing upload intact. Albums are an additional optional column.
+  const albumRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(CONFIG.albums, true)
+    .setAllowInvalid(false)
+    .build();
+  sheet.getRange(2, COL.album, sheet.getMaxRows() - 1, 1).setDataValidation(albumRule);
 
   if (!sheet.getFilter()) {
     sheet.getRange(1, 1, sheet.getMaxRows(), HEADERS.length).createFilter();
@@ -448,6 +465,10 @@ function finalizeWeddingMedia(payload) {
   const guestName = String(payload.guestName || '').trim();
   const uploadType = String(payload.uploadType || 'Wedding Memory').trim();
   const originalFileName = sanitizeFileName_(String(payload.fileName || 'upload'));
+  const album = uploadType === 'Wedding Memory' ? String(payload.album || '').trim() : '';
+  if (album && !CONFIG.albums.includes(album)) {
+    throw new Error('Please choose a valid wedding album.');
+  }
   const requestedMimeType = String(payload.mimeType || '').trim();
   const driveFileId = String(payload.driveFileId || '').trim();
 
@@ -502,7 +523,8 @@ function finalizeWeddingMedia(payload) {
       driveFileId,
       file.getUrl(),
       'Pending',
-      ''
+      '',
+      album
     ]);
   }
 
@@ -592,6 +614,7 @@ function handleUploadStatusEdit(e) {
       'Wedding guest upload\n' +
       'Guest: ' + sheet.getRange(row, COL.guestName).getDisplayValue() + '\n' +
       'Upload Type: ' + uploadType + '\n' +
+      'Album: ' + String(sheet.getRange(row, COL.album).getDisplayValue() || 'Unassigned') + '\n' +
       'Status: ' + status
     );
   } catch (err) {
@@ -634,6 +657,8 @@ function getPublicGallery() {
         mimeType: mimeType,
         fileId: fileId,
         kind: isVideo ? 'video' : 'photo',
+        album: CONFIG.albums.includes(String(row[COL.album - 1] || '').trim())
+          ? String(row[COL.album - 1]).trim() : '',
         thumbnailUrl: 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(fileId) + '&sz=w1600',
         previewUrl: isVideo
           ? 'https://drive.google.com/file/d/' + encodeURIComponent(fileId) + '/preview'
@@ -766,7 +791,8 @@ function syncApprovedFolderToGallery() {
           fileId,
           file.getUrl(),
           'Approved',
-          new Date()
+          new Date(),
+          ''
         ]);
         knownIds.add(fileId);
       } catch (err) {
@@ -820,7 +846,8 @@ function getUploadQueue(status) {
       sizeBytes: row[COL.sizeBytes - 1],
       driveFileId: row[COL.driveFileId - 1],
       driveLink: row[COL.driveLink - 1],
-      status: row[COL.status - 1]
+      status: row[COL.status - 1],
+      album: row[COL.album - 1] || ''
     }));
 }
 
