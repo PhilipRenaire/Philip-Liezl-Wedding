@@ -547,6 +547,44 @@
       const frame = document.getElementById('weddingGalleryFrame');
       if (!frame) return;
 
+      // When a photo/video opens in the gallery, keep its preview centered in
+      // the portion of the tall iframe currently visible on the actual phone.
+      // Otherwise an iframe-sized fixed overlay can be off-screen.
+      let previewSource = null;
+      let previewOrigin = '';
+      let viewportScheduled = false;
+
+      function sendPreviewViewport() {
+        viewportScheduled = false;
+        if (!previewSource) return;
+        const rect = frame.getBoundingClientRect();
+        const top = Math.max(0, -rect.top);
+        const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const visibleHeight = Math.max(260, Math.min(
+          viewportHeight - Math.max(0, rect.top),
+          rect.height - top,
+          viewportHeight
+        ));
+        if (!Number.isFinite(visibleHeight)) return;
+        previewSource.postMessage({
+          type: 'wedding-gallery-preview-viewport',
+          top: Math.round(top),
+          height: Math.round(visibleHeight)
+        }, previewOrigin);
+      }
+
+      function schedulePreviewViewport() {
+        if (!previewSource || viewportScheduled) return;
+        viewportScheduled = true;
+        requestAnimationFrame(sendPreviewViewport);
+      }
+
+      window.addEventListener('scroll', schedulePreviewViewport, { passive: true });
+      window.addEventListener('resize', schedulePreviewViewport);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', schedulePreviewViewport);
+      }
+
       // Keep the gallery embedded: forward iPhone swipe movements from the
       // Apps Script content to this outer page, where normal scrolling lives.
       window.addEventListener('message', function (event) {
@@ -554,6 +592,21 @@
         if (!/^https:\/\/(?:script\.google\.com|[a-z0-9.-]+\.googleusercontent\.com)$/.test(origin)) return;
         const data = event.data || {};
         if (data.page && data.page !== 'gallery') return;
+
+        if (data.type === 'wedding-gallery-preview-open' && event.source) {
+          previewSource = event.source;
+          previewOrigin = origin;
+          schedulePreviewViewport();
+          return;
+        }
+
+        if (data.type === 'wedding-gallery-preview-close') {
+          if (event.source === previewSource) {
+            previewSource = null;
+            previewOrigin = '';
+          }
+          return;
+        }
 
         if (data.type === 'wedding-embed-scroll-hello' && event.source) {
           event.source.postMessage({ type: 'wedding-embed-scroll-ready', page: 'gallery' }, origin);
