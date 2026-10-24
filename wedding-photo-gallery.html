@@ -537,6 +537,35 @@
       transform-origin: top left;
     }
 
+    /* When the gallery iframe is taller than the device screen, a regular
+       position:fixed lightbox would center itself far off-screen. Align it
+       to the visible part of the embedded frame instead. */
+    .lightbox.embedded-window-preview {
+      position: absolute;
+      inset: auto 0 auto 0;
+      top: var(--embed-preview-top, 0px);
+      height: var(--embed-preview-height, 100vh);
+      padding: 10px;
+    }
+
+    .lightbox.embedded-window-preview .lightbox-panel {
+      max-height: calc(var(--embed-preview-height, 100vh) - 20px);
+    }
+
+    .lightbox.embedded-window-preview .lightbox-media {
+      min-height: 0;
+      max-height: calc(var(--embed-preview-height, 100vh) - 96px);
+    }
+
+    .lightbox.embedded-window-preview .lightbox-media img {
+      max-height: calc(var(--embed-preview-height, 100vh) - 100px);
+    }
+
+    .lightbox.embedded-window-preview .video-frame-viewport {
+      height: calc(var(--embed-preview-height, 100vh) - 112px);
+      max-height: 780px;
+    }
+
     .lightbox-caption {
       padding: 13px 18px;
       color: rgba(255,255,255,.86);
@@ -844,6 +873,22 @@
     const lightboxNext = document.getElementById('lightboxNext');
     const lightboxPanel = lightbox.querySelector('.lightbox-panel');
 
+    // The parent website tells us which portion of this tall embedded page
+    // is actually on-screen, so previews stay visible without navigation.
+    window.addEventListener('message', event => {
+      if (event.origin !== 'https://philiprenaire.github.io') return;
+      const data = event.data || {};
+      if (data.type !== 'wedding-gallery-preview-viewport') return;
+      const top = Number(data.top);
+      const height = Number(data.height);
+      if (!Number.isFinite(top) || top < 0 || top > 250000 ||
+          !Number.isFinite(height) || height < 200 || height > 3000) return;
+      lightbox.classList.add('embedded-window-preview');
+      lightbox.style.setProperty('--embed-preview-top', Math.round(top) + 'px');
+      lightbox.style.setProperty('--embed-preview-height', Math.round(height) + 'px');
+      if (lightbox.classList.contains('open')) resizeVideoPlayer();
+    });
+
     let allItems = [];
     let activeFilter = 'all';
     let lightboxItems = [];
@@ -1116,6 +1161,11 @@
       lightboxCaption.textContent = 'Shared by ' + item.guestName;
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden';
+      if (window.top !== window) {
+        window.top.postMessage({
+          type: 'wedding-gallery-preview-open', page: 'gallery'
+        }, 'https://philiprenaire.github.io');
+      }
       resizeVideoPlayer();
       revealNavigation();
     }
@@ -1127,6 +1177,14 @@
       lightbox.querySelector('.lightbox-panel').classList.remove('video-active', 'nav-visible');
       clearTimeout(navHideTimer);
       document.body.style.overflow = '';
+      lightbox.classList.remove('embedded-window-preview');
+      lightbox.style.removeProperty('--embed-preview-top');
+      lightbox.style.removeProperty('--embed-preview-height');
+      if (window.top !== window) {
+        window.top.postMessage({
+          type: 'wedding-gallery-preview-close', page: 'gallery'
+        }, 'https://philiprenaire.github.io');
+      }
       currentItemIndex = -1;
     }
 
