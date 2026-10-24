@@ -232,15 +232,44 @@
       background: transparent;
     }
 
+    /* The parent page needs to own scrolling on iOS. Grow the gallery
+       iframe to its actual contents rather than using nested scrolling. */
     .share-frame {
       display: block;
       width: 100%;
-      height: 900px;
+      height: 1100px; /* Fallback until Gallery.html sends its height. */
       border: 0;
-      overflow: hidden;
       background: transparent;
       transform: none;
-      transition: height 0.2s ease;
+    }
+
+    .gallery-ios-open-direct {
+      display: none;
+      width: min(680px, calc(100% - 32px));
+      margin: 26px auto 10px;
+      padding: 17px 20px;
+      border: 1px solid rgba(199, 158, 73, 0.32);
+      border-radius: 18px;
+      background: rgba(255, 250, 240, 0.94);
+      text-align: center;
+      color: var(--deep-purple);
+      line-height: 1.55;
+    }
+
+    .gallery-ios-open-direct a {
+      display: inline-block;
+      margin-top: 9px;
+      padding: 11px 21px;
+      border-radius: 999px;
+      background: var(--deep-purple);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .gallery-ios-open-direct a:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
     }
 
     .share-fallback {
@@ -347,10 +376,11 @@
 
       .share-frame-window {
         height: auto;
+        overflow: visible;
       }
 
       .share-frame {
-        height: 1000px;
+        height: 1550px; /* Fallback for visitors on the old Apps Script deployment. */
         transform: none;
       }
     }
@@ -506,6 +536,11 @@
     <div class="share-hero-divider" aria-hidden="true"><span>◆</span></div>
   </section>
 
+  <div class="gallery-ios-open-direct" id="galleryIosDirectLink">
+    <span>Browsing on an iPhone or iPad? Open the gallery directly for smooth scrolling and photo viewing.</span><br>
+    <a href="https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec?page=gallery">Open Wedding Gallery</a>
+  </div>
+
   <div class="share-frame-window">
     <iframe
       id="weddingGalleryFrame"
@@ -544,17 +579,32 @@
 
     (function () {
       const frame = document.getElementById('weddingGalleryFrame');
+      const iosLink = document.getElementById('galleryIosDirectLink');
       if (!frame) return;
 
+      // iOS Safari sometimes traps scrolling inside Google Apps Script's
+      // cross-origin iframe. Offer the standalone gallery as a reliable option.
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isIOS && iosLink) iosLink.style.display = 'block';
+
       window.addEventListener('message', function (event) {
-        if (event.source !== frame.contentWindow) return;
+        // Apps Script HTML may be inside an additional googleusercontent
+        // sandbox iframe, so event.source need not equal frame.contentWindow.
+        const origin = event.origin || '';
+        if (!/^https:\/\/(?:script\.google\.com|[a-z0-9.-]+\.googleusercontent\.com)$/.test(origin)) return;
         const data = event.data || {};
         if (data.type !== 'wedding-gallery-height') return;
 
         const height = Number(data.height);
-        if (!Number.isFinite(height) || height < 200) return;
+        if (!Number.isFinite(height) || height < 200 || height > 250000) return;
 
-        frame.style.height = Math.ceil(height) + 'px';
+        // Avoid scroll jumps and resize feedback; natural-height content
+        // measurement happens inside Gallery.html, not from iframe height.
+        const nextHeight = Math.ceil(height + 12);
+        if (Math.abs(frame.offsetHeight - nextHeight) > 3) {
+          frame.style.height = nextHeight + 'px';
+        }
       });
     })();
   </script>
