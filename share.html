@@ -243,35 +243,6 @@
       transform: none;
     }
 
-    .share-ios-open-direct {
-      display: none;
-      width: min(680px, calc(100% - 32px));
-      margin: 26px auto 4px;
-      padding: 17px 20px;
-      border: 1px solid rgba(199, 158, 73, 0.32);
-      border-radius: 18px;
-      background: rgba(255, 250, 240, 0.94);
-      text-align: center;
-      color: var(--deep-purple);
-      line-height: 1.55;
-    }
-
-    .share-ios-open-direct a {
-      display: inline-block;
-      margin-top: 9px;
-      padding: 11px 21px;
-      border-radius: 999px;
-      background: var(--deep-purple);
-      color: #fff;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    .share-ios-open-direct a:focus-visible {
-      outline: 3px solid var(--gold);
-      outline-offset: 3px;
-    }
-
     .share-fallback {
       display: none;
       padding: 28px 18px 40px;
@@ -493,11 +464,6 @@
 
   <!-- The embedded upload form displays the Share Your Memories heading once. -->
 
-  <div class="share-ios-open-direct" id="shareIosDirectLink">
-    <span>Sharing from an iPhone? You can open the upload form directly for easier scrolling.</span><br>
-    <a href="https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec">Open Upload Form</a>
-  </div>
-
   <div class="share-frame-window">
     <iframe
       id="weddingUploadFrame"
@@ -519,26 +485,39 @@
   <script>
     (function () {
       const frame = document.getElementById('weddingUploadFrame');
-      const iosLink = document.getElementById('shareIosDirectLink');
       if (!frame) return;
 
-      // iOS Safari may not allow scrolling inside a cross-origin iframe.
-      // Give iPhone/iPad visitors a direct, fully scrollable upload option.
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      if (isIOS && iosLink) iosLink.style.display = 'block';
-
-      // Upload.html posts its content height on load, file selection and
-      // validation/status changes. Resize the iframe so the parent page
-      // scrolls normally instead of creating a nested scroll area.
+      // Apps Script uses a sandboxed inner frame on some browsers. Receive
+      // messages directly from its Google-hosted origin, not just the outer
+      // iframe window. The form remains embedded on this wedding page.
       window.addEventListener('message', function (event) {
         const origin = event.origin || '';
         if (!/^https:\/\/(?:script\.google\.com|[a-z0-9.-]+\.googleusercontent\.com)$/.test(origin)) return;
         const data = event.data || {};
+        if (data.page && data.page !== 'upload') return;
+
+        if (data.type === 'wedding-embed-scroll-hello' && event.source) {
+          // Handshake prevents the bridge from taking over scrolling when
+          // the Apps Script form is opened by itself outside this website.
+          event.source.postMessage({ type: 'wedding-embed-scroll-ready', page: 'upload' }, origin);
+          return;
+        }
+
+        if (data.type === 'wedding-embed-scroll-delta') {
+          const deltaY = Number(data.deltaY);
+          if (Number.isFinite(deltaY) && Math.abs(deltaY) <= 150) {
+            window.scrollBy(0, deltaY);
+          }
+          return;
+        }
+
         if (data.type !== 'wedding-upload-height') return;
         const height = Number(data.height);
         if (!Number.isFinite(height) || height < 200 || height > 12000) return;
-        frame.style.height = Math.ceil(height + 12) + 'px';
+        const nextHeight = Math.ceil(height + 12);
+        if (Math.abs(frame.offsetHeight - nextHeight) > 3) {
+          frame.style.height = nextHeight + 'px';
+        }
       });
     })();
 
