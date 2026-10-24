@@ -213,7 +213,8 @@
       text-transform: uppercase;
     }
 
-    input[type="text"] {
+    input[type="text"],
+    select.album-select {
       width: 100%;
       border: 1px solid rgba(75,36,95,.22);
       border-radius: 17px;
@@ -224,7 +225,8 @@
       outline: none;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    select.album-select:focus {
       border-color: var(--orchid);
       box-shadow: 0 0 0 4px rgba(125,79,141,.10);
     }
@@ -579,6 +581,17 @@
       <section class="section-box">
         <h2 class="box-title">Share Your Wedding Photos &amp; Videos <span class="required">*</span></h2>
         <p class="box-copy">Upload the moments you captured during the celebration. You can choose several files at once.</p>
+        <label class="field" for="memoryAlbum">
+          <span>Which album is this for? (Optional)</span>
+          <select id="memoryAlbum" class="album-select">
+            <option value="">Not sure / Let us organize it</option>
+            <option value="Wedding Day-Ceremony">Wedding Day-Ceremony</option>
+            <option value="Wedding Day-Reception">Wedding Day-Reception</option>
+            <option value="Prenup">Prenup</option>
+            <option value="Bridal Shower">Bridal Shower</option>
+            <option value="E&amp;S Photobooth">E&amp;S Photobooth</option>
+          </select>
+        </label>
         <input id="files" type="file" accept="image/*,video/*" multiple required>
         <p class="small">At least one wedding photo or video is required. Maximum: 10 GB per file. Fast direct uploads are used when supported, with automatic recovery on other browsers. Keep this page open until uploads finish.</p>
       </section>
@@ -626,6 +639,7 @@
       event.preventDefault();
 
       const guestName = document.getElementById('guestName').value.trim();
+      const album = document.getElementById('memoryAlbum').value;
       const videoMessage = videoMessageInput.files[0];
       const memories = Array.from(document.getElementById('files').files || []);
 
@@ -657,8 +671,8 @@
       statusBox.textContent = '';
 
       const uploads = [
-        ...(videoMessage ? [{ file: videoMessage, uploadType: 'Video Message' }] : []),
-        ...memories.map(file => ({ file, uploadType: 'Wedding Memory' }))
+        ...(videoMessage ? [{ file: videoMessage, uploadType: 'Video Message', album: '' }] : []),
+        ...memories.map(file => ({ file, uploadType: 'Wedding Memory', album }))
       ];
 
       const totalBytes = uploads.reduce((sum, item) => sum + item.file.size, 0);
@@ -680,6 +694,7 @@
           const session = await beginUpload({
             guestName,
             uploadType: item.uploadType,
+            album: item.album,
             fileName: file.name,
             mimeType: file.type || 'application/octet-stream',
             fileSize: file.size,
@@ -711,6 +726,7 @@
             id: session.id,
             guestName,
             uploadType: item.uploadType,
+            album: item.album,
             fileName: file.name,
             mimeType: file.type || 'application/octet-stream',
             driveFileId: uploaded.id
