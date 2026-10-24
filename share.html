@@ -225,9 +225,11 @@
       background: linear-gradient(90deg, rgba(184,138,46,.58), transparent);
     }
 
+    /* Keep the outer page as the only scroll container. A nested scrolling
+       Google Apps Script iframe can trap vertical swipes in iOS Safari. */
     .share-frame-window {
-      overflow: hidden;
-      height: 1240px;
+      overflow: visible;
+      height: auto;
       flex: 0 0 auto;
       background: transparent;
     }
@@ -235,10 +237,39 @@
     .share-frame {
       display: block;
       width: 100%;
-      height: 1240px;
+      height: 1550px; /* Fallback until the embed reports its measured height. */
       border: 0;
       background: transparent;
       transform: none;
+    }
+
+    .share-ios-open-direct {
+      display: none;
+      width: min(680px, calc(100% - 32px));
+      margin: 26px auto 4px;
+      padding: 17px 20px;
+      border: 1px solid rgba(199, 158, 73, 0.32);
+      border-radius: 18px;
+      background: rgba(255, 250, 240, 0.94);
+      text-align: center;
+      color: var(--deep-purple);
+      line-height: 1.55;
+    }
+
+    .share-ios-open-direct a {
+      display: inline-block;
+      margin-top: 9px;
+      padding: 11px 21px;
+      border-radius: 999px;
+      background: var(--deep-purple);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .share-ios-open-direct a:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 3px;
     }
 
     .share-fallback {
@@ -334,11 +365,12 @@
       }
 
       .share-frame-window {
-        height: 1460px;
+        height: auto;
+        overflow: visible;
       }
 
       .share-frame {
-        height: 1460px;
+        height: 2000px; /* iOS-safe fallback if the Apps Script page is not yet redeployed. */
         transform: none;
       }
     }
@@ -461,13 +493,20 @@
 
   <!-- The embedded upload form displays the Share Your Memories heading once. -->
 
+  <div class="share-ios-open-direct" id="shareIosDirectLink">
+    <span>Sharing from an iPhone? You can open the upload form directly for easier scrolling.</span><br>
+    <a href="https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec">Open Upload Form</a>
+  </div>
+
   <div class="share-frame-window">
     <iframe
+      id="weddingUploadFrame"
       class="share-frame"
       src="https://script.google.com/macros/s/AKfycbxt2yuy21SSgdh3nxCcxOTD07G9ikLyX5q4km_3ZGT1Y2QwYGgK8M3c0X6wfaVxtHy84g/exec"
       title="Share Your Memories upload form"
       loading="eager"
       allow="camera; microphone"
+      scrolling="no"
     ></iframe>
   </div>
 
@@ -478,6 +517,31 @@
 
 
   <script>
+    (function () {
+      const frame = document.getElementById('weddingUploadFrame');
+      const iosLink = document.getElementById('shareIosDirectLink');
+      if (!frame) return;
+
+      // iOS Safari may not allow scrolling inside a cross-origin iframe.
+      // Give iPhone/iPad visitors a direct, fully scrollable upload option.
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isIOS && iosLink) iosLink.style.display = 'block';
+
+      // Upload.html posts its content height on load, file selection and
+      // validation/status changes. Resize the iframe so the parent page
+      // scrolls normally instead of creating a nested scroll area.
+      window.addEventListener('message', function (event) {
+        const origin = event.origin || '';
+        if (!/^https:\/\/(?:script\.google\.com|[a-z0-9.-]+\.googleusercontent\.com)$/.test(origin)) return;
+        const data = event.data || {};
+        if (data.type !== 'wedding-upload-height') return;
+        const height = Number(data.height);
+        if (!Number.isFinite(height) || height < 200 || height > 12000) return;
+        frame.style.height = Math.ceil(height + 12) + 'px';
+      });
+    })();
+
     (function () {
       const menuToggle = document.querySelector('.menu-toggle');
       const navLinks = document.querySelector('.nav-links');
