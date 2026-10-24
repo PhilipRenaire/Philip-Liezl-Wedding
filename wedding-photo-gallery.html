@@ -876,7 +876,17 @@
       filterButtons.forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
       renderAlbums();
       renderGallery();
-      document.getElementById('galleryAlbumTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const albumHeading = document.getElementById('galleryAlbumTitle');
+      if (window.__weddingIOSSafariBridgeActive) {
+        // scrollIntoView inside an iOS iframe can move the hidden inner
+        // viewport instead of the visible wedding webpage.
+        const offset = Math.max(0, albumHeading.getBoundingClientRect().top + window.scrollY - 18);
+        window.top.postMessage({
+          type: 'wedding-gallery-scroll-to', page: 'gallery', offset
+        }, 'https://philiprenaire.github.io');
+      } else {
+        albumHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     viewAllAlbums.addEventListener('click', () => selectAlbum(''));
@@ -1218,6 +1228,71 @@
       pointerGestureStart = null;
     });
 
+
+    // Forward vertical touch movements to the wedding webpage only when
+    // this gallery is embedded there. The handshake ensures a gallery opened
+    // on its own retains native Safari scrolling. Horizontal photo swipes,
+    // tap controls, album selection, and lightbox gestures stay intact.
+    (function bridgeIOSSafariScrolling() {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (!isIOS || window.top === window) return;
+
+      const weddingOrigin = 'https://philiprenaire.github.io';
+      let gesture = null;
+
+      window.addEventListener('message', event => {
+        if (event.origin !== weddingOrigin) return;
+        const data = event.data || {};
+        if (data.type === 'wedding-embed-scroll-ready' && data.page === 'gallery') {
+          window.__weddingIOSSafariBridgeActive = true;
+        }
+      });
+
+      function announce() {
+        if (window.__weddingIOSSafariBridgeActive) return;
+        window.top.postMessage({ type: 'wedding-embed-scroll-hello', page: 'gallery' }, weddingOrigin);
+      }
+
+      announce();
+      window.addEventListener('pageshow', announce);
+      setTimeout(announce, 400);
+      setTimeout(announce, 1600);
+
+      document.addEventListener('touchstart', event => {
+        gesture = null;
+        if (!window.__weddingIOSSafariBridgeActive || lightbox.classList.contains('open') ||
+            event.touches.length !== 1) return;
+        if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+        const touch = event.touches[0];
+        gesture = { x: touch.clientX, y: touch.clientY, lastY: touch.clientY, active: false };
+      }, { passive: true });
+
+      document.addEventListener('touchmove', event => {
+        if (!window.__weddingIOSSafariBridgeActive || !gesture ||
+            lightbox.classList.contains('open') || event.touches.length !== 1) return;
+        const touch = event.touches[0];
+        const distanceY = touch.clientY - gesture.y;
+        const distanceX = touch.clientX - gesture.x;
+        if (!gesture.active) {
+          if (Math.abs(distanceY) < 7 || Math.abs(distanceY) < Math.abs(distanceX) * 1.2) return;
+          gesture.active = true;
+        }
+
+        if (event.cancelable) event.preventDefault();
+        const deltaY = gesture.lastY - touch.clientY;
+        gesture.lastY = touch.clientY;
+        if (!deltaY) return;
+        window.top.postMessage({
+          type: 'wedding-embed-scroll-delta',
+          page: 'gallery',
+          deltaY: Math.max(-150, Math.min(150, deltaY))
+        }, weddingOrigin);
+      }, { passive: false });
+
+      document.addEventListener('touchend', () => { gesture = null; }, { passive: true });
+      document.addEventListener('touchcancel', () => { gesture = null; }, { passive: true });
+    })();
 
     // In iOS Safari, scrolling a cross-origin iframe can get stuck. Let the
     // wedding website scroll as a single document by telling it the actual
