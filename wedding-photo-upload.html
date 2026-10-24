@@ -623,6 +623,68 @@
     const videoMessageInput = document.getElementById('videoMessage');
     const videoSelection = document.getElementById('videoSelection');
 
+    // The upload page is displayed inside an iframe on the wedding website.
+    // iOS Safari can trap swipes inside a scrollable iframe, so tell the
+    // outer page how tall the form is and let the OUTER page handle scrolling.
+    (function reportWeddingUploadHeight() {
+      let scheduled = false;
+      let lastHeight = 0;
+
+      function publishHeight() {
+        scheduled = false;
+        const card = document.querySelector('main.card');
+        if (!card) return;
+
+        // Measure the actual content instead of body.scrollHeight: the latter
+        // can equal the iframe's viewport height because of min-height:100vh.
+        const rect = card.getBoundingClientRect();
+        const margin = parseFloat(getComputedStyle(card).marginBottom) || 0;
+        const height = Math.ceil(rect.bottom + window.scrollY + margin + 2);
+        if (!Number.isFinite(height) || height < 200) return;
+        if (Math.abs(height - lastHeight) < 2) return;
+        lastHeight = height;
+
+        const message = { type: 'wedding-upload-height', height: height };
+        // Google Apps Script may render inside an additional sandbox iframe.
+        // Posting to top reaches the wedding website even from that iframe.
+        if (window.parent !== window) window.parent.postMessage(message, '*');
+        if (window.top !== window.parent && window.top !== window) {
+          window.top.postMessage(message, '*');
+        }
+      }
+
+      function scheduleHeight() {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(publishHeight);
+      }
+
+      window.addEventListener('load', scheduleHeight);
+      window.addEventListener('resize', scheduleHeight);
+      window.addEventListener('orientationchange', scheduleHeight);
+      window.addEventListener('pageshow', scheduleHeight);
+
+      if (typeof ResizeObserver !== 'undefined') {
+        const observer = new ResizeObserver(scheduleHeight);
+        observer.observe(document.querySelector('.hero'));
+        observer.observe(document.querySelector('main.card'));
+      }
+      if (typeof MutationObserver !== 'undefined') {
+        new MutationObserver(scheduleHeight).observe(document.querySelector('main.card'), {
+          subtree: true,
+          childList: true,
+          characterData: true
+        });
+      }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(scheduleHeight);
+      }
+
+      scheduleHeight();
+      setTimeout(scheduleHeight, 350);
+      setTimeout(scheduleHeight, 1250);
+    })();
+
     videoMessageInput.addEventListener('change', () => {
       const file = videoMessageInput.files[0];
       if (!file) {
