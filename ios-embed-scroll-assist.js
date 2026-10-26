@@ -17,6 +17,14 @@
   const frame = document.querySelector('.share-frame');
   if (!frame) return;
 
+  // styles.css sets html scroll-behavior:smooth. Repeated small scroll
+  // movements from a finger must NOT animate, or Safari will feel stuck.
+  document.documentElement.style.scrollBehavior = 'auto';
+
+  // WebKit has historically skipped child-frame touch events unless an
+  // ancestor in the top-level document also listens for touches.
+  frame.addEventListener('touchstart', () => {}, { passive: true });
+
   const css = document.createElement('style');
   css.textContent = `
     .ios-scroll-assist {
