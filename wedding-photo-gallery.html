@@ -379,13 +379,25 @@
       box-shadow: 0 21px 44px rgba(42,25,48,.15);
     }
 
-    .memory-card img {
+    /* Every thumbnail uses a fixed 1:1 visual frame regardless of the
+       original photo or video dimensions. Full-size previews stay uncropped. */
+    .memory-thumb {
+      position: relative;
       display: block;
       width: 100%;
-      height: auto;
-      min-height: 190px;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
       background: linear-gradient(135deg, #f6eff8, #fff8eb);
+    }
+
+    .memory-thumb img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      object-position: center;
     }
 
     .memory-meta {
@@ -416,7 +428,7 @@
 
     .play {
       position: absolute;
-      inset: 0 0 48px;
+      inset: 0;
       display: grid;
       place-items: center;
       pointer-events: none;
@@ -926,7 +938,6 @@
         font-size: 9px;
       }
 
-      .play { inset: 0 0 70px; }
 
       .play span {
         width: 50px;
@@ -1329,16 +1340,18 @@
         kind.textContent = item.kind === 'video' ? 'Video' : 'Photo';
 
         meta.append(by, kind);
-        card.append(image);
 
+        const thumbnail = document.createElement('div');
+        thumbnail.className = 'memory-thumb';
+        thumbnail.appendChild(image);
         if (item.kind === 'video') {
           const play = document.createElement('div');
           play.className = 'play';
           play.innerHTML = '<span>▶</span>';
-          card.appendChild(play);
+          thumbnail.appendChild(play);
         }
 
-        card.append(meta);
+        card.append(thumbnail, meta);
 
         const open = () => openItem(item);
         card.addEventListener('click', open);
