@@ -469,6 +469,180 @@
       line-height: 1.7;
     }
 
+    /* A full album opens in-place rather than jumping to the page gallery. */
+    .album-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(24, 14, 31, .82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .album-modal.open { display: flex; }
+
+    .album-modal-panel {
+      display: flex;
+      flex-direction: column;
+      width: min(960px, 100%);
+      max-height: min(90vh, 860px);
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid rgba(199,158,73,.45);
+      border-radius: 25px;
+      background: #fffaf4;
+      box-shadow: 0 30px 90px rgba(0,0,0,.4);
+    }
+
+    .album-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 23px 26px 17px;
+      border-bottom: 1px solid rgba(199,158,73,.22);
+      background: linear-gradient(135deg,#fffaf4,#f7f0fc);
+    }
+
+    .album-modal-eyebrow {
+      margin: 0 0 6px;
+      color: var(--orchid);
+      font: 700 11px/1.4 Arial,sans-serif;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .album-modal-header h2 {
+      margin: 0;
+      color: var(--deep-purple);
+      font: 500 clamp(21px,4vw,31px)/1.22 Georgia,serif;
+    }
+
+    .album-modal-count {
+      margin: 8px 0 0;
+      color: rgba(60,47,53,.65);
+      font: 13px/1.45 Arial,sans-serif;
+    }
+
+    .album-modal-close {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      padding: 0;
+      border: 1px solid rgba(75,36,95,.18);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--deep-purple);
+      font: 27px/1 Arial,sans-serif;
+      cursor: pointer;
+    }
+
+    .album-modal-close:focus-visible, .album-tile:focus-visible {
+      outline: 3px solid var(--orchid);
+      outline-offset: 3px;
+    }
+
+    .album-modal-grid {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(4,minmax(0,1fr));
+      align-content: start;
+      gap: 13px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      padding: 22px 24px 28px;
+    }
+
+    .album-tile {
+      display: block;
+      min-width: 0;
+      padding: 0;
+      border: 1px solid rgba(199,158,73,.25);
+      border-radius: 15px;
+      overflow: hidden;
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .album-tile-image {
+      position: relative;
+      display: block;
+      aspect-ratio: 1 / 1;
+      background: linear-gradient(135deg,#f6eff8,#fff3df);
+    }
+
+    .album-tile-image img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .album-tile-play {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      width: 47px;
+      height: 47px;
+      padding-left: 3px;
+      border-radius: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(75,36,95,.84);
+      color: #fff;
+      font-size: 21px;
+    }
+
+    .album-tile-caption {
+      display: block;
+      padding: 10px 11px 12px;
+      color: rgba(60,47,53,.8);
+      font: 12px/1.4 Arial,sans-serif;
+      overflow-wrap: anywhere;
+    }
+
+    .album-modal-empty {
+      grid-column: 1 / -1;
+      padding: 50px 16px;
+      text-align: center;
+      color: var(--deep-purple);
+      font: 16px/1.7 Georgia,serif;
+    }
+
+    /* Apps Script sits inside a tall iframe on the wedding website.
+       Align the modal to the currently visible portion of that frame. */
+    .album-modal.embedded-window-preview {
+      position: absolute;
+      inset: auto 0 auto 0;
+      top: var(--embed-preview-top,0px);
+      height: var(--embed-preview-height,100vh);
+    }
+
+    .album-modal.embedded-window-preview .album-modal-panel {
+      max-height: calc(var(--embed-preview-height,100vh) - 24px);
+    }
+
+    @media (max-width: 760px) {
+      .album-modal { padding: 9px; }
+      .album-modal-panel { border-radius: 17px; max-height: calc(100dvh - 18px); }
+      .album-modal-header { padding: 16px 16px 13px; }
+      .album-modal-close { width: 42px; height: 42px; }
+      .album-modal-grid { grid-template-columns: repeat(2,minmax(0,1fr));gap: 9px;padding: 13px; }
+      .album-tile-caption { padding: 8px 9px 10px; font-size: 11px; }
+    }
+
     .lightbox {
       position: fixed;
       inset: 0;
@@ -837,6 +1011,20 @@
     Thank you for helping us preserve the memories of our day.
   </footer>
 
+  <div id="albumModal" class="album-modal" role="dialog" aria-modal="true" aria-labelledby="albumModalTitle">
+    <div class="album-modal-panel">
+      <div class="album-modal-header">
+        <div>
+          <p class="album-modal-eyebrow">Philip &amp; Liezl · Wedding Memories</p>
+          <h2 id="albumModalTitle">Our Album</h2>
+          <p id="albumModalCount" class="album-modal-count"></p>
+        </div>
+        <button id="closeAlbumModal" class="album-modal-close" type="button" aria-label="Close album">×</button>
+      </div>
+      <div id="albumModalGrid" class="album-modal-grid"></div>
+    </div>
+  </div>
+
   <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Wedding memory preview">
     <div class="lightbox-panel">
       <button id="closeLightbox" class="close-btn" type="button" aria-label="Close preview">×</button>
@@ -857,6 +1045,14 @@
     const albumGrid = document.getElementById('albumGrid');
     const albumTitle = document.getElementById('galleryAlbumTitle');
     const viewAllAlbums = document.getElementById('viewAllAlbums');
+    const albumModal = document.getElementById('albumModal');
+    const albumModalTitle = document.getElementById('albumModalTitle');
+    const albumModalCount = document.getElementById('albumModalCount');
+    const albumModalGrid = document.getElementById('albumModalGrid');
+    const closeAlbumButton = document.getElementById('closeAlbumModal');
+    let albumTrigger = null;
+    let selectedAlbumTile = null;
+    let returnToAlbum = false;
     const ALBUMS = [
       'Wedding Day-Ceremony',
       'Wedding Day-Reception',
@@ -883,9 +1079,11 @@
       const height = Number(data.height);
       if (!Number.isFinite(top) || top < 0 || top > 250000 ||
           !Number.isFinite(height) || height < 200 || height > 3000) return;
-      lightbox.classList.add('embedded-window-preview');
-      lightbox.style.setProperty('--embed-preview-top', Math.round(top) + 'px');
-      lightbox.style.setProperty('--embed-preview-height', Math.round(height) + 'px');
+      [lightbox, albumModal].forEach(modal => {
+        modal.classList.add('embedded-window-preview');
+        modal.style.setProperty('--embed-preview-top', Math.round(top) + 'px');
+        modal.style.setProperty('--embed-preview-height', Math.round(height) + 'px');
+      });
       if (lightbox.classList.contains('open')) resizeVideoPlayer();
     });
 
@@ -947,8 +1145,8 @@
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'album-card' + (activeAlbum === name ? ' is-active' : '');
-        card.setAttribute('aria-pressed', String(activeAlbum === name));
-        card.setAttribute('aria-label', name + ', ' + items.length + ' memories');
+        card.setAttribute('aria-haspopup', 'dialog');
+        card.setAttribute('aria-label', 'Open ' + name + ' album, ' + items.length + ' memories');
 
         const cover = document.createElement('span');
         cover.className = 'album-cover';
@@ -977,10 +1175,99 @@
         count.textContent = items.length ? items.length + (items.length === 1 ? ' memory' : ' memories') : 'Coming soon';
         info.append(title, count);
         card.append(cover, info);
-        card.addEventListener('click', () => selectAlbum(name));
+        card.addEventListener('click', () => openAlbumModal(name, card));
         albumGrid.appendChild(card);
       });
     }
+
+    function notifyAlbumPreview(open) {
+      if (window.top === window) return;
+      window.top.postMessage({
+        type: open ? 'wedding-gallery-preview-open' : 'wedding-gallery-preview-close',
+        page: 'gallery'
+      }, 'https://philiprenaire.github.io');
+    }
+
+    function openAlbumModal(name, trigger) {
+      if (!ALBUMS.includes(name)) return;
+      albumTrigger = trigger;
+      selectedAlbumTile = null;
+      returnToAlbum = false;
+      const albumItems = allItems.filter(item => item.album === name);
+      albumModalTitle.textContent = name;
+      albumModalCount.textContent = albumItems.length +
+        (albumItems.length === 1 ? ' memory' : ' memories');
+      albumModalGrid.replaceChildren();
+      albumModalGrid.scrollTop = 0;
+
+      if (!albumItems.length) {
+        const empty = document.createElement('p');
+        empty.className = 'album-modal-empty';
+        empty.textContent = 'Approved photos and videos for this album are coming soon.';
+        albumModalGrid.appendChild(empty);
+      }
+
+      albumItems.forEach(item => {
+        const tile = document.createElement('button');
+        tile.type = 'button';
+        tile.className = 'album-tile';
+        tile.setAttribute('aria-label', 'View ' + item.kind + ' shared by ' + item.guestName);
+
+        const imageArea = document.createElement('span');
+        imageArea.className = 'album-tile-image';
+        const photo = document.createElement('img');
+        photo.src = item.thumbnailUrl;
+        photo.alt = '';
+        photo.loading = 'lazy';
+        photo.referrerPolicy = 'no-referrer';
+        imageArea.appendChild(photo);
+        if (item.kind === 'video') {
+          const play = document.createElement('span');
+          play.className = 'album-tile-play';
+          play.setAttribute('aria-hidden', 'true');
+          play.textContent = '▶';
+          imageArea.appendChild(play);
+        }
+
+        const caption = document.createElement('span');
+        caption.className = 'album-tile-caption';
+        caption.textContent = 'Shared by ' + item.guestName +
+          (item.kind === 'video' ? ' · Video' : '');
+        tile.append(imageArea, caption);
+        tile.addEventListener('click', () => {
+          selectedAlbumTile = tile;
+          returnToAlbum = true;
+          // Keep the full album as the source for prev/next navigation.
+          lightboxItems = albumItems;
+          albumModal.classList.remove('open');
+          openItem(item);
+          closeLightbox.focus({ preventScroll: true });
+        });
+        albumModalGrid.appendChild(tile);
+      });
+
+      albumModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      notifyAlbumPreview(true);
+      closeAlbumButton.focus({ preventScroll: true });
+    }
+
+    function closeAlbumModal() {
+      albumModal.classList.remove('open', 'embedded-window-preview');
+      albumModal.style.removeProperty('--embed-preview-top');
+      albumModal.style.removeProperty('--embed-preview-height');
+      returnToAlbum = false;
+      document.body.style.overflow = '';
+      notifyAlbumPreview(false);
+      if (albumTrigger && albumTrigger.isConnected) albumTrigger.focus({ preventScroll: true });
+      albumTrigger = null;
+      selectedAlbumTile = null;
+    }
+
+    closeAlbumButton.addEventListener('click', closeAlbumModal);
+    albumModal.addEventListener('click', event => {
+      if (event.target === albumModal) closeAlbumModal();
+    });
 
     function renderGallery() {
       const albumItems = activeAlbum
@@ -1176,16 +1463,25 @@
       lightboxMedia.innerHTML = '';
       lightbox.querySelector('.lightbox-panel').classList.remove('video-active', 'nav-visible');
       clearTimeout(navHideTimer);
-      document.body.style.overflow = '';
       lightbox.classList.remove('embedded-window-preview');
       lightbox.style.removeProperty('--embed-preview-top');
       lightbox.style.removeProperty('--embed-preview-height');
-      if (window.top !== window) {
-        window.top.postMessage({
-          type: 'wedding-gallery-preview-close', page: 'gallery'
-        }, 'https://philiprenaire.github.io');
-      }
       currentItemIndex = -1;
+
+      if (returnToAlbum) {
+        returnToAlbum = false;
+        albumModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        notifyAlbumPreview(true);
+        if (selectedAlbumTile && selectedAlbumTile.isConnected) {
+          selectedAlbumTile.focus({ preventScroll: true });
+        } else {
+          closeAlbumButton.focus({ preventScroll: true });
+        }
+      } else {
+        document.body.style.overflow = '';
+        notifyAlbumPreview(false);
+      }
     }
 
     function navigatePreview(direction) {
@@ -1229,12 +1525,29 @@
     });
 
     document.addEventListener('keydown', event => {
-      if (!lightbox.classList.contains('open')) return;
+      if (lightbox.classList.contains('open')) {
+        if (event.key === 'Escape') {
+          closePreview();
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+          navigatePreview(event.key === 'ArrowLeft' ? -1 : 1);
+        }
+        return;
+      }
+      if (!albumModal.classList.contains('open')) return;
       if (event.key === 'Escape') {
-        closePreview();
-      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        event.preventDefault();
-        navigatePreview(event.key === 'ArrowLeft' ? -1 : 1);
+        closeAlbumModal();
+      } else if (event.key === 'Tab') {
+        // Keep keyboard focus within the open album until it's closed.
+        const controls = [closeAlbumButton, ...albumModalGrid.querySelectorAll('button')];
+        const current = controls.indexOf(document.activeElement);
+        if (event.shiftKey && current <= 0) {
+          event.preventDefault();
+          controls[controls.length - 1].focus();
+        } else if (!event.shiftKey && current === controls.length - 1) {
+          event.preventDefault();
+          controls[0].focus();
+        }
       }
     });
 
@@ -1319,7 +1632,8 @@
 
       document.addEventListener('touchstart', event => {
         gesture = null;
-        if (!window.__weddingIOSSafariBridgeActive || lightbox.classList.contains('open') ||
+        if (!window.__weddingIOSSafariBridgeActive ||
+            lightbox.classList.contains('open') || albumModal.classList.contains('open') ||
             event.touches.length !== 1) return;
         if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
         const touch = event.touches[0];
@@ -1328,7 +1642,8 @@
 
       document.addEventListener('touchmove', event => {
         if (!window.__weddingIOSSafariBridgeActive || !gesture ||
-            lightbox.classList.contains('open') || event.touches.length !== 1) return;
+            lightbox.classList.contains('open') || albumModal.classList.contains('open') ||
+            event.touches.length !== 1) return;
         const touch = event.touches[0];
         const distanceY = touch.clientY - gesture.y;
         const distanceX = touch.clientX - gesture.x;
