@@ -506,7 +506,7 @@
         if (data.type === 'wedding-embed-scroll-delta') {
           const deltaY = Number(data.deltaY);
           if (Number.isFinite(deltaY) && Math.abs(deltaY) <= 150) {
-            window.scrollBy(0, deltaY);
+            window.scrollBy({ top: deltaY, left: 0, behavior: 'instant' });
           }
           return;
         }
