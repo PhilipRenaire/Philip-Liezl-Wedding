@@ -630,6 +630,28 @@
       object-position: center;
     }
 
+    /* Never leave Safari's broken-image ? symbol visible. Show a branded
+       placeholder while Google Drive prepares a thumbnail or if all image
+       hosts fail. The original media can still be opened by tapping. */
+    .album-tile-image.is-thumbnail-unavailable::after,
+    .memory-thumb.is-thumbnail-unavailable::after {
+      content: "Preview unavailable";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      color: rgba(75,36,95,.76);
+      background: linear-gradient(145deg, #f8f0fa, #fff5e7);
+      font: 600 13px/1.5 Georgia,serif;
+      text-align: center;
+      pointer-events: none;
+    }
+    .memory-thumb.is-thumbnail-unavailable .play,
+    .album-tile-image.is-thumbnail-unavailable .album-tile-play {
+      z-index: 1;
+    }
+
     .album-tile-play {
       position: absolute;
       left: 50%;
@@ -1159,6 +1181,57 @@
       if (lightbox.classList.contains('open')) resizeVideoPlayer();
     });
 
+    // Large Drive thumbnail requests can be blocked, expire, or exhaust
+    // iPhone Safari's image resources. Try smaller, public URLs and a
+    // second Google image host before displaying a graceful placeholder.
+    // Keep Drive IDs validated and encode them before constructing URLs.
+    function createGalleryThumbnail(item, container, alt, eager) {
+      const img = document.createElement('img');
+      img.alt = alt || '';
+      img.loading = eager ? 'eager' : 'lazy';
+      img.decoding = 'async';
+      img.referrerPolicy = 'no-referrer';
+
+      const id = String(item && item.fileId || '').trim();
+      const urls = [];
+      if (/^[A-Za-z0-9_-]{10,}$/.test(id)) {
+        const encodedId = encodeURIComponent(id);
+        const fastGoogleImage = 'https://lh3.googleusercontent.com/d/' + encodedId + '=w640';
+        const driveThumbnail = 'https://drive.google.com/thumbnail?id=' + encodedId + '&sz=w640';
+        // Drive's own thumbnail service is more likely to generate a still
+        // for video files; the Google image host is preferable for photos.
+        if (item.kind === 'video') urls.push(driveThumbnail, fastGoogleImage);
+        else urls.push(fastGoogleImage, driveThumbnail);
+      }
+      if (item.thumbnailUrl && !urls.includes(item.thumbnailUrl)) {
+        urls.push(item.thumbnailUrl);
+      }
+
+      let current = 0;
+      function loadNextSource() {
+        if (current >= urls.length) {
+          img.remove();
+          if (container) container.classList.add('is-thumbnail-unavailable');
+          return;
+        }
+        img.src = urls[current++];
+      }
+
+      // Do not expose a broken-image icon between attempts on iOS.
+      img.style.visibility = 'hidden';
+      img.addEventListener('load', () => {
+        if (img.naturalWidth > 0) {
+          img.style.visibility = '';
+          if (container) container.classList.remove('is-thumbnail-unavailable');
+        } else {
+          loadNextSource();
+        }
+      });
+      img.addEventListener('error', loadNextSource);
+      loadNextSource();
+      return img;
+    }
+
     let allItems = [];
     let activeFilter = 'all';
     let lightboxItems = [];
@@ -1228,12 +1301,7 @@
         cover.appendChild(monogram);
 
         if (items.length) {
-          const photo = document.createElement('img');
-          photo.src = items[0].thumbnailUrl;
-          photo.alt = '';
-          photo.loading = 'lazy';
-          photo.referrerPolicy = 'no-referrer';
-          photo.addEventListener('error', () => photo.remove(), { once: true });
+          const photo = createGalleryThumbnail(items[0], cover, '', true);
           cover.appendChild(photo);
         }
 
@@ -1287,11 +1355,11 @@
 
         const imageArea = document.createElement('span');
         imageArea.className = 'album-tile-image';
-        const photo = document.createElement('img');
-        photo.src = item.thumbnailUrl;
-        photo.alt = '';
-        photo.loading = 'lazy';
-        photo.referrerPolicy = 'no-referrer';
+        // Fetch a visible album's first few previews immediately; defer
+        // the remaining thumbnails until they approach the scroll viewport.
+        const photo = createGalleryThumbnail(
+          item, imageArea, '', albumItems.indexOf(item) < 8
+        );
         imageArea.appendChild(photo);
         if (item.kind === 'video') {
           const play = document.createElement('span');
@@ -1388,11 +1456,12 @@
         card.setAttribute('role', 'button');
         card.setAttribute('aria-label', 'Open ' + item.kind + ' shared by ' + item.guestName);
 
-        const image = document.createElement('img');
-        image.src = item.thumbnailUrl;
-        image.alt = 'Wedding memory shared by ' + item.guestName;
-        image.loading = 'lazy';
-        image.referrerPolicy = 'no-referrer';
+        const thumbnail = document.createElement('div');
+        thumbnail.className = 'memory-thumb';
+        const image = createGalleryThumbnail(
+          item, thumbnail, 'Wedding memory shared by ' + item.guestName,
+          visibleItems.indexOf(item) < 6
+        );
 
         const meta = document.createElement('div');
         meta.className = 'memory-meta';
@@ -1407,8 +1476,6 @@
 
         meta.append(by, kind);
 
-        const thumbnail = document.createElement('div');
-        thumbnail.className = 'memory-thumb';
         thumbnail.appendChild(image);
         if (item.kind === 'video') {
           const play = document.createElement('div');
