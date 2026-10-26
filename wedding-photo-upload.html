@@ -17,6 +17,20 @@
 
     * { box-sizing: border-box; }
 
+    /* Only enabled after the embedded page confirms the wedding site
+       will scroll on its behalf. Keep standalone Apps Script scrolling
+       untouched. Touch controls and gallery modal remain interactive. */
+    html.wedding-parent-scroll-ready,
+    html.wedding-parent-scroll-ready body {
+      overflow-y: hidden;
+      overscroll-behavior-y: none;
+    }
+
+    html.wedding-parent-scroll-ready .hero,
+    html.wedding-parent-scroll-ready main {
+      touch-action: none;
+    }
+
     body {
       margin: 0;
       color: var(--text);
@@ -698,58 +712,77 @@
       const weddingOrigin = 'https://philiprenaire.github.io';
       let enabled = false;
       let gesture = null;
+      let lastAnnouncement = 0;
 
       window.addEventListener('message', event => {
         if (event.origin !== weddingOrigin) return;
         const data = event.data || {};
-        if (data.type === 'wedding-embed-scroll-ready' && data.page === 'upload') {
-          enabled = true;
-        }
+        if (data.type !== 'wedding-embed-scroll-ready' || data.page !== 'upload') return;
+        enabled = true;
+        
+        document.documentElement.classList.add('wedding-parent-scroll-ready');
       });
 
+      // Apps Script may load inside a second sandboxed iframe. Repeat the
+      // handshake until its nested frame can reach the GitHub parent page.
       function announce() {
         if (enabled) return;
-        window.top.postMessage({ type: 'wedding-embed-scroll-hello', page: 'upload' }, weddingOrigin);
+        const now = Date.now();
+        if (now - lastAnnouncement < 400) return;
+        lastAnnouncement = now;
+        window.top.postMessage({
+          type: 'wedding-embed-scroll-hello', page: 'upload'
+        }, weddingOrigin);
       }
 
       announce();
       window.addEventListener('pageshow', announce);
-      setTimeout(announce, 400);
-      setTimeout(announce, 1600);
+      window.addEventListener('load', announce);
+      const timer = setInterval(() => {
+        if (enabled) clearInterval(timer);
+        else announce();
+      }, 1300);
+      setTimeout(() => clearInterval(timer), 20000);
 
-      document.addEventListener('touchstart', event => {
+      // Attach listeners to body, not document: iOS WebKit has historically
+      // missed some touch events on document inside deeply nested iframes.
+      document.body.addEventListener('touchstart', event => {
         gesture = null;
-        if (!enabled || event.touches.length !== 1) return;
+        if (!enabled) { announce(); return; }
+        if (event.touches.length !== 1) return;
         if (event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
         const touch = event.touches[0];
-        gesture = { x: touch.clientX, y: touch.clientY, lastY: touch.clientY, active: false };
+        gesture = {
+          x: touch.clientX, y: touch.clientY, lastY: touch.clientY,
+          active: false
+        };
       }, { passive: true });
 
-      document.addEventListener('touchmove', event => {
+      document.body.addEventListener('touchmove', event => {
         if (!enabled || !gesture || event.touches.length !== 1) return;
         const touch = event.touches[0];
         const distanceY = touch.clientY - gesture.y;
         const distanceX = touch.clientX - gesture.x;
         if (!gesture.active) {
-          if (Math.abs(distanceY) < 7 || Math.abs(distanceY) < Math.abs(distanceX) * 1.2) return;
+          // Claim the vertical swipe from the first meaningful movement,
+          // before Safari decides to scroll the inner frame instead.
+          if (Math.abs(distanceY) < 2 ||
+              Math.abs(distanceX) > Math.abs(distanceY) * 1.2) return;
           gesture.active = true;
         }
 
-        // Prevent iOS from scrolling its internal iframe. The parent page
-        // scrolls in response to the same finger movement.
         if (event.cancelable) event.preventDefault();
         const deltaY = gesture.lastY - touch.clientY;
         gesture.lastY = touch.clientY;
-        if (!deltaY) return;
+        if (Math.abs(deltaY) < 0.5) return;
         window.top.postMessage({
           type: 'wedding-embed-scroll-delta',
-          page: 'upload',
-          deltaY: Math.max(-150, Math.min(150, deltaY))
+          page: 'upload', deltaY: Math.max(-150, Math.min(150, deltaY))
         }, weddingOrigin);
       }, { passive: false });
 
-      document.addEventListener('touchend', () => { gesture = null; }, { passive: true });
-      document.addEventListener('touchcancel', () => { gesture = null; }, { passive: true });
+      document.body.addEventListener('touchend', () => { gesture = null; }, { passive: true });
+      document.body.addEventListener('touchcancel', () => { gesture = null; }, { passive: true });
     })();
 
     videoMessageInput.addEventListener('change', () => {
